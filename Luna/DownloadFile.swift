@@ -29,12 +29,15 @@ class DownloadFile: File {
         super.init()
     }
     
-    public override init( url:String ) throws {
+    public init( url:String, isOverwrite:Bool, isCheck:Bool?=true ) throws {
         try super.init( url:url )
-        if let fileName = self.getFileName() {
-            let file = FileManager.generateDocumentFilePath(fileName: fileName, relativePath: self.savePath)
-            if FileManager.isExists(url: file ) && !self.isOverwrite {
-                throw FileError.FILE_ALREADY_EXISTS
+        self.isOverwrite = isOverwrite
+        if isCheck! {
+            if let fileName = self.getFileName() {
+                let file = FileManager.generateDocumentFilePath(fileName: fileName, relativePath: self.savePath)
+                if FileManager.isExists(url: file ) && !self.isOverwrite {
+                    throw FileError.FILE_ALREADY_EXISTS
+                }
             }
         }
         if !addDownloadToList() {
@@ -48,14 +51,18 @@ class DownloadFile: File {
                 switch filePathType {
                 case FilePathType.URL_TYPE:
                     if let path = file.value(forKeyPath: "path") as? String {
-                        try self.init( url: path )
-                        if let savePath = file.value(forKeyPath: "savePath") as? String {
-                            self.savePath = savePath
+                        let savePath = file.value(forKeyPath: "savePath") as? String ?? SystemFilePath.DOWNLOADS.rawValue
+                        let isOverwrite = file.value(forKeyPath: "isOverwrite") as? Bool ?? false
+                        var fileName = file.value(forKeyPath: "filename") as? String
+                        if fileName == nil {
+                            fileName = path.getFilenameFromURL()
                         }
-                        if let isOverwrite = file.value(forKeyPath: "isOverwrite") as? Bool {
-                            self.isOverwrite = isOverwrite
+                        let filePath = FileManager.generateDocumentFilePath(fileName: fileName!, relativePath: savePath)
+                        if FileManager.isExists(url: filePath ) && !isOverwrite {
+                            throw FileError.FILE_ALREADY_EXISTS
                         }
-                        
+                        try self.init( url: path, isOverwrite: isOverwrite, isCheck:false )
+                        self.savePath = savePath
                         return
                     }else {
                         throw FileError.INVALID_FILE_PARAMETERS
@@ -135,41 +142,6 @@ class DownloadFile: File {
         return self.download_id
     }
     
-//    public override func move( relative:String?="", isOverwrite:Bool?=false, onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
-//        if let downloadedFilePath = self.downloadedFilePath {
-//            if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: relative) {
-//                let file = FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: self.savePath)
-//                if FileManager.isExists(url: file ) {
-//                    if isOverwrite! {
-//                        if !FileManager.deleteFile(filePath: file) {
-//                            if onFail != nil {
-//                                onFail!( "Unable to delete file" )
-//                            }
-//                            return false
-//                        }
-//                    } else {
-//                        if onFail != nil {
-//                            onFail!( "File already exists" )
-//                        }
-//                        return false
-//                    }
-//                }
-//                if !FileManager.isExists(url: relativeURL) {
-//                    if !FileManager.createDirectory(absolutePath: relativeURL.path) {
-//                        if onFail != nil {
-//                            onFail!( "Failed to create folder to move to" )
-//                        }
-//                        return false
-//                    }
-//                }
-//                return FileManager.moveFile( filePath: downloadedFilePath, newFileName: self.getFileName(), relative:self.savePath, onSuccess:onSuccess, onFail: onFail)
-//            }
-//        }
-//        if onFail != nil {
-//            onFail!( "Failed to move file" )
-//        }
-//        return false
-//    }
     
     public func download( onSuccess:((Bool)->()), onFail:((String)->()) ) {
         if self.getPathType() == FilePathType.URL_TYPE {
@@ -192,13 +164,52 @@ class DownloadFile: File {
         CommandProcessor.processOnDownload( downloadFile: self )
     }
     
+    public override func move( relative:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil ) -> Bool {
+        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: relative) {
+            let file = FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: relative )
+            if FileManager.isExists(url: file ) {
+                if isOverwrite! {
+                    if !FileManager.deleteFile(filePath: file) {
+                        if onFail != nil {
+                            onFail!( "Unable to delete file" )
+                        }
+                        return false
+                    }
+                } else {
+                    if onFail != nil {
+                        onFail!( "File already exists" )
+                    }
+                    return false
+                }
+            }
+            if !FileManager.isExists(url: relativeURL) {
+                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
+                    if onFail != nil {
+                        onFail!( "Failed to create folder to move to" )
+                    }
+                    return false
+                }
+            }
+            if let fileName = self.getFileName() {
+                return FileManager.moveFile(filePath: self.downloadedFilePath!, newFileName: fileName, relative: relative, onSuccess: { (result) in
+                    print("intercept here")
+                    onSuccess( result )
+                }, onFail: onFail)
+            }
+        }
+        if onFail != nil {
+            onFail!( "Unable to move file" )
+        }
+        return false
+    }
+    
     func onDownloaded( downloadedFilePath: URL ) {
         self.downloadedFilePath = downloadedFilePath
-//        let _ = self.move(relative: self.savePath, isOverwrite: self.isOverwrite, onSuccess: { (result) in
-//            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: result )
-//        }) { (error) in
-//            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: downloadedFilePath )
-//        }
+        let _ = self.move(relative: self.savePath, isOverwrite: self.isOverwrite, onSuccess: { (result) in
+            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: result )
+        }) { (error) in
+            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: downloadedFilePath )
+        }
     }
     
     func onDownloading( progress: Double ) {

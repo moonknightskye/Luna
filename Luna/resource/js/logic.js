@@ -411,7 +411,7 @@
 
                 iOS.newDownloadFile({
                     path:       "https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg",
-                    isOverwrite: true
+                    isOverwrite: false
                 }).then( function( download_file ){
 
                   iOS.debug("iOS.getFile: OK " + download_file.getID())
@@ -445,6 +445,7 @@
                 }, function(error){
                   iOS.debug( "iOS.getFile: " + error );
                 });
+
               });
 
 

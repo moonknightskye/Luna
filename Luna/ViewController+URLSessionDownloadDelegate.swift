@@ -16,26 +16,6 @@ extension ViewController: URLSessionDownloadDelegate {
         
         if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
             downloadFile.onDownloaded( downloadedFilePath: location )
-//            if let fileName = downloadFile.getFileName() {
-//                
-//                let path = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
-//                let documentDirectoryPath:String = path[0]
-//                let fileManager = FileManager()
-//                let destinationURLForFile = URL(fileURLWithPath: documentDirectoryPath.appendingFormat("/\(fileName)"))
-//                
-//                if fileManager.fileExists(atPath: destinationURLForFile.path){
-//                    print( destinationURLForFile.path )
-//                }
-//                else{
-//                    do {
-//                        try fileManager.moveItem(at: location, to: destinationURLForFile)
-//                        // show file
-//                        print( destinationURLForFile.path )
-//                    }catch{
-//                        print("An error occurred while moving file to destination url")
-//                    }
-//                }
-//            }
         }
     }
 
@@ -61,8 +41,8 @@ extension ViewController: URLSessionDownloadDelegate {
             if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
                 downloadFile.removeDownloadFile()
             }
-            
         }
+        session.finishTasksAndInvalidate()
     }
     
 }
