@@ -833,6 +833,11 @@
                     isOverwrite : param.isOverwrite || false
                 }
             });
+            command.onResolve( function( new_file_path ) {
+                file.setPath( param.to || "" );
+                file.setFilePath( new_file_path );
+                return new_file_path;
+            });
             return CommandProcessor.queue( command );
         };
 
@@ -843,6 +848,11 @@
                     file        : this.toJSON(),
                     filename    : param.filename
                 }
+            });
+            command.onResolve( function( new_file_path ) {
+                file.setFilename( param.filename );
+                file.setFilePath( new_file_path );
+                return new_file_path;
             });
             return CommandProcessor.queue( command );
         };
@@ -864,6 +874,10 @@
                 parameter       : {
                     file        : this.toJSON(),
                 }
+            });
+            command.onResolve( function( result ) {
+                file.setFilePath( undefined );
+                return result;
             });
             return CommandProcessor.queue( command );
         };

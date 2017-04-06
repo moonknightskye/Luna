@@ -15,6 +15,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewDidLoad()
         Shared.shared.ViewController = self
         
+        
         var parameter = NSMutableDictionary()
         parameter.setValue( "index.html", forKey: "filename")
         parameter.setValue( "resource", forKey: "path")
@@ -47,7 +48,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             
         }
         CommandProcessor.queue(command: commandGetFile)
-
     }
 
 

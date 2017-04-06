@@ -295,7 +295,7 @@
                       to:  "movefolder",
                       isOverwrite: true
                     }).then(function(url){
-                      iOS.debug("file.moveFile: " + url)
+                      iOS.debug("file.moveFile: " + video_file.getFilePath())
                     }, function(error){
                       iOS.debug("file.moveFile: " + error)
                     })
@@ -314,7 +314,7 @@
                         to:  "",
                         isOverwrite: true
                       }).then(function(url){
-                        iOS.debug("file.moveFile: " + url)
+                        iOS.debug("file.moveFile: " + video_file.getFilePath())
                       }, function(error){
                         iOS.debug("file.moveFile: " + error)
                       })
@@ -332,29 +332,29 @@
                   iOS.getFile({
                     filename:   "rename.mp4",
                     path_type:  "document"
-                  }).then(function( video_file ){
-                    iOS.debug( "iOS.getFile: " +  video_file.getFilename());
+                  }).then(function( file ){
+                    iOS.debug( "iOS.getFile: (old filename) " +  file.getFilename());
 
-                    video_file.rename({
+                    file.rename({
                       filename:  "newname.mp4"
                     }).then(function(url){
-                      iOS.debug("file.renameFile: " + url)
+                      iOS.debug( "iOS.getFile: (new filename) " +  file.getFilename());
                     }, function(error){
                       iOS.debug("file.renameFile: " + error)
                     })
                   },function(error){
-                    iOS.debug( error );
+                    //iOS.debug( error );
 
                     iOS.getFile({
                       filename:   "newname.mp4",
                       path_type:  "document"
-                    }).then(function( video_file ){
-                      iOS.debug( "iOS.getFile: " +  video_file.getFilename());
+                    }).then(function( file ){
+                      iOS.debug( "iOS.getFile: (old filename) " +  file.getFilename());
 
-                      video_file.rename({
+                      file.rename({
                         filename:  "rename.mp4"
                       }).then(function(url){
-                        iOS.debug("file.renameFile: " + url)
+                        iOS.debug( "iOS.getFile: (new filename) " +  file.getFilename());
                       }, function(error){
                         iOS.debug("file.renameFile: " + error)
                       })
