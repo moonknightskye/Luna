@@ -146,30 +146,9 @@
 
 
               utility.getElement( "getVideo", "id" ).addEventListener( "click", function() {
-                // iOS.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
-                //   iOS.debug( "iOS.takeVideo:" );
+                iOS.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
+                  iOS.debug( "iOS.takeVideo:" );
 
-
-                //     videoFile.getFullResolutionDOM().then( function( DOM ){
-                //       iOS.debug( "videoFile.getBase64Binary: YAY" );
-
-                //       document.body.appendChild( DOM );
-
-                //     }, function(error){
-                //       iOS.debug( "videoFile.getBase64Binary: " + error );
-                //     });
-
-                // }, function(error){
-                //   iOS.debug( "iOS.takeVideo: " + error );
-                // });
-
-                iOS.getVideoFile({
-                    filename:   "video 1.mp4", //1,2,3,6
-                    path_type:  "document"
-                  }).then(function( videoFile ){
-                    iOS.debug( "iOS.takeVideo:" +  videoFile.getFilename() +  videoFile.getFileExtension());
-
-                    // console.log( videoFile )
 
                     videoFile.getFullResolutionDOM().then( function( DOM ){
                       iOS.debug( "videoFile.getBase64Binary: YAY" );
@@ -180,17 +159,39 @@
                       iOS.debug( "videoFile.getBase64Binary: " + error );
                     });
 
-                  },function(error){
-                    iOS.debug( error );
-                  });
+                }, function(error){
+                  iOS.debug( "iOS.takeVideo: " + error );
+                });
+
+                // iOS.getVideoFile({
+                //     filename:   "video 1.mp4", //1,2,3,6
+                //     path_type:  "document"
+                //   }).then(function( videoFile ){
+                //     iOS.debug( "iOS.takeVideo:" +  videoFile.getFilename());
+
+                //     // console.log( videoFile )
+
+                //     videoFile.getFullResolutionDOM().then( function( DOM ){
+                //       iOS.debug( "videoFile.getBase64Binary: YAY" );
+
+                //       document.body.appendChild( DOM );
+
+                //     }, function(error){
+                //       iOS.debug( "videoFile.getBase64Binary: " + error );
+                //     });
+
+                //   },function(error){
+                //     iOS.debug( error );
+                //   });
               });
 
 
 
 
               utility.getElement( "takePhoto", "id" ).addEventListener( "click", function() {
-                iOS.takePhoto({from:"CAMERA"}).then( function(imageFile){
+                iOS.takePhoto({from:"PHOTO_LIBRARY"}).then( function(imageFile){
                     iOS.debug( "iOS.takePhoto: OK" );
+                    iOS.debug( "iOS.takePhoto: " + imageFile.getFilePath());
 
                     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
                       iOS.debug( "imageFile.getResizedDOM: YAY" );
@@ -411,7 +412,7 @@
 
                 iOS.newDownloadFile({
                     path:       "https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg",
-                    isOverwrite: false
+                    isOverwrite: true
                 }).then( function( download_file ){
 
                   iOS.debug("iOS.getFile: OK " + download_file.getID())

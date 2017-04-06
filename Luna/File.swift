@@ -62,6 +62,13 @@ public enum FilePathType:String {
     case ASSET_TYPE     = "asset"
 }
 
+public enum FileType {
+    case FILE
+    case HTML_FILE
+    case IMAGE_FILE
+    case VIDEO_FILE
+}
+
 class File {
     
     private var fileName:String?
@@ -317,6 +324,63 @@ class File {
         }
         return nil
     }
+    
+    public class func getFileType( url: URL ) -> FileType {
+        if let fileName = url.path.getFilenameFromURL() {
+            if let fileExt = FileExtention(rawValue: fileName.substring(from: fileName.indexOf(target: ".")! + 1).lowercased() ) {
+                return File.getFileType( fileExt: fileExt )
+            }
+        }
+        return .FILE
+    }
+    
+    public func getFileType() -> FileType {
+        if let filePath = self.getFilePath() {
+            return File.getFileType( url: filePath )
+        }
+        return File.getFileType( fileExt: self.getFileExtension() )
+    }
+    
+    public class func getFileType( fileExt: FileExtention ) -> FileType {
+        switch fileExt {
+        case .GIF, .JPEG, .JPG, .PNG:
+            return .IMAGE_FILE
+        case .M4V, .MP4, .MOV:
+            return .VIDEO_FILE
+        case .HTML:
+            return .HTML_FILE
+        default:
+            return .FILE
+        }
+    }
+    
+    public class func getFilePathType( url: URL ) -> FilePathType {
+        if url.path.contains("/var/mobile/Containers/Data/Application") {
+        
+        } else if url.path.contains("/var/containers/Bundle/Application") {
+        
+        }
+        
+        return .DOCUMENT_TYPE
+    }
+    
+    public class func getFileObject( url:URL ) {
+        //file:///var/mobile/Containers/Data/Application/11A53667-B394-4175-9BE0-7667B666D3B7/Documents/sample.mp4
+        //file:///var/containers/Bundle/Application/4EB9C028-2932-473D-A0D2-DDD915F2C3F0/Luna.app/resource/index.html
+        //file:///private/var/mobile/Containers/Data/Application/A2B7116C-796D-493A-B0A1-B04F1AD26CD5/tmp/51316933297__C7247589-153A-4F6A-BCFA-73A9518ED50E.MOV
+        //assets-library://asset/asset.MOV?id=B49A35C0-9DF0-418B-ADD4-9D5B8A33C1D4&ext=MOV
+        
+        
+//        if let fileName = url.path.getFilenameFromURL() {
+//            if let fileExt = FileExtention(rawValue: fileName.substring(from: fileName.indexOf(target: ".")! + 1).lowercased() ) {
+//                let fileType = File.getFileType(fileExt: fileExt)
+//
+//            }
+//        }
+        
+    }
+    
+
     
     public func copy( relative:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         if self.getPathType() == .URL_TYPE {

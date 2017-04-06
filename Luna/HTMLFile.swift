@@ -29,12 +29,9 @@ class HTMLFile: File {
         try super.init(bundle: bundle, path: path, filePath: filePath)
     }
     
-    public override init( filePath: URL) {
-        super.init( filePath:filePath )
-    }
-    
     public override init( url:String ) throws {
         try super.init( url:url )
+        self.setFileExtension(fileext: .HTML)
     }
     
     public convenience init( file:NSDictionary ) throws {
