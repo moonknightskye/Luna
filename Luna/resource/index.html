@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
+        <link href="css/style.css" rel="newer stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/strict_utility.js" ></script>
+        <script type="text/javascript" src="js/strict_utilitycss.js" ></script>
+        <script type="text/javascript" src="js/strict_utilitysf.js" ></script>
+        <script type="text/javascript" src="js/strict_ios.js" ></script>
+        <script type="text/javascript" src="js/logic.js" ></script>
+    <style>
+            body {
+                min-height: 1000px;
+            }
+            .image {
+                background-size: contain;
+                width: 200px;
+                height: 200px;
+                background-color: gray;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: auto;
+            }
+            .luna {
+                background-image: url(img/luna.jpg);
+                background-size: contain;
+                width: 200px;
+                height: 200px;
+                background-color: black;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: auto;
+            }
+        </style>
+        <script>
+
+
+            (function(){
+                iOS.onReady(function(){
+                    iOS.debug( "iOS initialized" )
+                    App.activatePage( );
+                });
+
+                utility.onPageLoad(function(){
+
+                });
+
+             })();
+        </script>
+    </head>
+    <body>
+        <article id="app_content" class="matostyle">
+                        
+            <div id="show" class="custom-button">NEW WEBVIEW</div>
+            <div id="close" class="custom-button">CLOSE WEBVIEW</div> 
+            
+            <div id="takePhoto" class="custom-button">CAMERA</div>
+            <div id="getPhoto" class="custom-button">GET PHOTO FROM LIBRARY</div>
+            <div id="getVideo" class="custom-button">CAMCORDER</div>
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="icon0" class="custom-button">DEFAULT ICON</div>
+                </li>
+                <li class="flex-one">
+                    <div id="icon1" class="custom-button">ICON 1</div>
+                </li>
+                <li class="flex-one">
+                    <div id="icon2" class="custom-button">ICON 2</div>
+                </li>
+            </ul>
+            
+            <div id="getvideo1" class="custom-button">NEW BUNNY VIDEO PLAYER</div>
+            <div id="getvideo2" class="custom-button">NEW RIVER VIDEO PLAYER</div>
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="play" class="custom-button">PLAY</div>
+                </li>
+                <li class="flex-one">
+                    <div id="pause" class="custom-button">PAUSE</div>
+                </li>
+                <li class="flex-one">
+                    <div id="seek" class="custom-button">SEEK 0</div>
+                </li>
+            </ul>
+            <div id="download" class="custom-button">DOWNLOAD</div>
+            <div id="move" class="custom-button">MOVE FILE</div>
+            <div id="rename" class="custom-button">RENAME FILE</div>
+            <div id="copy" class="custom-button">COPY FILE</div>
+            <div id="delete" class="custom-button">DELETE FILE</div>
+            
+<!--             <img id="ghost" src="img/animation.gif" /> -->
+        </article>
+    </body>
+</html>
+

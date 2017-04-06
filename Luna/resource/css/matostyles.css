@@ -1,0 +1,287 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);
+
+body .matostyle * {
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    position: relative;
+}
+
+body .matostyle *:not(.fa) {
+    font-family: 'Salesforce Sans','Open Sans', 'Klee', sans-serif;
+    font-weight: 100;
+}
+
+.matostyle .absolute-center {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.vertical-center {
+    position: absolute !important;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.matostyle .noselect,
+.matostyle [grabable='true']{
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+  not supported by any browser */
+}
+
+.matostyle .smooth-animation {
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+}
+
+.matostyle .container {
+    margin: 20px 10px;
+    padding: 10px;
+    background-color: #EEEEEE;
+    color: #757575;
+}
+
+.matostyle .container .container-title {
+    padding-left: 14px;
+    border-bottom: 2px #FF7043 solid;
+    font-size: 26px;
+}
+
+.matostyle .hide {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+.matostyle .show {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+.matostyle ul.flex-box {
+    display: -webkit-flex;
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+.matostyle ul.flex-col {
+    flex-direction: column;
+}
+
+.matostyle ul.flex-box.flex-wrap {
+    flex-flow: row wrap;
+    justify-content: space-around;
+    width: 100%;
+}
+
+
+.matostyle ul.flex-box li {
+    margin: 0px;
+    width: 100%;
+}
+.matostyle ul.flex-box li.flex-fixed {
+    flex-shrink: 0;
+    flex-grow: 0;
+    /*flex-basis: 40px;*/
+}
+.matostyle ul.flex-box li.flex-one {
+    flex: 1;
+}
+.matostyle ul.flex-box li.flex-two {
+    flex: 2;
+}
+.matostyle ul.flex-box li.flex-three {
+    flex: 3;
+}
+.matostyle ul.flex-box li.flex-four {
+    flex: 4;
+}
+.matostyle ul.flex-box li.flex-five {
+    flex: 5;
+}
+
+.matostyle .text-right {
+    text-align: right !important;
+}
+.matostyle .text-center {
+    text-align: center !important;
+}
+
+.matostyle .margin-left-10{
+    margin-left: 10px !important;
+}
+.matostyle .margin-right-10{
+    margin-right: 10px !important;
+}
+.matostyle .margin-top-10{
+    margin-top: 10px !important;
+}
+.matostyle .margin-bottom-10{
+    margin-bottom: 10px !important;
+}
+
+.matostyle .custom-button-1 {
+    -webkit-transition: background-color 0.4s ease-in-out;
+    -moz-transition: background-color 0.4s ease-in-out;
+    -o-transition: background-color 0.4s ease-in-out;
+    transition: background-color 0.4s ease-in-out;
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px 0px;
+    background-color: #2196F3;
+    color: #E0F7FA;
+    font-size: 14px;
+    width: 100%;
+    margin: auto;
+    border: 0px;
+}
+.matostyle .custom-button-1:not(.disabled):focus,
+.matostyle .custom-button-1:not(.disabled):hover{
+    background-color: #64B5F6;
+}
+.matostyle .custom-button-1.disabled{
+    -webkit-animation: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+    background-color: #9E9E9E
+}
+.matostyle .custom-button-1.add {
+    background-color: #4CAF50;
+}
+.matostyle .custom-button-1.add:not(.disabled):focus,
+.matostyle .custom-button-1.add:not(.disabled):hover{
+    background-color: #A5D6A7;
+}
+
+
+
+
+
+.matostyle .custom-button {
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px 0px;
+    background-color: #2196F3;
+    color: #E0F7FA;
+    font-size: 14px;
+    width: 100%;
+    margin: auto;
+    border: 0px;
+    -webkit-animation: fadeoutblue 0.4s ease;
+}
+.matostyle .custom-button:not(.disabled):focus,
+.matostyle .custom-button:not(.disabled):hover{
+    -webkit-animation: fadeinblue 0.4s ease;
+    background-color: #64B5F6;
+}
+.matostyle .custom-button.disabled{
+    -webkit-animation: none !important;
+    background-color: #9E9E9E
+}
+
+.matostyle .custom-button.cancel {
+    color: #FFCCBC;
+    background-color: #F44336;
+    -webkit-animation: fadeoutred 0.4s ease;
+}
+.matostyle .custom-button.cancel:not(.disabled):focus,
+.matostyle .custom-button.cancel:not(.disabled):hover{
+    -webkit-animation: fadeinred 0.4s ease;
+    background-color: #FF8A65;
+}
+
+.matostyle .custom-button.add {
+    color: #E8F5E9;
+    background-color: #4CAF50;
+    -webkit-animation: fadeoutgeen 0.4s ease;
+}
+.matostyle .custom-button.add:not(.disabled):focus,
+.matostyle .custom-button.add:not(.disabled):hover{
+    -webkit-animation: fadeingreen 0.4s ease;
+    background-color: #A5D6A7;
+}
+
+.matostyle dl.custom-icon-1,
+.matostyle dl.custom-icon-1 dd{
+    margin: 0px;
+    text-align: center;
+}
+.matostyle dl.custom-icon-1 dt {
+    position: relative;
+    font-size: xx-large;
+    color: #FAFAFA;
+}
+.matostyle dl.custom-icon-1 dd{
+    font-size: small;
+    color: #FFEBEE;
+}
+
+.matostyle input.custom-textbox,
+.matostyle div.textarea,
+.matostyle div.textbox{
+    background: #E8EAF6;
+    color: #1A237E;
+    border-radius: 4px;
+    font-size: 12px;
+    border: 0px;
+    padding: 0px;
+    width: 100%;
+    text-indent: 10px;
+}
+
+.matostyle div.textarea{
+    height: 100px;
+}
+
+
+.matostyle [grabable='true']{
+    cursor: -webkit-grab !important;
+}
+.matostyle [data-grab-status='grab']{
+    cursor: -webkit-grabbing !important;
+    z-index: 9999999;
+}
+
+
+
+
+@-webkit-keyframes fadein {
+    0%{ opacity: 0; }
+    100%{ opacity: 1;}
+}
+@-webkit-keyframes fadeinblue {
+    0%{ background-color: #2196F3; }
+    100%{ background-color: #64B5F6; }
+}
+@-webkit-keyframes fadeoutblue {
+    0%{ background-color: #64B5F6; }
+    100%{ background-color: #2196F3; }
+}
+@-webkit-keyframes fadeoutred {
+    0%{ background-color: #FF8A65; }
+    100%{ background-color: #F44336; }
+}
+@-webkit-keyframes fadeinred {
+    0%{ background-color: #F44336; }
+    100%{ background-color: #FF8A65; }
+}
+@-webkit-keyframes fadeoutgeen {
+        0%{ background-color: #A5D6A7; }
+    100%{ background-color: #4CAF50; }
+}
+@-webkit-keyframes fadeingreen {
+    0%{ background-color: #4CAF50; }
+    100%{ background-color: #A5D6A7; }
+}

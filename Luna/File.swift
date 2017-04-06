@@ -1,0 +1,433 @@
+//
+//  File.swift
+//  Luna
+//
+//  Created by Mart Civil on 2017/03/07.
+//  Copyright © 2017年 salesforce.com. All rights reserved.
+//
+
+import Foundation
+
+public enum FileError: Error {
+    case FILE_DOES_NOT_EXIST
+    case SOURCE_UNDEFINED
+    case INVALID_URL
+    case INVALID_FILE_PARAMETERS
+    case DOWNLOAD_ALREADY_INQUEUE
+    case FAILED_TO_CREATE
+    case FILE_ALREADY_EXISTS
+    case other
+}
+extension FileError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .FILE_DOES_NOT_EXIST:
+            return NSLocalizedString("File does not exists.", comment: "Error")
+        case .SOURCE_UNDEFINED:
+            return NSLocalizedString("Provide either code or file to load", comment: "Error")
+        case .INVALID_URL:
+            return NSLocalizedString("URL is invalid", comment: "Error")
+        case .FAILED_TO_CREATE:
+            return NSLocalizedString("Failed to create file/directory", comment: "Error")
+        case .DOWNLOAD_ALREADY_INQUEUE:
+            return NSLocalizedString("Download already in queue", comment: "Error")
+        case .INVALID_FILE_PARAMETERS:
+            return NSLocalizedString("Invalid/insufficient parameter", comment: "Error")
+        case .FILE_ALREADY_EXISTS:
+            return NSLocalizedString("File already exists", comment: "Error")
+        default:
+            break
+        }
+        return nil
+    }
+}
+
+public enum FileExtention:String {
+    case PNG            = "png"
+    case JPG            = "jpg"
+    case JPEG           = "jpeg"
+    case GIF            = "gif"
+    case HTML           = "html"
+    case ZIP            = "zip"
+    case MP4            = "mp4"
+    case MOV            = "mov"
+    case M4V            = "m4v"
+    case UNSUPPORTED    = "unsupported"
+}
+
+public enum FilePathType:String {
+    case DOCUMENT_TYPE  = "document"
+    case BUNDLE_TYPE    = "bundle"
+    case URL_TYPE       = "url"
+    case ASSET_TYPE     = "asset"
+}
+
+class File {
+    
+    private var fileName:String?
+    private var path:String?
+    private var pathType:FilePathType = FilePathType.DOCUMENT_TYPE
+    private var filePath:URL!
+    private var fileExtension:FileExtention?
+    
+    init(){}
+    
+    public init( asset:String, filePath:URL ) {
+        self.setFileName(fileName: asset)
+        self.setPathType(pathType: FilePathType.ASSET_TYPE )
+        self.setFilePath(filePath: filePath )
+    }
+    
+    public init( document:String, filePath: URL ) {
+        self.setFileName(fileName: document)
+        self.setPathType(pathType: FilePathType.DOCUMENT_TYPE)
+        self.setFilePath(filePath: filePath)
+    }
+    
+    public init( document:String, path:String?=nil, filePath:URL?=nil ) throws {
+        self.setFileName(fileName: document)
+        self.setPathType(pathType: FilePathType.DOCUMENT_TYPE)
+        self.setPath(path: path)
+        self.setFilePath(filePath: filePath)
+        if !self.isFileExists() {
+            throw FileError.FILE_DOES_NOT_EXIST
+        }
+    }
+    
+    
+    public init( bundle:String, filePath: URL ) {
+        self.setFileName(fileName: bundle)
+        self.setPathType(pathType: FilePathType.BUNDLE_TYPE)
+        self.setFilePath(filePath: filePath)
+    }
+    public init( bundle:String, path:String?=nil, filePath:URL?=nil ) throws {
+        self.setFileName(fileName: bundle)
+        self.setPathType(pathType: FilePathType.BUNDLE_TYPE)
+        self.setPath(path: path)
+        self.setFilePath(filePath: filePath)
+        if !self.isFileExists() {
+            throw FileError.FILE_DOES_NOT_EXIST
+        }
+    }
+    
+    public init( filePath: URL ) {
+        self.setPathType(pathType: FilePathType.URL_TYPE)
+        self.setFilePath(filePath: filePath)
+    }
+    
+    public init( url:String ) throws {
+		if url.isValidURL() {
+            if let filePath = URL(string: url) {
+                self.setFilePath(filePath: filePath)
+            } else {
+                throw FileError.INVALID_URL
+            }
+            
+            if let filename = url.getFilenameFromURL() {
+                self.setFileName(fileName: filename)
+            }
+            self.setPathType(pathType: FilePathType.URL_TYPE)
+        } else {
+            throw FileError.INVALID_URL
+        }
+    }
+    
+    
+    public convenience init( file:NSObject ) throws {
+        var isValid = true
+
+        let fileName:String? = file.value(forKeyPath: "filename") as? String
+        let path:String? = file.value(forKeyPath: "path") as? String
+        
+        if let pathType = file.value(forKeyPath: "path_type") as? String {
+            if let filePathType = FilePathType( rawValue: pathType ) {
+                switch filePathType {
+                case FilePathType.BUNDLE_TYPE:
+                    if fileName != nil {
+                        try self.init( bundle: fileName!, path:path)
+                        return
+                    } else {
+                        isValid = false
+                    }
+                    break
+                case FilePathType.DOCUMENT_TYPE:
+                    if fileName != nil {
+                        try self.init( document: fileName!, path:path )
+                        return
+                    } else {
+                        isValid = false
+                    }
+                    break
+                case FilePathType.URL_TYPE:
+                    if path != nil {
+                        try self.init( url: path! )
+						return
+                    }else {
+                        isValid = false
+                    }
+                    break
+                default:
+                    isValid = false
+                    break
+                }
+                
+            } else {
+                isValid = false
+            }
+        } else {
+            isValid = false
+        }
+        
+        if !isValid {
+            throw FileError.INVALID_FILE_PARAMETERS
+        }
+        self.init()
+    }
+    
+//    public func setBase64Value( base64:String ) {
+//        self.base64Value = base64
+//    }
+//    public func getBase64Value() -> String? {
+//        return self.base64Value
+//    }
+    
+    public func toDictionary() -> NSDictionary {
+        let dict = NSMutableDictionary()
+        if let filename = self.getFileName() {
+            dict.setValue(filename, forKey: "filename")
+        }
+        if let path = self.getPath() {
+            dict.setValue(path, forKey: "path")
+        }
+        if let pathType = self.getPathType() {
+            dict.setValue(pathType.rawValue, forKey: "path_type")
+        }
+        if let filePath = self.getFilePath() {
+            dict.setValue(filePath.absoluteString, forKey: "file_path")
+        }
+        dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
+        return dict
+    }
+    
+    public func setFileName( fileName: String ) {
+        self.fileName = fileName
+        self.setFileExtension(fileext: File.getFileExtension(filename: fileName ))
+    }
+    public func getFileName() -> String? {
+        return self.fileName
+    }
+    
+    public func setPath( path:String?=nil ) {
+        self.path = path
+    }
+    public func getPath() -> String? {
+        return self.path
+    }
+    
+    public func setFileExtension( fileext: FileExtention ) {
+        self.fileExtension = fileext
+    }
+    public func getFileExtension() -> FileExtention {
+        return self.fileExtension!
+    }
+    public class func getFileExtension( filename:String ) -> FileExtention {
+        if let fileext = FileExtention(rawValue: filename.substring(from: filename.indexOf(target: ".")! + 1).lowercased() ) {
+            return fileext
+        }
+        return FileExtention.UNSUPPORTED
+    }
+    
+    public func setPathType( pathType: FilePathType ) {
+        self.pathType = pathType
+    }
+    public func setPathType( pathType: String ) {
+        if let ptype = FilePathType(rawValue: pathType) {
+            self.pathType = ptype
+        }
+    }
+    public func getPathType() -> FilePathType? {
+        return self.pathType
+    }
+    public func isFileExists() -> Bool {
+        switch self.getPathType()! {
+        case .ASSET_TYPE:
+            return true
+        case .URL_TYPE:
+            if let filePath = self.getFilePath() {
+                return filePath.absoluteString.isValidURL()
+            }
+        case .BUNDLE_TYPE, .DOCUMENT_TYPE:
+            if isFolderExists() {
+                if let filePath = self.getFilePath() {
+                    return FileManager.isExists(url: filePath)
+                }
+            }
+        }
+        return false
+    }
+    public func getFile() -> Data? {
+        do {
+            if let filePath = self.getFilePath() {
+                return try Data(contentsOf: filePath)
+            }
+        } catch {}
+        return nil
+    }
+    
+    public func isFolderExists() -> Bool {
+        if let dirPath = FileManager.getDocumentsDirectoryPath( pathType: self.pathType, relative: self.path ) {
+            return FileManager.isExists(url: dirPath)
+        }
+        return false
+    }
+    
+    public func setFilePath( filePath: URL?=nil ) {
+        self.filePath = filePath
+    }
+    public func getFilePath() -> URL? {
+        if self.filePath == nil {
+            self.filePath = self.generateFilePath()
+        }
+        return self.filePath
+    }
+    
+    private func generateFilePath() -> URL? {
+        switch self.pathType {
+        case FilePathType.BUNDLE_TYPE:
+            if self.fileName == nil {
+                return nil
+            }
+            var filename = self.fileName!.substring(from: 0, to: self.fileName!.indexOf(target: "."));
+            
+            if self.path != nil {
+                filename = self.path! + "/" + filename
+            }
+            
+            if let url = Bundle.main.path(forResource: filename, ofType: self.getFileExtension().rawValue) {
+                return URL( fileURLWithPath:url )
+            }
+            break
+        case FilePathType.DOCUMENT_TYPE:
+            if self.fileName == nil {
+                return nil
+            }
+            return FileManager.generateDocumentFilePath(fileName: self.fileName!, relativePath: self.path)
+        default:
+            break
+        }
+        return nil
+    }
+    
+    public func copy( relative:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
+        if self.getPathType() == .URL_TYPE {
+            if onFail != nil {
+                onFail!( "Files from path_type \(self.pathType) cannot be copied" )
+            }
+            return false
+        }
+        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: relative) {
+            if !FileManager.isExists(url: relativeURL) {
+                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
+                    if onFail != nil {
+                        onFail!( "Failed to create folder to copy to" )
+                    }
+                    return false
+                }
+            }
+        }
+        if let filePath = self.getFilePath() {
+            return FileManager.copyFile( filePath: filePath, relativeTo: relative, onSuccess:onSuccess, onFail:onFail)
+        }
+        if onFail != nil {
+            onFail!( "Unable to copy file" )
+        }
+        return false
+    }
+    
+    public func rename( fileName:String, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil  ) -> Bool {
+        if self.getPathType() != .DOCUMENT_TYPE {
+            if onFail != nil {
+                onFail!( "Files from path_type \(self.pathType) cannot be renamed" )
+            }
+            return false
+        }
+        if let filePath = self.getFilePath() {
+            return FileManager.renameFile(fileName: fileName, filePath: filePath, onSuccess: { result in
+                self.setFileName(fileName: fileName)
+                self.setFilePath(filePath: result)
+                onSuccess( result )
+            }, onFail:onFail)
+        }
+        if onFail != nil {
+            onFail!( "Unable to rename file" )
+        }
+        return false
+    }
+    
+    
+    public func move( relative:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil ) -> Bool {
+        if self.getPathType() != .DOCUMENT_TYPE {
+            if onFail != nil {
+                onFail!( "Files from path_type \(self.pathType) cannot be moved" )
+            }
+            return false
+        }
+        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: relative) {
+            let file = FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: relative )
+            if FileManager.isExists(url: file ) {
+                if isOverwrite! {
+                    if !FileManager.deleteFile(filePath: file) {
+                        if onFail != nil {
+                            onFail!( "Unable to delete file" )
+                        }
+                        return false
+                    }
+                } else {
+                    if onFail != nil {
+                        onFail!( "File already exists" )
+                    }
+                    return false
+                }
+            }
+            if !FileManager.isExists(url: relativeURL) {
+                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
+                    if onFail != nil {
+                        onFail!( "Failed to create folder to move to" )
+                    }
+                    return false
+                }
+            }
+            if let fileName = self.getFileName() {
+                return FileManager.moveFile(document: fileName, relativeFrom: self.getPath(), relativeTo: relative, onSuccess:{ result in
+                    self.setPath(path: relative)
+                    self.setFilePath(filePath: result)
+                    onSuccess( result )
+                }, onFail: onFail)
+            }
+        }
+        if onFail != nil {
+            onFail!( "Unable to move file" )
+        }
+        return false
+    }
+    
+    public func delete( onSuccess:@escaping ((Bool)->()), onFail:((String)->())?=nil ) -> Bool {
+        if( self.pathType == .DOCUMENT_TYPE ) {
+            if let filePath = self.getFilePath() {
+                return FileManager.deleteFile(filePath: filePath, onSuccess:{
+                    self.filePath = nil
+                    onSuccess(true)
+                }, onFail:onFail )
+            }
+        } else {
+            if onFail != nil {
+                onFail!("Files from path_type \(self.pathType) cannot be deleted")
+            }
+            return false
+        }
+        if onFail != nil {
+            onFail!("Unable to delete file")
+        }
+        return false
+    }
+}

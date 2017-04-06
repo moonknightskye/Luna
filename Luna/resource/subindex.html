@@ -1,0 +1,139 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/strict_utility.js" ></script>
+        <script type="text/javascript" src="js/strict_utilitycss.js" ></script>
+        <script type="text/javascript" src="js/strict_utilitysf.js" ></script>
+        <script type="text/javascript" src="js/strict_ios.js" ></script>
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                background-color: black;
+                color: white;
+            }
+            .luna {
+                background-image: url(img/luna.jpg);
+                background-size: contain;
+                width: 200px;
+                height: 200px;
+                background-position: center;
+                background-repeat: no-repeat;
+                margin: auto;
+            }
+        </style>
+        <script>
+            (function(){
+                iOS.onReady(function(){
+                
+                    var webview = iOS.getMainWebview();
+                    var yahoowb;
+
+                    iOS.debug( webview.getID() )
+                    var luna = utility.getElement( "luna","id" );
+
+                    luna.addEventListener( "click", function() {
+                        utility.getElement( "hide", "id" ).click();
+                        webview.setProperty( {frame: {
+                            height:   320,
+                            y:        0
+                          },
+                          opacity:0.0
+                        }, { duration:1.0, delay:0 } ).then(function(result){
+                          iOS.debug( "webview.setProperty: " + result );
+                          webview.close()
+                        });
+                    });
+
+                    utility.getElement( "hide", "id" ).addEventListener( "click", function(){
+                        if( yahoowb ) {
+                            yahoowb.setProperty( {frame: {
+                                height:   320,
+                                y:        0
+                              },
+                              opacity:0.0
+                            }, { duration:0.5, delay:0 } ).then(function(result){
+                              yahoowb.close();
+                            });
+                        }
+                    });
+
+                    utility.getElement( "show", "id" ).addEventListener( "click", function(){
+
+                        iOS.getHTMLFile({
+                            path:       "https://www.yahoo.com",
+                            path_type:  "url"
+                        }).then( function( html_file ) {
+                          
+                            iOS.getNewWebview({
+                                html_file: html_file,
+                                property: {
+                                    frame: {
+                                        height:   320,
+                                        y:        0
+                                    },
+                                    opacity:    0
+                                }
+                            }).then( function( result ){
+                                utility.getElement( "hide", "id" ).click();
+
+                                yahoowb = result
+
+                                iOS.debug( "iOS.getNewWebview: " + yahoowb.getID() );
+
+                                yahoowb.onLoading(function(progress){
+                                    iOS.debug( "Loading: " + progress + "%" );
+                                });
+
+                                yahoowb.onLoaded().then(function(result){
+                                    iOS.debug( "webview.onLoaded: " + result );
+
+                                    yahoowb.setProperty( {
+                                        frame: {
+                                            height:   320,
+                                            y:        420
+                                        },
+                                        opacity:1.0
+                                    },
+                                    { duration:1.0, delay:0 }).then( function(result){
+                                        iOS.debug( "webview.setProperty: " + result );
+                                    });
+
+                                });
+
+                                yahoowb.load().then(function(result){
+                                  iOS.debug( "webview.load: " + result );
+                                });
+
+                                },function(error){
+                                    iOS.debug( error )
+                                });
+
+                            }, function(error) {
+                                iOS.debug( "something went wrong" )
+                            }
+                        );
+                    });
+
+
+
+                });
+             })();
+        </script>
+    </head>
+    <body>
+        <article>
+            <div id="luna" class="luna"></div>
+            <div>Pitch: <span id="pitch">0</span></div>
+            <div>Roll: <span id="roll">0</span></div>
+            <div>Yaw: <span id="yaw">0</span></div>
+            <ul class="flex-box">
+                <li><div id="show" class="custom-button">NEW WEBVIEW SITE</div></li>
+                <li><div id="hide" class="custom-button">HIDE WEBVIEW SITE</div></li>
+            </ul>
+        </article>
+    </body>
+</html>
+
