@@ -15,8 +15,8 @@ extension ViewController: URLSessionDownloadDelegate {
                     didFinishDownloadingTo location: URL){
         
         if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
-            if let fileName = downloadTask.response?.suggestedFilename {
-                downloadFile.setFileName(fileName: fileName)
+            if let suggestedFilename = downloadTask.response?.suggestedFilename {
+                downloadFile.setFileName(fileName: suggestedFilename)
             }
             downloadFile.onDownloaded( downloadedFilePath: location )
         }
