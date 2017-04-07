@@ -38,12 +38,24 @@ extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession,
                     task: URLSessionTask,
                     didCompleteWithError error: Error?){
-        if (error != nil) {
-            print(error!.localizedDescription)
-        }else{
-            if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
-                downloadFile.removeDownloadFile()
+        if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
+            if (error != nil) {
+                CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
+                    if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
+                        if innerDownloadFile.getID() == downloadFile.getID() {
+                            command.reject(errorMessage: error!.localizedDescription)
+                        }
+                    }
+                }
+                CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
+                    if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
+                        if innerDownloadFile.getID() == downloadFile.getID() {
+                            command.reject(errorMessage: error!.localizedDescription)
+                        }
+                    }
+                }
             }
+            downloadFile.removeDownloadFile()
         }
         session.finishTasksAndInvalidate()
     }

@@ -157,7 +157,7 @@ class CommandProcessor {
     public class func getQueue() -> [Command] {
         return CommandProcessor.QUEUE
     }
-    private class func getCommand( commandCode:CommandCode, ifFound:((Command)->()) ) {
+    public class func getCommand( commandCode:CommandCode, ifFound:((Command)->()) ) {
         for (_, command) in CommandProcessor.getQueue().enumerated() {
             if command.getCommandCode() == commandCode {
                 ifFound( command )
