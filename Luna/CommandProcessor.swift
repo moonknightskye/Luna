@@ -852,11 +852,15 @@ class CommandProcessor {
 			}
         }
     }
-    public class func processOnDownloaded( downloadFile: DownloadFile, downloadedFilePath:URL ) {
+	public class func processOnDownloaded( downloadFile: DownloadFile, downloadedFilePath:URL?=nil, errorMessage:String?=nil) {
         getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
             if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
 				if innerDownloadFile.getID() == downloadFile.getID() {
-					command.resolve(value: downloadedFilePath.path)
+					if downloadedFilePath != nil {
+						command.resolve(value: downloadedFilePath!.path)
+					} else if errorMessage != nil {
+						command.reject(errorMessage: errorMessage)
+					}
 				}
 			}
         }

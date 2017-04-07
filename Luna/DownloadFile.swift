@@ -29,17 +29,12 @@ class DownloadFile: File {
         super.init()
     }
     
-    public init( url:String, isOverwrite:Bool, isCheck:Bool?=true ) throws {
+	public init( url:String, isOverwrite:Bool, savePath:String?=nil ) throws {
         try super.init( url:url )
         self.isOverwrite = isOverwrite
-        if isCheck! {
-            if let fileName = self.getFileName() {
-                let file = FileManager.generateDocumentFilePath(fileName: fileName, relativePath: self.savePath)
-                if FileManager.isExists(url: file ) && !self.isOverwrite {
-                    throw FileError.FILE_ALREADY_EXISTS
-                }
-            }
-        }
+		if savePath != nil {
+			self.savePath = savePath!
+		}
         if !addDownloadToList() {
             throw FileError.DOWNLOAD_ALREADY_INQUEUE
         }
@@ -51,18 +46,9 @@ class DownloadFile: File {
                 switch filePathType {
                 case FilePathType.URL_TYPE:
                     if let path = file.value(forKeyPath: "path") as? String {
-                        let savePath = file.value(forKeyPath: "save_path") as? String ?? SystemFilePath.DOWNLOADS.rawValue
                         let isOverwrite = file.value(forKeyPath: "isOverwrite") as? Bool ?? false
-                        var fileName = file.value(forKeyPath: "filename") as? String
-                        if fileName == nil {
-                            fileName = path.getFilenameFromURL()
-                        }
-                        let filePath = FileManager.generateDocumentFilePath(fileName: fileName!, relativePath: savePath)
-                        if FileManager.isExists(url: filePath ) && !isOverwrite {
-                            throw FileError.FILE_ALREADY_EXISTS
-                        }
-                        try self.init( url: path, isOverwrite: isOverwrite, isCheck:false )
-                        self.savePath = savePath
+						let savePath = file.value(forKeyPath: "save_path") as? String
+						try self.init( url: path, isOverwrite: isOverwrite, savePath:savePath )
                         return
                     }else {
                         throw FileError.INVALID_FILE_PARAMETERS
@@ -70,7 +56,6 @@ class DownloadFile: File {
                 default:
                     throw FileError.INVALID_FILE_PARAMETERS
                 }
-                
             }
         } else {
             throw FileError.INVALID_FILE_PARAMETERS
@@ -177,7 +162,6 @@ class DownloadFile: File {
                     }
                 } else {
                     if onFail != nil {
-						print("file already exists")
                         onFail!( "File already exists" )
                     }
                     return false
@@ -209,7 +193,7 @@ class DownloadFile: File {
         let _ = self.move(relative: self.savePath, isOverwrite: self.isOverwrite, onSuccess: { (result) in
             CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: result )
         }) { (error) in
-            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: downloadedFilePath )
+            CommandProcessor.processOnDownloaded( downloadFile: self, errorMessage: error )
         }
     }
     
