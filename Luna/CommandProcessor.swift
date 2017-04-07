@@ -845,29 +845,35 @@ class CommandProcessor {
     
     public class func processOnDownload( downloadFile: DownloadFile ) {
         getCommand(commandCode: CommandCode.ONDOWNLOAD) { (command) in
-            if let _ = CommandProcessor.getDownloadFile(command: command) {
-                command.resolve(value: true)
-            }
+			if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
+				if innerDownloadFile.getID() == downloadFile.getID() {
+					command.resolve(value: true)
+				}
+			}
         }
     }
     public class func processOnDownloaded( downloadFile: DownloadFile, downloadedFilePath:URL ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-            if let _ = CommandProcessor.getDownloadFile(command: command) {
-                command.resolve(value: downloadedFilePath.path)
-            }
+            if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
+				if innerDownloadFile.getID() == downloadFile.getID() {
+					command.resolve(value: downloadedFilePath.path)
+				}
+			}
         }
     }
     public class func processOnDownloading( downloadFile: DownloadFile, progress: Double ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-            if let _ = CommandProcessor.getDownloadFile(command: command) {
-                command.update(value:progress)
-                if( progress >= 100.0 ) {
-                    command.resolve(value: true)
-                }
+            if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
+				if innerDownloadFile.getID() == downloadFile.getID() {
+					command.update(value:progress)
+					if( progress >= 100.0 ) {
+						command.resolve(value: true)
+					}
+				}
             }
         }
     }
-    
+
     private class func processMoveFile( command: Command ) {
         checkMoveFile( command: command, onSuccess: { result in
             command.resolve( value: result )

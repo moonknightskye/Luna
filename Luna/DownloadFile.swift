@@ -51,7 +51,7 @@ class DownloadFile: File {
                 switch filePathType {
                 case FilePathType.URL_TYPE:
                     if let path = file.value(forKeyPath: "path") as? String {
-                        let savePath = file.value(forKeyPath: "savePath") as? String ?? SystemFilePath.DOWNLOADS.rawValue
+                        let savePath = file.value(forKeyPath: "save_path") as? String ?? SystemFilePath.DOWNLOADS.rawValue
                         let isOverwrite = file.value(forKeyPath: "isOverwrite") as? Bool ?? false
                         var fileName = file.value(forKeyPath: "filename") as? String
                         if fileName == nil {
@@ -116,7 +116,7 @@ class DownloadFile: File {
     }
     public class func getDownloadFile( urlSession: URLSession ) -> DownloadFile? {
         for (_, downloadFile) in DownloadFile.QUEUE.enumerated() {
-            if downloadFile.getURLSession() == urlSession {
+            if downloadFile.getURLSession() === urlSession {
                 return downloadFile
             }
         }
@@ -144,8 +144,8 @@ class DownloadFile: File {
     
     
     public func download( onSuccess:((Bool)->()), onFail:((String)->()) ) {
-        if self.getPathType() == FilePathType.URL_TYPE {
-            let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: "backgroundSession")
+        if self.getPathType() == .URL_TYPE {
+            let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: Bundle.main.bundleIdentifier! + self.getID().description)
             backgroundSession = Foundation.URLSession(configuration: backgroundSessionConfiguration, delegate: Shared.shared.ViewController, delegateQueue: OperationQueue.main)
             if let url = self.getFilePath() {
                 downloadTask = backgroundSession.downloadTask(with: url)
@@ -177,6 +177,7 @@ class DownloadFile: File {
                     }
                 } else {
                     if onFail != nil {
+						print("file already exists")
                         onFail!( "File already exists" )
                     }
                     return false
@@ -192,7 +193,7 @@ class DownloadFile: File {
             }
             if let fileName = self.getFileName() {
                 return FileManager.moveFile(filePath: self.downloadedFilePath!, newFileName: fileName, relative: relative, onSuccess: { (result) in
-                    print("intercept here")
+                    print("intercept here \(result)")
                     onSuccess( result )
                 }, onFail: onFail)
             }

@@ -731,8 +731,7 @@
             var command = new Command({
                 command_code    : COMMAND.DOWNLOAD,
                 parameter       : {
-                    download_id : this.getID()
-                }
+                    download_id : this.getID()                }
             });
             return CommandProcessor.queue( command );
         };

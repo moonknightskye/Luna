@@ -412,35 +412,73 @@
                 //https://goo.gl/cl7FKy
                 //http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html
                 //https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg
+                //https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg
+                // iOS.newDownloadFile({
+                //     path:       "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html",
+                //     isOverwrite: true
+                // }).then( function( download_file ){
+
+                //   iOS.debug("iOS.getFile: OK " + download_file.getID())
+
+                //   download_file.onDownloaded().then( function(result){
+                //     iOS.debug("iOS.onDownloaded: " + result)
+                //   }, function(error){
+                //     iOS.debug("iOS.onDownloaded: " + error)
+                //   });
+                //   download_file.onDownload().then( function(result){
+                //     iOS.debug("iOS.onDownload: " + result)
+                //   }, function(error){
+                //     iOS.debug("iOS.onDownload: " + error)
+                //   });
+                //   download_file.onDownloading(function(progress){
+                //     //iOS.debug( "onDownloading: " + progress + "%" );
+                //   }).then(function(result){
+                //     iOS.debug( "download_file.onDownloading: " + result );
+                //   }, function(error){
+                //     iOS.debug( "download_file.onDownloading: " + error );
+                //   });
+
+
+
+                //   download_file.download({save_path:"Downloads"}).then(function(result){
+                //     iOS.debug("iOS.download: " + result)
+                //   },function(error){
+                //     iOS.debug("iOS.download: " + error)
+                //   })
+
+                // }, function(error){
+                //   iOS.debug( "iOS.getFile: " + error );
+                // });
+
+
                 iOS.newDownloadFile({
-                    path:       "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html",
-                    isOverwrite: true
+                    path          : "https://goo.gl/cl7FKy",
+                    isOverwrite   : false,
+                    save_path     : "Downloads" 
                 }).then( function( download_file ){
 
                   iOS.debug("iOS.getFile: OK " + download_file.getID())
 
                   download_file.onDownloaded().then( function(result){
-                    iOS.debug("iOS.onDownloaded: " + result)
+                    iOS.debug("iOS.onDownloaded: " + download_file.getID() + " " + result)
                   }, function(error){
                     iOS.debug("iOS.onDownloaded: " + error)
                   });
-                  download_file.onDownload().then( function(result){
-                    iOS.debug("iOS.onDownload: " + result)
-                  }, function(error){
-                    iOS.debug("iOS.onDownload: " + error)
-                  });
-                  download_file.onDownloading(function(progress){
-                    //iOS.debug( "onDownloading: " + progress + "%" );
-                  }).then(function(result){
-                    iOS.debug( "download_file.onDownloading: " + result );
-                  }, function(error){
-                    iOS.debug( "download_file.onDownloading: " + error );
-                  });
+                  // download_file.onDownload().then( function(result){
+                  //   iOS.debug("iOS.onDownload: " + result)
+                  // }, function(error){
+                  //   iOS.debug("iOS.onDownload: " + error)
+                  // });
+                  // download_file.onDownloading(function(progress){
+                  //   //iOS.debug( "onDownloading: " + progress + "%" );
+                  // }).then(function(result){
+                  //   iOS.debug( "download_file.onDownloading: " + result );
+                  // }, function(error){
+                  //   iOS.debug( "download_file.onDownloading: " + error );
+                  // });
 
-
-
-                  download_file.download({save_path:"Downloads"}).then(function(result){
-                    iOS.debug("iOS.download: " + result)
+                  download_file.download().then(function(result){
+                    iOS.debug("iOS.download: " + download_file.getID() + " " + result)
                   },function(error){
                     iOS.debug("iOS.download: " + error)
                   })
@@ -450,35 +488,35 @@
                 });
 
 
+
                 iOS.newDownloadFile({
-                    path:       "https://goo.gl/cl7FKy",
-                    isOverwrite: true
+                    path          : "https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg",
+                    isOverwrite   : false,
+                    save_path     : "Downloads"
                 }).then( function( download_file ){
 
                   iOS.debug("iOS.getFile: OK " + download_file.getID())
 
                   download_file.onDownloaded().then( function(result){
-                    iOS.debug("iOS.onDownloaded: " + result)
+                    iOS.debug("iOS.onDownloaded: " + download_file.getID() + " " + result)
                   }, function(error){
                     iOS.debug("iOS.onDownloaded: " + error)
                   });
-                  download_file.onDownload().then( function(result){
-                    iOS.debug("iOS.onDownload: " + result)
-                  }, function(error){
-                    iOS.debug("iOS.onDownload: " + error)
-                  });
-                  download_file.onDownloading(function(progress){
-                    //iOS.debug( "onDownloading: " + progress + "%" );
-                  }).then(function(result){
-                    iOS.debug( "download_file.onDownloading: " + result );
-                  }, function(error){
-                    iOS.debug( "download_file.onDownloading: " + error );
-                  });
+                  // download_file.onDownload().then( function(result){
+                  //   iOS.debug("iOS.onDownload: " + result)
+                  // }, function(error){
+                  //   iOS.debug("iOS.onDownload: " + error)
+                  // });
+                  // download_file.onDownloading(function(progress){
+                  //   //iOS.debug( "onDownloading: " + progress + "%" );
+                  // }).then(function(result){
+                  //   iOS.debug( "download_file.onDownloading: " + result );
+                  // }, function(error){
+                  //   iOS.debug( "download_file.onDownloading: " + error );
+                  // });
 
-
-
-                  download_file.download({save_path:"Downloads"}).then(function(result){
-                    iOS.debug("iOS.download: " + result)
+                  download_file.download().then(function(result){
+                    iOS.debug("iOS.download: " + download_file.getID() + " " + result)
                   },function(error){
                     iOS.debug("iOS.download: " + error)
                   })
@@ -486,6 +524,8 @@
                 }, function(error){
                   iOS.debug( "iOS.getFile: " + error );
                 });
+
+
 
               });
 
