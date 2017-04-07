@@ -22,6 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //https://coderwall.com/p/dyqrfa/customize-navigation-bar-appearance-with-swift
         Fabric.with([Crashlytics.self])
         
+        let _ = FileManager.deleteDocumentFolder(relative: "CACHE")
+        
         Shared.shared.UIApplication = application
         
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
@@ -49,7 +51,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
-        let _ = FileManager.deleteDocumentFolder(relative: "CACHE")
         self.saveContext()
     }
 

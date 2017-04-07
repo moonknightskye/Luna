@@ -238,8 +238,10 @@ class File {
         return self.fileExtension!
     }
     public class func getFileExtension( filename:String ) -> FileExtention {
-        if let fileext = FileExtention(rawValue: filename.substring(from: filename.indexOf(target: ".")! + 1).lowercased() ) {
-            return fileext
+        if let name = filename.indexOf(target: ".") {
+            if let fileext = FileExtention(rawValue: filename.substring(from: name + 1).lowercased() ) {
+                return fileext
+            }
         }
         return FileExtention.UNSUPPORTED
     }

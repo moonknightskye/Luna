@@ -189,7 +189,7 @@
 
 
               utility.getElement( "takePhoto", "id" ).addEventListener( "click", function() {
-                iOS.takePhoto({from:"PHOTO_LIBRARY"}).then( function(imageFile){
+                iOS.takePhoto({from:"CAMERA"}).then( function(imageFile){
                     iOS.debug( "iOS.takePhoto: OK" );
                     iOS.debug( "iOS.takePhoto: " + imageFile.getFilePath());
 
@@ -409,9 +409,11 @@
               });
 
               utility.getElement( "download", "id" ).addEventListener( "click", function() {
-
+                //https://goo.gl/cl7FKy
+                //http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html
+                //https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg
                 iOS.newDownloadFile({
-                    path:       "https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg",
+                    path:       "https://goo.gl/cl7FKy",
                     isOverwrite: true
                 }).then( function( download_file ){
 
