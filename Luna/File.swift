@@ -16,6 +16,7 @@ public enum FileError: Error {
     case DOWNLOAD_ALREADY_INQUEUE
     case FAILED_TO_CREATE
     case FILE_ALREADY_EXISTS
+	case ONLY_URL_TYPE
     case other
 }
 extension FileError: LocalizedError {
@@ -35,11 +36,19 @@ extension FileError: LocalizedError {
             return NSLocalizedString("Invalid/insufficient parameter", comment: "Error")
         case .FILE_ALREADY_EXISTS:
             return NSLocalizedString("File already exists", comment: "Error")
+		case .ONLY_URL_TYPE:
+			return NSLocalizedString("\(FilePathType.URL_TYPE) are only allowed to be downloaded", comment: "Error")
         default:
             break
         }
         return nil
     }
+}
+
+public enum SystemFilePath:String {
+	case DOCUMENT		= ""
+	case DOWNLOADS      = "Downloads"
+	case CACHE          = "_cache"
 }
 
 public enum FileExtention:String {
@@ -67,6 +76,8 @@ public enum FileType {
     case HTML_FILE
     case IMAGE_FILE
     case VIDEO_FILE
+	case ZIP_FILE
+	case DOWNLOAD_FILE
 }
 
 class File {

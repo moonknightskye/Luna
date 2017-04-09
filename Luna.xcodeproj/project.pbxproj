@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F1F1E988A9C0087F8AC /* ZipFile.swift */; };
+		47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F211E9A874B0087F8AC /* DownloadManager.swift */; };
 		6F7BD0935E789F7AFF725A66 /* Pods_Luna.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */; };
 		700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 700064B11E5BD573003CF38D /* WKWebView+extension.swift */; };
 		700182141E8DFFB700B28C59 /* bluemoon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7001820E1E8DFFB700B28C59 /* bluemoon@2x.png */; };
@@ -43,6 +45,8 @@
 
 /* Begin PBXFileReference section */
 		3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Luna.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		47E78F1F1E988A9C0087F8AC /* ZipFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFile.swift; sourceTree = "<group>"; };
+		47E78F211E9A874B0087F8AC /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		700064B11E5BD573003CF38D /* WKWebView+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKWebView+extension.swift"; sourceTree = "<group>"; };
 		7001820E1E8DFFB700B28C59 /* bluemoon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bluemoon@2x.png"; path = "resource/icon/bluemoon@2x.png"; sourceTree = "<group>"; };
 		7001820F1E8DFFB700B28C59 /* bluemoon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bluemoon@3x.png"; path = "resource/icon/bluemoon@3x.png"; sourceTree = "<group>"; };
@@ -124,11 +128,13 @@
 			children = (
 				70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */,
 				70B3A6781E66A44E006F4E4D /* Command.swift */,
+				47E78F211E9A874B0087F8AC /* DownloadManager.swift */,
 				70460F1C1E66CAAA003E43EC /* WebViewManager.swift */,
 				705D13881E82653B0032ECBE /* AVPlayerManager.swift */,
-				7063C2201E9334B400E14ABB /* DownloadFile.swift */,
 				7062F0961E6EB51E00CB8144 /* File.swift */,
 				70F7903B1E7A65330080F51E /* HTMLFile.swift */,
+				47E78F1F1E988A9C0087F8AC /* ZipFile.swift */,
+				7063C2201E9334B400E14ABB /* DownloadFile.swift */,
 				70F790391E7A26860080F51E /* ImageFile.swift */,
 				70F7903D1E80C27A0080F51E /* VideoFile.swift */,
 				70642E071E77ADB400C50DD7 /* Photos.swift */,
@@ -340,7 +346,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -366,9 +372,11 @@
 				70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */,
 				704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */,
 				7062F0971E6EB51E00CB8144 /* File.swift in Sources */,
+				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
 				706DE2091E556C3A005AE646 /* String+extension.swift in Sources */,
 				70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */,
 				7063C2211E9334B400E14ABB /* DownloadFile.swift in Sources */,
+				47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */,
 				70B3A6711E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift in Sources */,
 				7001821A1E8E24B800B28C59 /* UIImage+extension.swift in Sources */,
 				7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */,

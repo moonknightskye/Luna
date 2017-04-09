@@ -199,20 +199,30 @@
                     }, function(error){
                       iOS.debug( "imageFile.getResizedDOM: " + error );
                     });
-                    // imageFile.getFullResolutionDOM().then( function( DOM ){
-                    //   iOS.debug( "imageFile.getBase64Binary: YAY" );
 
-                    //   document.body.appendChild( DOM );
-
+                    // imageFile.move({
+                    //     to:  "Camera Roll",
+                    //     isOverwrite: true
+                    // }).then(function(url){
+                    //     iOS.debug("file.moveFile: " + imageFile.getFilePath())
                     // }, function(error){
-                    //   iOS.debug( "imageFile.getBase64Binary: " + error );
-                    // });
+                    //     iOS.debug("file.moveFile: " + imageFile)
+                    // })
 
-                    imageFile.getEXIFInfo().then( function(value){
-                      iOS.debug( value );
+                    imageFile.getFullResolutionDOM().then( function( DOM ){
+                      iOS.debug( "imageFile.getBase64Binary: YAY" );
+
+                      document.body.appendChild( DOM );
+
                     }, function(error){
-                      iOS.debug( "imageFile.getEXIFInfo: " + error );
+                      iOS.debug( "imageFile.getBase64Binary: " + error );
                     });
+
+                    // imageFile.getEXIFInfo().then( function(value){
+                    //   iOS.debug( value );
+                    // }, function(error){
+                    //   iOS.debug( "imageFile.getEXIFInfo: " + error );
+                    // });
 
                 }, function(error){
                     iOS.debug( "iOS.takePhoto: " + error );

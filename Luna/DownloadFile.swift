@@ -8,11 +8,6 @@
 
 import Foundation
 
-public enum SystemFilePath:String {
-    case DOWNLOADS      = "Downloads"
-    case CACHE          = "_cache"
-}
-
 class DownloadFile: File {
     
     static var QUEUE:[DownloadFile] = [DownloadFile]();
