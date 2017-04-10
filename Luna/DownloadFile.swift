@@ -140,8 +140,8 @@ class DownloadFile: File {
         }
     }
     
-    func onDownload() {
-        CommandProcessor.processOnDownload( downloadFile: self )
+    override func onDownload() {
+        CommandProcessor.processOnDownload( file: self )
     }
     
     public override func move( relative:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil ) -> Bool {
@@ -183,16 +183,16 @@ class DownloadFile: File {
         return false
     }
     
-    func onDownloaded( downloadedFilePath: URL ) {
-        self.downloadedFilePath = downloadedFilePath
-        let _ = self.move(relative: self.savePath, isOverwrite: self.isOverwrite, onSuccess: { (result) in
-            CommandProcessor.processOnDownloaded( downloadFile: self, downloadedFilePath: result )
-        }) { (error) in
-            CommandProcessor.processOnDownloaded( downloadFile: self, errorMessage: error )
-        }
+    override func onDownloaded( downloadedFilePath: URL ) {
+//        self.downloadedFilePath = downloadedFilePath
+//        let _ = self.move(relative: self.savePath, isOverwrite: self.isOverwrite, onSuccess: { (result) in
+//            CommandProcessor.processOnDownloaded( file: self, downloadedFilePath: result )
+//        }) { (error) in
+//            CommandProcessor.processOnDownloaded( file: self, errorMessage: error )
+//        }
     }
     
-    func onDownloading( progress: Double ) {
-        CommandProcessor.processOnDownloading( downloadFile: self, progress: progress )
+    override func onDownloading( progress: Double ) {
+        CommandProcessor.processOnDownloading( file: self, progress: progress )
     }
 }

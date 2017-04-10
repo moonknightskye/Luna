@@ -393,6 +393,15 @@ class File {
         
     }
     
+    public func download( to:String?=nil, isOverwrite:Bool?=false, onSuccess:((Int)->()), onFail:((String)->()) ) {
+        do {
+            let manager = try DownloadManager(file: self, savePath: to, isOverwrite:isOverwrite)
+            onSuccess( manager.getID() )
+            self.onDownload()
+        } catch let error as NSError {
+            onFail( error.localizedDescription )
+        }
+    }
 
     
     public func copy( relative:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
@@ -506,5 +515,17 @@ class File {
             onFail!("Unable to delete file")
         }
         return false
+    }
+    
+    func onDownload() {
+        CommandProcessor.processOnDownload( file: self )
+    }
+    
+    func onDownloaded( downloadedFilePath: URL ) {
+        CommandProcessor.processOnDownloaded( file: self, downloadedFilePath: downloadedFilePath )
+    }
+    
+    func onDownloading( progress: Double ) {
+        CommandProcessor.processOnDownloading( file: self, progress: progress )
     }
 }

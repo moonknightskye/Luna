@@ -128,7 +128,7 @@ class Command {
             if status == CommandStatus.RESOLVE || status == CommandStatus.UPDATE {
                 result.setValue( value, forKey: "value" )
             } else if status == CommandStatus.REJECT {
-                result.setValue( value, forKey: "message" )
+                result.setValue( (value as! String).replacingOccurrences(of: "\'", with: ""), forKey: "message" )
             }
             params.setValue( result, forKey: "result" )
             sourceWebView.getWebview().runJSCommand(commandName: getCallbackMethod(), params: params, onComplete: { result, error in

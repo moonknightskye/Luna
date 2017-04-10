@@ -125,31 +125,33 @@
         };
 
         function getFile( parameter ) {
+            _setPathType( parameter );
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_FILE,
 	        	parameter: 		parameter
 	        });
 	        command.onResolve( function( file_path ) {
 	        	parameter.file_path = file_path;
-	         	return new Filex( parameter );
+	         	return new File( parameter );
 	        });
 	        return CommandProcessor.queue( command );
         };
 
-        function newDownloadFile( parameter ) {
-            parameter.path_type = "url";
-            parameter.isOverwrite = parameter.isOverwrite || false;
-            var command = new Command({
-                command_code:   COMMAND.NEW_DOWNLOAD_FILE,
-                parameter:      parameter
-            });
-            command.onResolve( function( download_file ) {
-                return new DownloadFile( download_file );
-            });
-            return CommandProcessor.queue( command );
-        };
+        // function newDownloadFile( parameter ) {
+        //     parameter.path_type = "url";
+        //     parameter.isOverwrite = parameter.isOverwrite || false;
+        //     var command = new Command({
+        //         command_code:   COMMAND.NEW_DOWNLOAD_FILE,
+        //         parameter:      parameter
+        //     });
+        //     command.onResolve( function( download_file ) {
+        //         return new DownloadFile( download_file );
+        //     });
+        //     return CommandProcessor.queue( command );
+        // };
 
         function getHTMLFile( parameter ) {
+            _setPathType( parameter );
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_HTML_FILE,
 	        	parameter: 		parameter
@@ -162,6 +164,7 @@
         };
 
         function getVideoFile(parameter) {
+            _setPathType( parameter );
             var command = new Command({
                 command_code:   COMMAND.GET_VIDEO_FILE,
                 parameter:      parameter
@@ -313,6 +316,18 @@
             webview:    undefined
         };
 
+        var _setPathType = function( param ) {
+            var type = "document";
+            if( param.path ) {
+                if( param.path.startsWith("http") ) {
+                    type = "url";
+                } else {
+                    return
+                }
+            }
+            param.path_type = type;
+        };
+
 		return {
             changeIcon: changeIcon,
 			closeWebview: closeWebview,
@@ -325,7 +340,7 @@
             getNewAVPlayer: getNewAVPlayer,
             getNewWebview: getNewWebview,
             getVideoFile: getVideoFile,
-            newDownloadFile: newDownloadFile,
+            // newDownloadFile: newDownloadFile,
             onReady: onReady,
             processJSCommand: processJSCommand,
             takePhoto: takePhoto,
@@ -583,7 +598,7 @@
 
 
 
-        file = utility.mergeJSON( file, new Filex(param), true );
+        file = utility.mergeJSON( file, new File(param), true );
         init();
 
         return file;
@@ -601,7 +616,7 @@
         	iOS.debug("HELLO3");
         };
 
-        file = utility.mergeJSON( file, new Filex(param), true );
+        file = utility.mergeJSON( file, new File(param), true );
         init();
 
     	return file;
@@ -665,13 +680,12 @@
         	return CommandProcessor.queue( command );
         };
 
-
 		file.greet = function(){
 			this.greet__super();
         	iOS.debug("HELLO2");
         };
 
-        file = utility.mergeJSON( file, new Filex(param), true );
+        file = utility.mergeJSON( file, new File(param), true );
         init();
     	return file;
     };
@@ -737,29 +751,32 @@
         };
 
 
-        file = utility.mergeJSON( file, new Filex(param), true );
+        file = utility.mergeJSON( file, new File(param), true );
         init();
         return file;
     };
 
     //filename, local_path, url_path
-    function Filex( param ) {
+    function File( param ) {
         var file = {
         	isClass: true
         };
         var _INTERNAL_DATA = {
-            filename:           param.filename || "",
-            path:               param.path,         // folder/name, http://www.mysite.com
-            path_type:          param.path_type || "document",    //url, bundle, document
-            file_extension:     param.file_extension || "",  //zip, html, png, mp4
-            status:             STATUS.INIT,
-            file_path: 			param.file_path,
-            base64_value: 		param.base64_value
+            filename            : param.filename,
+            path                : param.path,         // folder/name, http://www.mysite.com
+            path_type           : param.path_type || "document",    //url, bundle, document
+            file_extension      : param.file_extension,  //zip, html, png, mp4
+            status              : STATUS.INIT,
+            file_path           : param.file_path,
+            base64_value        : param.base64_value
         };
 
         function init() {
-            if( _INTERNAL_DATA.filename.length > 0 && _INTERNAL_DATA.file_extension.length <= 0) {
-                file.setFileExtension( _INTERNAL_DATA.filename.substring( _INTERNAL_DATA.filename.lastIndexOf( "." ) + 1 ) );
+            if( _INTERNAL_DATA.filename && _INTERNAL_DATA.filename.length > 0 && _INTERNAL_DATA.file_extension.length <= 0) {
+                _INTERNAL_DATA.file_extension = _INTERNAL_DATA.filename.substring( _INTERNAL_DATA.filename.lastIndexOf( "." ) + 1 );
+            }
+            if( _INTERNAL_DATA.path && _INTERNAL_DATA.path.startsWith("http") ) {
+                _INTERNAL_DATA.path_type = "url";
             }
         };
 
@@ -768,18 +785,19 @@
         };
 
         file.toJSON = function(){
-        	return {
-        		filename 		: this.getFilename(),
+            var JSON = {
+                filename        : this.getFilename(),
                 path            : this.getPath(),
-        		path_type 		: this.getPathType(),
-        		file_path 		: this.getFilePath(),
-        		file_extension 	: this.getFileExtension()
-        	}
+                path_type       : this.getPathType(),
+                file_path       : this.getFilePath(),
+                file_extension  : this.getFileExtension(),
+            }
+            if ((this.getPathType() === "url") && (_INTERNAL_DATA.download_id > -1)) {
+                JSON.download_id = _INTERNAL_DATA.download_id;
+            }
+        	return JSON;
         };
 
-        file.setFileExtension = function( file_extension ) {
-        	_INTERNAL_DATA.file_extension = file_extension;
-        };
         file.getFileExtension = function() {
         	return _INTERNAL_DATA.file_extension;
         };
@@ -821,6 +839,53 @@
         };
         file.getStatus = function( ) {
             return _INTERNAL_DATA.status;
+        };
+
+        file.onDownload = function() {
+            var command = new Command({
+                command_code    : COMMAND.ONDOWNLOAD,
+                parameter       : {
+                    path        : this.getPath()
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        file.onDownloading = function(fn) {
+            var command = new Command({
+                command_code    : COMMAND.ONDOWNLOADING,
+                parameter       : {
+                    path        : this.getPath()
+                }
+            });
+            command.onUpdate( fn );
+            return CommandProcessor.queue( command );
+        };
+
+        file.onDownloaded = function() {
+            var command = new Command({
+                command_code    : COMMAND.ONDOWNLOADED,
+                parameter       : {
+                    path        : this.getPath()
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        file.download = function( parameter ) {
+            var command = new Command({
+                command_code    : COMMAND.DOWNLOAD,
+                parameter       : {
+                    to          : parameter.to,
+                    file        : this.toJSON(),
+                    isOverwrite : parameter.isOverwrite || false,
+                }
+            });
+            command.onResolve( function( download_id ) {
+                _INTERNAL_DATA.download_id = download_id;
+                return download_id;
+            });
+            return CommandProcessor.queue( command );
         };
 
         file.move = function( param ) {

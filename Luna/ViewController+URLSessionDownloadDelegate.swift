@@ -13,12 +13,13 @@ extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession,
                     downloadTask: URLSessionDownloadTask,
                     didFinishDownloadingTo location: URL){
-        
-        if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
+
+        if let manager = DownloadManager.getManager(urlSession: session) {
+            let file = manager.getFile()
             if let suggestedFilename = downloadTask.response?.suggestedFilename {
-                downloadFile.setFileName(fileName: suggestedFilename)
+                file.setFileName(fileName: suggestedFilename)
             }
-            downloadFile.onDownloaded( downloadedFilePath: location )
+            file.onDownloaded( downloadedFilePath: location )
         }
     }
 
@@ -28,9 +29,9 @@ extension ViewController: URLSessionDownloadDelegate {
                     totalBytesWritten: Int64,
                     totalBytesExpectedToWrite: Int64){
         
-        if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
+        if let manager = DownloadManager.getManager(urlSession: session) {
             let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            downloadFile.onDownloading(progress: Double(progress * 100))
+            manager.getFile().onDownloading(progress: Double(progress * 100))
         }
         
     }
@@ -38,25 +39,29 @@ extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession,
                     task: URLSessionTask,
                     didCompleteWithError error: Error?){
-        if let downloadFile = DownloadFile.getDownloadFile(urlSession: session) {
+        
+        if let manager = DownloadManager.getManager(urlSession: session) {
+            var errorMessage = "The file has already been downloaded"
             if (error != nil) {
-                CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-                    if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
-                        if innerDownloadFile.getID() == downloadFile.getID() {
-                            command.reject(errorMessage: error!.localizedDescription)
-                        }
-                    }
-                }
-                CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-                    if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
-                        if innerDownloadFile.getID() == downloadFile.getID() {
-                            command.reject(errorMessage: error!.localizedDescription)
-                        }
+                errorMessage = (error?.localizedDescription)!
+            }
+            CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
+                if let dmanager = CommandProcessor.getDownloadManager(command: command) {
+                    if manager === dmanager {
+                        command.reject(errorMessage: errorMessage)
                     }
                 }
             }
-            downloadFile.removeDownloadFile()
+            CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
+                if let dmanager = CommandProcessor.getDownloadManager(command: command) {
+                    if manager === dmanager {
+                        command.reject(errorMessage: errorMessage)
+                    }
+                }
+            }
+            manager.removeDownloadManager()
         }
+
         session.finishTasksAndInvalidate()
     }
     

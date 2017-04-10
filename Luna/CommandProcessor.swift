@@ -47,9 +47,9 @@ class CommandProcessor {
         case CommandCode.GET_HTML_FILE:
             processGetHTMLFile( command: command )
             break
-        case CommandCode.GET_BASE64_IMAGE:
+//        case CommandCode.GET_BASE64_IMAGE:
 //            processGetBase64Image( command: command )
-            break
+//            break
         case CommandCode.GET_EXIF_IMAGE:
             processGetExifImage( command: command )
             break
@@ -95,9 +95,9 @@ class CommandProcessor {
 		case CommandCode.DOWNLOAD:
 			processDownloadFile( command: command )
 			break
-        case CommandCode.NEW_DOWNLOAD_FILE:
-            processNewDownloadFile( command: command )
-            break
+//        case CommandCode.NEW_DOWNLOAD_FILE:
+//            processNewDownloadFile( command: command )
+//            break
         case CommandCode.ONDOWNLOAD,
              CommandCode.ONDOWNLOADING,
              CommandCode.ONDOWNLOADED:
@@ -144,15 +144,25 @@ class CommandProcessor {
         return nil
     }
     
-    public class func getDownloadFile( command: Command ) -> DownloadFile? {
-        if let downloadID = (command.getParameter() as AnyObject).value(forKeyPath: "download_id") as? Int {
-            if let downloadFile = DownloadFile.getDownloadFile(download_id: downloadID) {
-                return downloadFile
+    public class func getDownloadManager( command: Command ) -> DownloadManager? {
+        if let path = (command.getParameter() as AnyObject).value(forKeyPath: "path") as? String {
+            if let manager = DownloadManager.getManager(path: path) {
+                return manager
             }
         }
-        command.reject( errorMessage: "[ERROR] Download File does not exists" )
+        command.reject( errorMessage: "[ERROR] Download Manager does not existsX" )
         return nil
     }
+    
+//    public class func getDownloadManager( command: Command ) -> DownloadManager? {
+//        if let downloadID = (command.getParameter() as AnyObject).value(forKeyPath: "download_id") as? Int {
+//            if let manager = DownloadManager.getManager(download_id: downloadID) {
+//                return manager
+//            }
+//        }
+//        command.reject( errorMessage: "[ERROR] Download Manager does not exists" )
+//        return nil
+//    }
     
     public class func getQueue() -> [Command] {
         return CommandProcessor.QUEUE
@@ -246,7 +256,7 @@ class CommandProcessor {
     }
     
     private class func checkDownloadEvent( command: Command) {
-        let _ = CommandProcessor.getDownloadFile(command: command)
+        //let _ = CommandProcessor.getDownloadManager(command: command)
     }
     
     public class func processWebViewOnload( wkmanager: WebViewManager ) {
@@ -472,7 +482,7 @@ class CommandProcessor {
     }
     private class func checkGetHTMLFile( command:Command, onSuccess:@escaping ((String, HTMLFile)->()), onFail:@escaping ((String)->()) ) {
         do {
-            let htmlFile = try HTMLFile( file: command.getParameter() as! NSDictionary)
+            let htmlFile = try HTMLFile( file: command.getParameter() as! NSDictionary )
             if let filePath = htmlFile.getFilePath() {
 				onSuccess(filePath.absoluteString, htmlFile)
             } else {
@@ -490,32 +500,42 @@ class CommandProcessor {
 			command.reject( errorMessage: errorMessage )
 		})
 	}
-	private class func checkDownloadFile( command:Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let downloadFile = getDownloadFile( command: command ) {
-            downloadFile.download(onSuccess: { (result) in
-                onSuccess(result)
-            }, onFail: { (error) in
-                onFail(error)
-            })
+	private class func checkDownloadFile( command:Command, onSuccess:@escaping ((Int)->()), onFail:@escaping ((String)->()) ) {
+        do {
+            if let fileparam = (command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary {
+                let file = try File( file: fileparam )
+                file.download(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String,
+                              isOverwrite: (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool,
+                              onSuccess: { (result) in
+                                onSuccess( result )
+                }, onFail: { (error) in
+                    onFail( error )
+                })
+                return
+            } else {
+                onFail( FileError.INVALID_FILE_PARAMETERS.localizedDescription )
+            }
+        } catch let error as NSError {
+            onFail( error.localizedDescription )
         }
 	}
 
-    private class func processNewDownloadFile( command: Command ) {
-        checkNewDownloadFile( command: command, onSuccess: { result, raw in
-            command.resolve( value: result, raw: raw )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkNewDownloadFile( command: Command, onSuccess:@escaping ((NSDictionary, DownloadFile)->()), onFail:@escaping ((String)->()) ) {
-        do {
-            let downloadFile = try DownloadFile( file: command.getParameter() as! NSDictionary )
-            onSuccess(downloadFile.toDictionary(), downloadFile)
-        } catch let error as NSError {
-            print( error )
-            onFail( error.localizedDescription )
-        }
-    }
+//    private class func processNewDownloadFile( command: Command ) {
+//        checkNewDownloadFile( command: command, onSuccess: { result, raw in
+//            command.resolve( value: result, raw: raw )
+//        }, onFail: { errorMessage in
+//            command.reject( errorMessage: errorMessage )
+//        })
+//    }
+//    private class func checkNewDownloadFile( command: Command, onSuccess:@escaping ((NSDictionary, DownloadFile)->()), onFail:@escaping ((String)->()) ) {
+//        do {
+//            let downloadFile = try DownloadFile( file: command.getParameter() as! NSDictionary )
+//            onSuccess(downloadFile.toDictionary(), downloadFile)
+//        } catch let error as NSError {
+//            print( error )
+//            onFail( error.localizedDescription )
+//        }
+//    }
 
     private class func processGetFile( command: Command ) {
         checkGetFile( command: command, onSuccess: { result, raw in
@@ -843,32 +863,31 @@ class CommandProcessor {
         }
     }
     
-    public class func processOnDownload( downloadFile: DownloadFile ) {
+    public class func processOnDownload( file: File ) {
         getCommand(commandCode: CommandCode.ONDOWNLOAD) { (command) in
-			if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
-				if innerDownloadFile.getID() == downloadFile.getID() {
-					command.resolve(value: true)
-				}
+			if let manager = CommandProcessor.getDownloadManager(command: command) {
+                if manager.getFile().getFilePath() == file.getFilePath() {
+                    command.resolve(value: true)
+                }
 			}
         }
     }
-	public class func processOnDownloaded( downloadFile: DownloadFile, downloadedFilePath:URL?=nil, errorMessage:String?=nil) {
+	public class func processOnDownloaded( file: File, downloadedFilePath:URL ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-            if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
-				if innerDownloadFile.getID() == downloadFile.getID() {
-					if downloadedFilePath != nil {
-						command.resolve(value: downloadedFilePath!.path)
-					} else if errorMessage != nil {
-						command.reject(errorMessage: errorMessage)
-					}
+            if let manager = CommandProcessor.getDownloadManager(command: command) {
+				if manager.getFile().getFilePath() == file.getFilePath() {
+                    manager.processDownloadedFile(path: downloadedFilePath,
+                                                  onSuccess: { (result) in command.resolve(value: result) },
+                                                  onFail: { (error) in
+                                                    command.reject(errorMessage: error)})
 				}
 			}
         }
     }
-    public class func processOnDownloading( downloadFile: DownloadFile, progress: Double ) {
+    public class func processOnDownloading( file: File, progress: Double ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-            if let innerDownloadFile = CommandProcessor.getDownloadFile(command: command) {
-				if innerDownloadFile.getID() == downloadFile.getID() {
+            if let manager = CommandProcessor.getDownloadManager(command: command) {
+				if manager.getFile().getFilePath() == file.getFilePath() {
 					command.update(value:progress)
 					if( progress >= 100.0 ) {
 						command.resolve(value: true)
