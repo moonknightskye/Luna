@@ -29,7 +29,7 @@
         TAKE_PHOTO                  : 7,
         GET_FILE                    : 8,
         GET_HTML_FILE               : 9,
-        GET_BASE64_IMAGE            : 10,
+        GET_IMAGE_FILE              : 10,
         GET_EXIF_IMAGE              : 11,
         GET_BASE64_BINARY           : 12,
         GET_BASE64_RESIZED          : 13,
@@ -45,7 +45,7 @@
         CHANGE_ICON                 : 23,
         GET_VIDEO_FILE              : 24,
         DOWNLOAD                    : 25,
-        NEW_DOWNLOAD_FILE           : 26,
+ //       NEW_DOWNLOAD_FILE           : 26,
         ONDOWNLOAD                  : 27,
         ONDOWNLOADED                : 28,
         ONDOWNLOADING               : 29,
@@ -137,19 +137,6 @@
 	        return CommandProcessor.queue( command );
         };
 
-        // function newDownloadFile( parameter ) {
-        //     parameter.path_type = "url";
-        //     parameter.isOverwrite = parameter.isOverwrite || false;
-        //     var command = new Command({
-        //         command_code:   COMMAND.NEW_DOWNLOAD_FILE,
-        //         parameter:      parameter
-        //     });
-        //     command.onResolve( function( download_file ) {
-        //         return new DownloadFile( download_file );
-        //     });
-        //     return CommandProcessor.queue( command );
-        // };
-
         function getHTMLFile( parameter ) {
             _setPathType( parameter );
         	var command = new Command({
@@ -161,6 +148,19 @@
 	         	return new HTMLFile( parameter );
 	        });
 	        return CommandProcessor.queue( command );
+        };
+
+        function getImageFile(parameter) {
+            _setPathType( parameter );
+            var command = new Command({
+                command_code:   COMMAND.GET_IMAGE_FILE,
+                parameter:      parameter
+            });
+            command.onResolve( function( file_path ) {
+                parameter.file_path = file_path;
+                return new ImageFile( parameter );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function getVideoFile(parameter) {
@@ -336,6 +336,7 @@
             getFile: getFile,
             init: init,
             getHTMLFile: getHTMLFile,
+            getImageFile: getImageFile,
             getMainWebview: getMainWebview,
             getNewAVPlayer: getNewAVPlayer,
             getNewWebview: getNewWebview,
@@ -690,72 +691,6 @@
     	return file;
     };
 
-    function DownloadFile( param ) {
-        var file = {};
-
-        var _INTERNAL_DATA = {
-            save_path       : param.save_path || "Downloads",
-            id              : param.download_id
-        };
-
-        function init() {
-            file.setPathType( "url" );
-        };
-
-        file.getID = function() {
-            return _INTERNAL_DATA.id;
-        };
-
-        file.getSavePath = function(){
-            return _INTERNAL_DATA.save_path;
-        };
-
-        file.onDownload = function() {
-            var command = new Command({
-                command_code    : COMMAND.ONDOWNLOAD,
-                parameter       : {
-                    download_id : this.getID()
-                }
-            });
-            return CommandProcessor.queue( command );
-        };
-
-        file.onDownloaded = function() {
-            var command = new Command({
-                command_code    : COMMAND.ONDOWNLOADED,
-                parameter       : {
-                    download_id : this.getID()
-                }
-            });
-            return CommandProcessor.queue( command );
-        };
-
-        file.onDownloading = function(fn) {
-            var command = new Command({
-                command_code    : COMMAND.ONDOWNLOADING,
-                parameter       : {
-                    download_id : this.getID()
-                }
-            });
-            command.onUpdate( fn );
-            return CommandProcessor.queue( command );
-        };
-
-        file.download = function( ) {
-            var command = new Command({
-                command_code    : COMMAND.DOWNLOAD,
-                parameter       : {
-                    download_id : this.getID()                }
-            });
-            return CommandProcessor.queue( command );
-        };
-
-
-        file = utility.mergeJSON( file, new File(param), true );
-        init();
-        return file;
-    };
-
     //filename, local_path, url_path
     function File( param ) {
         var file = {
@@ -785,17 +720,13 @@
         };
 
         file.toJSON = function(){
-            var JSON = {
+        	return {
                 filename        : this.getFilename(),
                 path            : this.getPath(),
                 path_type       : this.getPathType(),
                 file_path       : this.getFilePath(),
                 file_extension  : this.getFileExtension(),
-            }
-            if ((this.getPathType() === "url") && (_INTERNAL_DATA.download_id > -1)) {
-                JSON.download_id = _INTERNAL_DATA.download_id;
-            }
-        	return JSON;
+            };
         };
 
         file.getFileExtension = function() {
@@ -869,6 +800,10 @@
                     path        : this.getPath()
                 }
             });
+            command.onResolve( function(result){
+                _INTERNAL_DATA = utility.mergeJSON( result, _INTERNAL_DATA );
+                return _INTERNAL_DATA;
+            });
             return CommandProcessor.queue( command );
         };
 
@@ -882,7 +817,6 @@
                 }
             });
             command.onResolve( function( download_id ) {
-                _INTERNAL_DATA.download_id = download_id;
                 return download_id;
             });
             return CommandProcessor.queue( command );

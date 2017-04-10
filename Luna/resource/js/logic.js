@@ -420,49 +420,50 @@
 
               utility.getElement( "download", "id" ).addEventListener( "click", function() {
 
-                iOS.getFile({
-                  path    : "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html"
-                }).then( function(file){
+                // iOS.getFile({
+                //   path    : "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html"
+                // }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " + file.getFilePath())
+                //   iOS.debug("iOS.getFile: " + file.getFilePath())
 
-                  file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload: " + result)
-                  }, function(error){
-                    iOS.debug("file.onDownload: " + error)
-                  });
+                //   file.onDownload().then( function(result){
+                //     iOS.debug("file.onDownload: " + result)
+                //   }, function(error){
+                //     iOS.debug("file.onDownload: " + error)
+                //   });
 
-                  file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
-                  }).then(function(result){
-                    iOS.debug( "file.onDownloading: " + result );
-                  }, function(error){
-                    iOS.debug( "file.onDownloading: " + error );
-                  });
+                //   file.onDownloading(function(progress){
+                //     iOS.debug( "onDownloading: " + progress + "%" );
+                //   }).then(function(result){
+                //     iOS.debug( "file.onDownloading: " + result );
+                //   }, function(error){
+                //     iOS.debug( "file.onDownloading: " + error );
+                //   });
 
-                  file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: " + result)
-                  }, function(error){
-                    iOS.debug("file.onDownloaded: " + error)
-                  });
+                //   file.onDownloaded().then( function(result){
+                //     iOS.debug("file.onDownloaded: " + result)
+                //   }, function(error){
+                //     iOS.debug("file.onDownloaded: " + error)
+                //   });
 
-                  file.download({
-                    isOverwrite   : true
-                  }).then(function(resut){
-                    iOS.debug("file.download: " + resut)
-                  },function(error){
-                    iOS.debug("file.download: " + error)
-                  });
+                //   file.download({
+                //     isOverwrite   : true
+                //   }).then(function(resut){
+                //     iOS.debug("file.download: " + resut)
+                //   },function(error){
+                //     iOS.debug("file.download: " + error)
+                //   });
 
-                }, function(error){
-                  iOS.debug("iOS.getFile: " + error)
-                })
+                // }, function(error){
+                //   iOS.debug("iOS.getFile: " + error)
+                // })
 
-                iOS.getFile({
+                iOS.getImageFile({
                   path    : "https://goo.gl/cl7FKy"
                 }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " + file.getFilePath())
+                  iOS.debug("iOS.getFile: " )
+                  iOS.debug(file)
 
                   file.onDownload().then( function(result){
                     iOS.debug("file.onDownload: " + result)
@@ -479,13 +480,33 @@
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: " + result)
+                    iOS.debug("file.onDownloaded: ")
+                    iOS.debug(result)
+
+
+                    file.getResizedDOM({quality:10}).then( function( DOM ){
+                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      document.body.appendChild( DOM );
+                    }, function(error){
+                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                    });
+
+                    file.getFullResolutionDOM().then( function( DOM ){
+                      iOS.debug( "imageFile.getBase64Binary: YAY" );
+
+                      document.body.appendChild( DOM );
+
+                    }, function(error){
+                      iOS.debug( "imageFile.getBase64Binary: " + error );
+                    });
+                    
+
                   }, function(error){
                     iOS.debug("file.onDownloaded: " + error)
                   });
 
                   file.download({
-                    isOverwrite   : true
+                    isOverwrite   : true,
                   }).then(function(resut){
                     iOS.debug("file.download: " + resut)
                   },function(error){
@@ -496,160 +517,45 @@
                   iOS.debug("iOS.getFile: " + error)
                 })
 
-                iOS.getFile({
-                  path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
-                }).then( function(file){
+                // iOS.getFile({
+                //   path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
+                // }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " + file.getFilePath())
+                //   iOS.debug("iOS.getFile: " + file.getFilePath())
 
-                  file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload: " + result)
-                  }, function(error){
-                    iOS.debug("file.onDownload: " + error)
-                  });
-
-                  file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
-                  }).then(function(result){
-                    iOS.debug( "file.onDownloading: " + result );
-                  }, function(error){
-                    iOS.debug( "file.onDownloading: " + error );
-                  });
-
-                  file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: " + result)
-                  }, function(error){
-                    iOS.debug("file.onDownloaded: " + error)
-                  });
-
-                  file.download({
-                    isOverwrite   : true
-                  }).then(function(resut){
-                    iOS.debug("file.download: " + resut)
-                  },function(error){
-                    iOS.debug("file.download: " + error)
-                  });
-
-                }, function(error){
-                  iOS.debug("iOS.getFile: " + error)
-                })
-
-
-                //https://goo.gl/cl7FKy
-                //http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html
-                //https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg
-                //https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg
-                // iOS.newDownloadFile({
-                //     path:       "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html",
-                //     isOverwrite: true
-                // }).then( function( download_file ){
-
-                //   iOS.debug("iOS.getFile: OK " + download_file.getID())
-
-                //   download_file.onDownloaded().then( function(result){
-                //     iOS.debug("iOS.onDownloaded: " + result)
+                //   file.onDownload().then( function(result){
+                //     iOS.debug("file.onDownload: " + result)
                 //   }, function(error){
-                //     iOS.debug("iOS.onDownloaded: " + error)
+                //     iOS.debug("file.onDownload: " + error)
                 //   });
-                //   download_file.onDownload().then( function(result){
-                //     iOS.debug("iOS.onDownload: " + result)
-                //   }, function(error){
-                //     iOS.debug("iOS.onDownload: " + error)
-                //   });
-                //   download_file.onDownloading(function(progress){
-                //     //iOS.debug( "onDownloading: " + progress + "%" );
+
+                //   file.onDownloading(function(progress){
+                //     iOS.debug( "onDownloading: " + progress + "%" );
                 //   }).then(function(result){
-                //     iOS.debug( "download_file.onDownloading: " + result );
+                //     iOS.debug( "file.onDownloading: " + result );
                 //   }, function(error){
-                //     iOS.debug( "download_file.onDownloading: " + error );
+                //     iOS.debug( "file.onDownloading: " + error );
                 //   });
 
-
-
-                //   download_file.download({save_path:"Downloads"}).then(function(result){
-                //     iOS.debug("iOS.download: " + result)
-                //   },function(error){
-                //     iOS.debug("iOS.download: " + error)
-                //   })
-
-                // }, function(error){
-                //   iOS.debug( "iOS.getFile: " + error );
-                // });
-
-
-                // iOS.newDownloadFile({
-                //     path          : "https://goo.gl/cl7FKy",
-                //     isOverwrite   : true,
-                //     save_path     : "Downloads" 
-                // }).then( function( download_file ){
-
-                //   iOS.debug("iOS.getFile: OK " + download_file.getID())
-
-                //   download_file.onDownloaded().then( function(result){
-                //     iOS.debug("iOS.onDownloaded: " + download_file.getID() + " " + result)
+                //   file.onDownloaded().then( function(result){
+                //     iOS.debug("file.onDownloaded: " + result)
                 //   }, function(error){
-                //     iOS.debug("iOS.onDownloaded: " + error)
+                //     iOS.debug("file.onDownloaded: " + error)
                 //   });
-                //   // download_file.onDownload().then( function(result){
-                //   //   iOS.debug("iOS.onDownload: " + result)
-                //   // }, function(error){
-                //   //   iOS.debug("iOS.onDownload: " + error)
-                //   // });
-                //   // download_file.onDownloading(function(progress){
-                //   //   //iOS.debug( "onDownloading: " + progress + "%" );
-                //   // }).then(function(result){
-                //   //   iOS.debug( "download_file.onDownloading: " + result );
-                //   // }, function(error){
-                //   //   iOS.debug( "download_file.onDownloading: " + error );
-                //   // });
 
-                //   download_file.download().then(function(result){
-                //     iOS.debug("iOS.download: " + download_file.getID() + " " + result)
+                //   file.download({
+                //     isOverwrite   : true
+                //   }).then(function(resut){
+                //     iOS.debug("file.download: " + resut)
                 //   },function(error){
-                //     iOS.debug("iOS.download: " + error)
-                //   })
+                //     iOS.debug("file.download: " + error)
+                //   });
 
                 // }, function(error){
-                //   iOS.debug( "iOS.getFile: " + error );
-                // });
+                //   iOS.debug("iOS.getFile: " + error)
+                // })
 
 
-
-                // iOS.newDownloadFile({
-                //     path          : "https://i.ytimg.com/vi/3R2uvJqWeVg/maxresdefault.jpg",
-                //     isOverwrite   : true,
-                //     save_path     : "Downloads"
-                // }).then( function( download_file ){
-
-                //   iOS.debug("iOS.getFile: OK " + download_file.getID())
-
-                //   download_file.onDownloaded().then( function(result){
-                //     iOS.debug("iOS.onDownloaded: " + download_file.getID() + " " + result)
-                //   }, function(error){
-                //     iOS.debug("iOS.onDownloaded: " + error)
-                //   });
-                //   // download_file.onDownload().then( function(result){
-                //   //   iOS.debug("iOS.onDownload: " + result)
-                //   // }, function(error){
-                //   //   iOS.debug("iOS.onDownload: " + error)
-                //   // });
-                //   // download_file.onDownloading(function(progress){
-                //   //   //iOS.debug( "onDownloading: " + progress + "%" );
-                //   // }).then(function(result){
-                //   //   iOS.debug( "download_file.onDownloading: " + result );
-                //   // }, function(error){
-                //   //   iOS.debug( "download_file.onDownloading: " + error );
-                //   // });
-
-                //   download_file.download().then(function(result){
-                //     iOS.debug("iOS.download: " + download_file.getID() + " " + result)
-                //   },function(error){
-                //     iOS.debug("iOS.download: " + error)
-                //   })
-
-                // }, function(error){
-                //   iOS.debug( "iOS.getFile: " + error );
-                // });
 
 
 

@@ -15,31 +15,29 @@ class DownloadManager {
 	private var download_id = DownloadManager.counter
 	private var downloadFile:File!
 
+	private var downloadLink:URL!
+	private var downloadedFilePath:URL?
+	private var suggestedFilename:String?
 	private var downloadTask: URLSessionDownloadTask!
 	private var backgroundSession: URLSession!
     private var savePath:String!
     private var isOverwrite:Bool!
 
-    public init( file: File, savePath:String?=SystemFilePath.DOWNLOADS.rawValue, isOverwrite:Bool?=false ) throws {
+    public init( file: File, savePath:String?, isOverwrite:Bool?=false ) throws {
 		if file.getPathType() == FilePathType.URL_TYPE {
 			self.downloadFile = file
-            self.savePath = savePath
+			self.downloadLink = file.getFilePath()
+            self.savePath = savePath ?? SystemFilePath.DOWNLOADS.rawValue
             self.isOverwrite = isOverwrite
-            
-			for (_, manager) in DownloadManager.QUEUE.enumerated() {
-				if manager.getFile().getFilePath() == self.getFile().getFilePath() {
-					throw FileError.DOWNLOAD_ALREADY_INQUEUE
-				}
+
+			if let _ = DownloadManager.getManager(path: (file.getFilePath()?.absoluteString)!) {
+				throw FileError.DOWNLOAD_ALREADY_INQUEUE
 			}
 
             let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: Bundle.main.bundleIdentifier!)
             backgroundSession = Foundation.URLSession(configuration: backgroundSessionConfiguration, delegate: Shared.shared.ViewController, delegateQueue: OperationQueue.main)
-            if let url = file.getFilePath() {
-                downloadTask = backgroundSession.downloadTask(with: url)
-                downloadTask.resume()
-            } else {
-                throw FileError.INVALID_FILE_PARAMETERS
-            }
+			downloadTask = backgroundSession.downloadTask(with: self.downloadLink)
+			downloadTask.resume()
             
 			DownloadManager.QUEUE.append(self)
 			DownloadManager.counter += 1;
@@ -50,23 +48,13 @@ class DownloadManager {
     
     public class func getManager( path: String ) -> DownloadManager? {
         for (_, manager) in DownloadManager.QUEUE.enumerated() {
-            if let urlPath = manager.getFile().getFilePath()?.absoluteString {
-                if urlPath == path {
-                    return manager
-                }
-            }
+			if manager.getDownloadLink().absoluteString == path {
+				return manager
+			}
         }
         return nil
     }
-    
-//    public class func getManager( download_id: Int ) -> DownloadManager? {
-//        for (_, manager) in DownloadManager.QUEUE.enumerated() {
-//            if manager.getID() == download_id {
-//                return manager
-//            }
-//        }
-//        return nil
-//    }
+
     public class func getManager( urlSession: URLSession ) -> DownloadManager? {
         for (_, manager) in DownloadManager.QUEUE.enumerated() {
             if manager.getURLSession() === urlSession {
@@ -76,23 +64,25 @@ class DownloadManager {
         return nil
     }
     
-    func removeDownloadManager() {
-        DownloadManager.removeDownloadFile(manager: self)
+	func remove( withError:String ) {
+		DownloadManager.remove(manager: self, withError:withError)
         print("Download \(self.getID()) removed from Queue")
     }
-    public class func removeDownloadFile( download_id:Int?=nil, manager:DownloadManager?=nil ) {
+	public class func remove( manager:DownloadManager, withError:String ) {
+		CommandProcessor.processDownloadOnError(manager: manager, commandCode: .ONDOWNLOAD, errorMessage: withError)
+		CommandProcessor.processDownloadOnError(manager: manager, commandCode: .ONDOWNLOADED, errorMessage: withError)
+		CommandProcessor.processDownloadOnError(manager: manager, commandCode: .ONDOWNLOADING, errorMessage: withError)
+
         for ( index, DLManager) in DownloadManager.QUEUE.enumerated() {
-            if download_id != nil && download_id == DLManager.getID(){
-                DownloadManager.QUEUE.remove(at: index)
-            } else if manager != nil && manager === DLManager{
+            if manager === DLManager{
                 DownloadManager.QUEUE.remove(at: index)
             }
         }
     }
     
-    func processDownloadedFile( path: URL, onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
+    func processDownloadedFile( onSuccess:@escaping ((URL)->()), onFail:@escaping ((String)->()) ) {
         if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: self.savePath) {
-            let file = FileManager.generateDocumentFilePath(fileName: self.getFile().getFileName()!, relativePath: self.savePath )
+            let file = FileManager.generateDocumentFilePath(fileName: self.suggestedFilename!, relativePath: self.savePath )
             if FileManager.isExists(url: file ) {
                 if isOverwrite! {
                     if !FileManager.deleteFile(filePath: file) {
@@ -107,14 +97,42 @@ class DownloadManager {
                     onFail( "Failed to create folder to move to" )
                 }
             }
-            if let fileName = self.getFile().getFileName() {
-                let _ = FileManager.moveFile(filePath: path, newFileName: fileName, relative: self.savePath, onSuccess: { (result) in
-                    onSuccess( result.absoluteString )
-                }, onFail: onFail)
-            }
+			let _ = FileManager.moveFile(filePath: self.downloadedFilePath!, newFileName: self.suggestedFilename, relative: self.savePath, onSuccess: { (result) in
+				onSuccess( result )
+			}, onFail: onFail)
         }
         onFail( "Something went wrong" )
     }
+
+	func onDownload() {
+		CommandProcessor.processOnDownload( manager: self )
+	}
+
+	func onDownloaded( downloadedFilePath:URL ) {
+		self.downloadedFilePath = downloadedFilePath
+
+		processDownloadedFile( onSuccess: { (result) in
+			self.downloadFile.setFileName(fileName: self.suggestedFilename!)
+			self.downloadFile.setFilePath(filePath: result)
+			self.downloadFile.setPath(path: self.savePath)
+			self.downloadFile.setPathType(pathType: .DOCUMENT_TYPE)
+
+			CommandProcessor.processOnDownloaded( manager: self, result: self.downloadFile.toDictionary() )
+		}, onFail: { (errorMessage) in
+			CommandProcessor.processOnDownloaded( manager: self, errorMessage:errorMessage )
+		})	}
+
+	func onDownloading( progress:Double ) {
+		CommandProcessor.processOnDownloading( manager: self, progress: progress )
+	}
+
+	func setSuggestedFileName( suggestedFileName: String?=nil ) {
+		self.suggestedFilename = suggestedFileName
+	}
+
+	func getDownloadLink() -> URL {
+		return self.downloadLink
+	}
     
     func getID() -> Int {
         return self.download_id

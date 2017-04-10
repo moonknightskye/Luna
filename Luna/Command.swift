@@ -24,7 +24,7 @@ enum CommandCode:Int {
     case TAKE_PHOTO                 = 7
     case GET_FILE                   = 8
     case GET_HTML_FILE              = 9
-    case GET_BASE64_IMAGE           = 10
+    case GET_IMAGE_FILE				= 10
     case GET_EXIF_IMAGE             = 11
     case GET_BASE64_BINARY          = 12
     case GET_BASE64_RESIZED         = 13

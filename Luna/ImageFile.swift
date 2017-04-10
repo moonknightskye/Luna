@@ -12,7 +12,11 @@ import Photos
 class ImageFile: File {
     
     private var asset:PHAsset?
-    
+
+	override init(){
+		super.init()
+	}
+
     public init( uiimage:UIImage, exif:NSDictionary?=nil, savePath:String?=nil ) throws {
         super.init()
         self.setFileName(fileName: "TEMP_IMAGE.PNG")
@@ -117,7 +121,71 @@ class ImageFile: File {
         }
         super.init()
     }
-    
+
+	public convenience init( file:NSDictionary ) throws {
+		var isValid = true
+
+		let fileName:String? = file.value(forKeyPath: "filename") as? String
+		let path:String? = file.value(forKeyPath: "path") as? String
+
+		if let pathType = file.value(forKeyPath: "path_type") as? String {
+			if let filePathType = FilePathType( rawValue: pathType ) {
+				switch filePathType {
+				case .BUNDLE_TYPE:
+					if fileName != nil {
+						try self.init( bundle: fileName!, path:path)
+						return
+					} else {
+						isValid = false
+					}
+					break
+				case .DOCUMENT_TYPE:
+					if fileName != nil {
+						try self.init( document: fileName!, path:path )
+						return
+					} else {
+						isValid = false
+					}
+					break
+				case .URL_TYPE:
+					if path != nil {
+						try self.init( url: path! )
+						return
+					}else {
+						isValid = false
+					}
+					break
+				case .ASSET_TYPE:
+					if fileName != nil {
+						let filePath:URL = URL( string: file.value(forKeyPath: "file_path") as! String )!
+						self.init( asset: fileName!, filePath:filePath)
+						if let asset = Photos.getAsset(fileURL: filePath) {
+							self.asset = asset
+						}
+						return
+					} else {
+						isValid = false
+					}
+
+					break
+//				default:
+//					isValid = false
+//					break
+				}
+
+			} else {
+				isValid = false
+			}
+		} else {
+			isValid = false
+		}
+
+		if !isValid {
+			throw FileError.INVALID_FILE_PARAMETERS
+		}
+		self.init()
+	}
+
     public func getBase64Value( onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
         switch self.getPathType()! {
         case .ASSET_TYPE:

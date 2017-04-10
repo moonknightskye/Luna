@@ -15,11 +15,8 @@ extension ViewController: URLSessionDownloadDelegate {
                     didFinishDownloadingTo location: URL){
 
         if let manager = DownloadManager.getManager(urlSession: session) {
-            let file = manager.getFile()
-            if let suggestedFilename = downloadTask.response?.suggestedFilename {
-                file.setFileName(fileName: suggestedFilename)
-            }
-            file.onDownloaded( downloadedFilePath: location )
+			manager.setSuggestedFileName(suggestedFileName: downloadTask.response?.suggestedFilename)
+            manager.onDownloaded( downloadedFilePath: location )
         }
     }
 
@@ -31,7 +28,7 @@ extension ViewController: URLSessionDownloadDelegate {
         
         if let manager = DownloadManager.getManager(urlSession: session) {
             let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
-            manager.getFile().onDownloading(progress: Double(progress * 100))
+			manager.onDownloading(progress: Double(progress * 100))
         }
         
     }
@@ -45,21 +42,7 @@ extension ViewController: URLSessionDownloadDelegate {
             if (error != nil) {
                 errorMessage = (error?.localizedDescription)!
             }
-            CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-                if let dmanager = CommandProcessor.getDownloadManager(command: command) {
-                    if manager === dmanager {
-                        command.reject(errorMessage: errorMessage)
-                    }
-                }
-            }
-            CommandProcessor.getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-                if let dmanager = CommandProcessor.getDownloadManager(command: command) {
-                    if manager === dmanager {
-                        command.reject(errorMessage: errorMessage)
-                    }
-                }
-            }
-            manager.removeDownloadManager()
+			manager.remove( withError:errorMessage)
         }
 
         session.finishTasksAndInvalidate()

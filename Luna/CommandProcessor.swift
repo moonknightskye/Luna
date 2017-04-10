@@ -47,9 +47,9 @@ class CommandProcessor {
         case CommandCode.GET_HTML_FILE:
             processGetHTMLFile( command: command )
             break
-//        case CommandCode.GET_BASE64_IMAGE:
-//            processGetBase64Image( command: command )
-//            break
+        case CommandCode.GET_IMAGE_FILE:
+            processGetImageFile( command: command )
+            break
         case CommandCode.GET_EXIF_IMAGE:
             processGetExifImage( command: command )
             break
@@ -441,36 +441,40 @@ class CommandProcessor {
         }
     }
     
-//    private class func processGetBase64Image( command: Command ) {
-//        checkGetBase64Image( command: command, onSuccess: { result in
-//            command.resolve( value: result )
-//        }, onFail: { errorMessage in
-//            command.reject( errorMessage: errorMessage )
-//        })
-//    }
-//    private class func checkGetBase64Image( command:Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-//        let parameter = command.getParameter()
-//        var imageFile:ImageFile?
-//        switch( parameter ) {
-//        case is ImageFile:
-//            imageFile = parameter as? ImageFile
-//            break
-//        case is NSDictionary:
-//            imageFile = ImageFile( imageFile: parameter as! NSDictionary )
-//            break
-//        default:
-//            break;
-//        }
-//        if imageFile != nil {
-//            imageFile!.getBase64Value(onSuccess: { (base64) in
-//                command.resolve(value: base64)
-//            }, onFail: { (error) in
-//                command.reject( errorMessage: error )
-//            })
-//        } else {
-//            command.reject( errorMessage: "Failed to get Image" )
-//        }
-//    }
+    private class func processGetImageFile( command: Command ) {
+        checkGetImageFile( command: command, onSuccess: { result, raw in
+			command.resolve( value: result, raw: raw )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func checkGetImageFile( command:Command, onSuccess:@escaping ((String, ImageFile)->()), onFail:@escaping ((String)->()) ) {
+        let parameter = command.getParameter()
+        var imageFile:ImageFile?
+        switch( parameter ) {
+        case is ImageFile:
+            imageFile = parameter as? ImageFile
+            break
+        case is NSDictionary:
+			do {
+				imageFile = try ImageFile( file: parameter as! NSDictionary )
+			} catch  _ as NSError {
+
+			}
+            break
+        default:
+            break;
+        }
+        if imageFile != nil {
+			if let filePath = imageFile!.getFilePath() {
+				onSuccess(filePath.absoluteString, imageFile!)
+			} else {
+				onFail( "File is not available" )
+			}
+        } else {
+            command.reject( errorMessage: "Failed to get Image" )
+        }
+    }
 
     
     private class func processGetHTMLFile( command: Command ) {
@@ -863,31 +867,42 @@ class CommandProcessor {
         }
     }
     
-    public class func processOnDownload( file: File ) {
+    public class func processOnDownload( manager: DownloadManager ) {
         getCommand(commandCode: CommandCode.ONDOWNLOAD) { (command) in
-			if let manager = CommandProcessor.getDownloadManager(command: command) {
-                if manager.getFile().getFilePath() == file.getFilePath() {
+			if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
+                if manager === dlmanager {
                     command.resolve(value: true)
                 }
 			}
         }
     }
-	public class func processOnDownloaded( file: File, downloadedFilePath:URL ) {
+	public class func processOnDownloaded( manager: DownloadManager, result:NSDictionary?=nil, errorMessage:String?=nil ) {
+		getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
+			if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
+				if manager === dlmanager {
+					if result != nil {
+						command.resolve(value: result!)
+					} else if errorMessage != nil {
+						command.reject(errorMessage: errorMessage!)
+					}
+				}
+			}
+		}
+	}
+	public class func processOnDownloaded( manager: DownloadManager, downloadedFilePath:URL ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-            if let manager = CommandProcessor.getDownloadManager(command: command) {
-				if manager.getFile().getFilePath() == file.getFilePath() {
-                    manager.processDownloadedFile(path: downloadedFilePath,
-                                                  onSuccess: { (result) in command.resolve(value: result) },
-                                                  onFail: { (error) in
-                                                    command.reject(errorMessage: error)})
+            if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
+				if manager === dlmanager {
+					manager.processDownloadedFile( onSuccess: { (result) in command.resolve(value: result) },
+							onFail: { (error) in command.reject(errorMessage: error)})
 				}
 			}
         }
     }
-    public class func processOnDownloading( file: File, progress: Double ) {
+    public class func processOnDownloading( manager: DownloadManager, progress: Double ) {
         getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-            if let manager = CommandProcessor.getDownloadManager(command: command) {
-				if manager.getFile().getFilePath() == file.getFilePath() {
+            if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
+				if manager === dlmanager {
 					command.update(value:progress)
 					if( progress >= 100.0 ) {
 						command.resolve(value: true)
@@ -896,6 +911,15 @@ class CommandProcessor {
             }
         }
     }
+	public class func processDownloadOnError( manager:DownloadManager, commandCode:CommandCode, errorMessage:String ) {
+		getCommand(commandCode: commandCode) { (command) in
+			if let dmanager = getDownloadManager(command: command) {
+				if manager === dmanager {
+					command.reject(errorMessage: errorMessage)
+				}
+			}
+		}
+	}
 
     private class func processMoveFile( command: Command ) {
         checkMoveFile( command: command, onSuccess: { result in
