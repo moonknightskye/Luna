@@ -94,7 +94,7 @@ class HtmlFile: File {
             return
         case FilePathType.DOCUMENT_TYPE:
             let fileName:String = htmlFile.value(forKeyPath: "filename") as! String
-            super.init( document:fileName, filePath:filePath  )
+            super.init( document:fileName, filePath:filePath )
             return
         case FilePathType.URL_TYPE:
             super.init( filePath:filePath )
