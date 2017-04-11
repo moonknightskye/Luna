@@ -49,9 +49,13 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
         CommandProcessor.queue(command: commandGetFile)
         
-        
-        
-        let _ = FileCollection(pathType: FilePathType.DOCUMENT_TYPE);
+
+        do {
+            let filecol = try FileCollection( relative:"unzipfolder", pathType: FilePathType.DOCUMENT_TYPE);
+            try filecol.zip(fileName: "matozipped.zip")
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
     }
 
 

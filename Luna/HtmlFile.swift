@@ -28,6 +28,10 @@ class HtmlFile: File {
     public override init( bundle:String, path:String?=nil, filePath:URL?=nil) throws {
         try super.init(bundle: bundle, path: path, filePath: filePath)
     }
+
+	override init ( path:String?=nil, filePath: URL ) {
+		super.init(path: path, filePath: filePath)
+	}
     
     public override init( url:String ) throws {
         try super.init( url:url )

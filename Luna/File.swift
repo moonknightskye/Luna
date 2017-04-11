@@ -97,7 +97,6 @@ public enum FileType {
     case IMAGE_FILE
     case VIDEO_FILE
 	case ZIP_FILE
-	case DOWNLOAD_FILE
 }
 
 class File {
@@ -295,7 +294,7 @@ class File {
         return self.fileExtension!
     }
     public class func getFileExtension( filename:String ) -> FileExtention {
-        if let name = filename.indexOf(target: ".") {
+        if let name = filename.lastIndexOf(target: ".") {
             if let fileext = FileExtention(rawValue: filename.substring(from: name + 1).lowercased() ) {
                 return fileext
             }
@@ -418,7 +417,7 @@ class File {
     public class func getFilePathType( filePath: URL ) -> FilePathType {
         if filePath.absoluteString.contains("file:///private/var/mobile/Containers/Data/Application") {
             return .DOCUMENT_TYPE
-        } else if filePath.absoluteString.contains("/var/containers/Bundle/Application") {
+        } else if filePath.absoluteString.contains("file:///private/var/containers/Bundle/Application") {
             return .BUNDLE_TYPE
         } else if filePath.absoluteString.contains("assets-library://asset/") {
             return .ASSET_TYPE

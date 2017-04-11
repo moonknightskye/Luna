@@ -63,7 +63,7 @@ class ImageFile: File {
         }
     }
     
-    public override init( asset:String, filePath:URL ) {
+    override init( asset:String, filePath:URL ) {
         super.init( asset:asset, filePath:filePath)
         if let asset = Photos.getAsset(fileURL: filePath) {
             self.asset = asset
@@ -71,31 +71,31 @@ class ImageFile: File {
     }
     
     
-    public override init( document:String, filePath: URL ) {
+    override init( document:String, filePath: URL ) {
         super.init( document:document, filePath:filePath)
     }
     
-    public override init( document:String, path:String?=nil, filePath:URL?=nil ) throws {
+    override init( document:String, path:String?=nil, filePath:URL?=nil ) throws {
         try super.init(document: document, path: path, filePath: filePath)
     }
     
     
-    public override init( bundle:String, filePath: URL ) {
+    override init( bundle:String, filePath: URL ) {
         super.init(bundle: bundle, filePath: filePath)
     }
-    public override init( bundle:String, path:String?=nil, filePath:URL?=nil ) throws {
+    override init( bundle:String, path:String?=nil, filePath:URL?=nil ) throws {
         try super.init(bundle: bundle, path: path, filePath: filePath)
     }
     
-//    public override init( filePath: URL ) {
-//        super.init( filePath:filePath )
-//    }
-    
-    public override init( url:String ) throws {
+	override init ( path:String?=nil, filePath: URL ) {
+		super.init(path: path, filePath: filePath)
+	}
+
+    override init( url:String ) throws {
         try super.init( url:url )
     }
     
-    public init( imageFile: NSDictionary ) {
+    init( imageFile: NSDictionary ) {
         let filePath:URL = URL( string: imageFile.value(forKeyPath: "file_path") as! String )!
         let pathType = FilePathType( rawValue: imageFile.value(forKeyPath: "path_type") as! String )!
         
@@ -124,7 +124,7 @@ class ImageFile: File {
         super.init()
     }
 
-	public convenience init( file:NSDictionary ) throws {
+	convenience init( file:NSDictionary ) throws {
 		var isValid = true
 
 		let fileName:String? = file.value(forKeyPath: "filename") as? String
