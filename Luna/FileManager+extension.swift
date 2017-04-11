@@ -132,15 +132,11 @@ extension FileManager {
         return nil
     }
     
-    public class func getDocumentsFileList( relative:String?=nil ) -> [URL]?{
-        var urlPath:URL = getDocumentsDirectoryPath()!
-        if let relative = relative {
-            urlPath = getDocumentsDirectoryPath( relative: relative )!
-        }
-        
+    
+    public class func getDocumentsFileList( path:URL ) -> [URL]? {
         do {
             return try self.default.contentsOfDirectory(
-                at: urlPath,
+                at: path,
                 includingPropertiesForKeys: nil,
                 options: []
             )
@@ -148,6 +144,10 @@ extension FileManager {
             print( error.localizedDescription )
         }
         return nil
+    }
+    
+    public class func getDocumentsFileList( relative:String?=nil ) -> [URL]?{
+        return getDocumentsFileList( path: getDocumentsDirectoryPath( relative: relative )! )
     }
 
     public class func createDocumentFolder( relative:String?=nil, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ) {

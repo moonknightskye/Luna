@@ -33,9 +33,9 @@ class VideoFile: File {
         try super.init(bundle: bundle, path: path, filePath: filePath)
     }
     
-    public override init( filePath: URL ) {
-        super.init( filePath:filePath )
-    }
+//    public override init( filePath: URL ) {
+//        super.init( filePath:filePath )
+//    }
     
     public override init( url:String ) throws {
         try super.init( url:url )
@@ -105,7 +105,9 @@ class VideoFile: File {
             super.init( document:fileName, filePath:filePath )
             return
         case FilePathType.URL_TYPE:
-            super.init( filePath:filePath )
+            super.init()
+            self.setFilePath(filePath: filePath)
+            self.setPathType(pathType: FilePathType.URL_TYPE)
             return
         default:
             break

@@ -97,7 +97,9 @@ class HtmlFile: File {
             super.init( document:fileName, filePath:filePath )
             return
         case FilePathType.URL_TYPE:
-            super.init( filePath:filePath )
+            super.init()
+            self.setFilePath(filePath: filePath)
+            self.setPathType(pathType: FilePathType.URL_TYPE)
             return
         default:
             break

@@ -48,6 +48,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             
         }
         CommandProcessor.queue(command: commandGetFile)
+        
+        
+        
+        let _ = FileCollection(pathType: FilePathType.DOCUMENT_TYPE);
     }
 
 

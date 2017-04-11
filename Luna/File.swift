@@ -148,9 +148,13 @@ class File {
         }
     }
     
-    public init( filePath: URL ) {
-        self.setPathType(pathType: FilePathType.URL_TYPE)
+    public init( path:String?=nil, filePath: URL ) {
         self.setFilePath(filePath: filePath)
+        self.setPath(path: path)
+        self.setPathType(pathType: File.getFilePathType( filePath: filePath ).rawValue)
+        if let fileName = filePath.absoluteString.getFilenameFromFilePath() {
+            self.setFileName(fileName: fileName)
+        }
     }
     
     public init( url:String ) throws {
@@ -404,18 +408,24 @@ class File {
             return .VIDEO_FILE
         case .HTML:
             return .HTML_FILE
+        case .ZIP:
+            return .ZIP_FILE
         default:
             return .FILE
         }
     }
     
-    public class func getFilePathType( url: URL ) -> FilePathType {
-        if url.path.contains("/var/mobile/Containers/Data/Application") {
-        
-        } else if url.path.contains("/var/containers/Bundle/Application") {
-        
+    public class func getFilePathType( filePath: URL ) -> FilePathType {
+        if filePath.absoluteString.contains("file:///private/var/mobile/Containers/Data/Application") {
+            return .DOCUMENT_TYPE
+        } else if filePath.absoluteString.contains("/var/containers/Bundle/Application") {
+            return .BUNDLE_TYPE
+        } else if filePath.absoluteString.contains("assets-library://asset/") {
+            return .ASSET_TYPE
+        } else if filePath.absoluteString.contains("http") || filePath.absoluteString.contains("ftp") {
+            return .URL_TYPE
         }
-        
+    
         return .DOCUMENT_TYPE
     }
     

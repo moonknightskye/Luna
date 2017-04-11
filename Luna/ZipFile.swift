@@ -41,11 +41,6 @@ class ZipFile: File {
 		try super.init(bundle: bundle, path: path, filePath: filePath)
         add()
 	}
-
-    override init( filePath: URL ) {
-		super.init( filePath:filePath )
-        add()
-	}
     
     override init( url:String ) throws {
         try super.init( url:url )

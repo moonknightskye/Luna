@@ -100,6 +100,14 @@ extension String {
         return self.substring(from: start, to: to)
     }
     
+    func startsWith( string:String ) -> Bool {
+        return self.hasPrefix(string)
+    }
+    
+    func endsWith( string:String ) -> Bool {
+        return self.hasSuffix(string)
+    }
+    
     func getFilenameFromURL() -> String? {
         var string = self
         if self.isValidURL() {
@@ -118,6 +126,23 @@ extension String {
             return string.substring( from:string.lastIndexOf(target: "/")! + 1, to:string.length );
         }
         return nil
+    }
+    
+    func getFilenameFromFilePath() ->String? {
+        var string = self
+        if let ampersand = self.indexOf(target: "#") {
+            string = string.substring(from: 0, to: ampersand)
+        } else {
+            string = string.substring(from: 0, to: string.length)
+        }
+        
+        if let question = string.indexOf(target: "?") {
+            string = string.substring(from: 0, to: question)
+        } else {
+            string = string.substring(from: 0, to: string.length)
+        }
+        
+        return string.substring( from:string.lastIndexOf(target: "/")! + 1, to:string.length );
     }
     
     func isValidURL() -> Bool {
