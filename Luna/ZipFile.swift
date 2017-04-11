@@ -103,7 +103,7 @@ class ZipFile: File {
                     break
                 case FilePathType.DOCUMENT_TYPE:
                     if fileName != nil {
-                        try self.init( document: fileName! )
+                        try self.init( document: fileName!, path:path, filePath:filePathURL )
                         return
                     } else {
                         isValid = false
@@ -135,6 +135,7 @@ class ZipFile: File {
     }
     
     func unzip( to:String?=nil, isOverwrite:Bool?=false, password:String?="", onSuccess:@escaping(()->()), onFail:((String)->()) ) {
+
         if self.getPathType() == FilePathType.URL_TYPE {
             onFail( FileError.INVALID_FORMAT.localizedDescription )
             return
@@ -165,7 +166,7 @@ class ZipFile: File {
                         onSuccess()
                     }
                     
-                    self.onUnzipping( progress: progress )
+                    self.onUnzipping( progress: progress * 100 )
                     
                     if progress >= 1.0 {
                         self.onUnzipped(unzippedFilePath: url)

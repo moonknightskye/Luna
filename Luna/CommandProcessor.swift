@@ -142,6 +142,7 @@ class CommandProcessor {
     public class func getZipFile( command: Command ) -> ZipFile? {
         if let zipfileId = (command.getParameter() as AnyObject).value(forKeyPath: "zipfile_id") as? Int {
             if let zipfile = ZipFile.getZipFile(zipfile_id: zipfileId ) {
+                zipfile.update(dict: ((command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary)!)
                 return zipfile
             }
         }
@@ -561,7 +562,9 @@ class CommandProcessor {
         case is NSDictionary:
             do {
                 zipFile = try ZipFile( file: parameter as! NSDictionary )
-            } catch  _ as NSError {}
+            } catch  let error as NSError {
+                print("SOME ERRORS HERE: \(error.localizedDescription)")
+            }
             break
         default:
             break;
@@ -1153,7 +1156,7 @@ class CommandProcessor {
             if let zipFile = getZipFile(command: command) {
                 if zipFile.getID() == file.getID() {
                     command.update(value: progress)
-                    if progress >= 1.0 {
+                    if progress >= 100.0 {
                         command.resolve(value: true)
                     }
                 }

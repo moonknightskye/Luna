@@ -336,7 +336,7 @@
         var _setPathType = function( param ) {
             var type = "document";
             if( param.path ) {
-                if( param.path.startsWith("http") ) {
+                if( param.path.startsWith("http") || param.path.startsWith("ftp") ) {
                     type = "url";
                 } else {
                     return
@@ -654,7 +654,8 @@
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIP,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id
+                    zipfile_id  : _INTERNAL_DATA.id,
+                    file        : this.toJSON()
                 }
             });
             return CommandProcessor.queue( command );
@@ -663,7 +664,8 @@
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIPPED,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id
+                    zipfile_id  : _INTERNAL_DATA.id,
+                    file        : this.toJSON()
                 }
             });
             return CommandProcessor.queue( command );
@@ -672,7 +674,8 @@
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIPPING,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id
+                    zipfile_id  : _INTERNAL_DATA.id,
+                    file        : this.toJSON()
                 }
             });
             command.onUpdate( fn );
@@ -684,6 +687,7 @@
                 command_code    : COMMAND.UNZIP,
                 parameter       : {
                     zipfile_id  : _INTERNAL_DATA.id,
+                    file        : this.toJSON(),
                     to          : param.to,
                     password    : param.password,
                     isOverwrite : param.isOverwrite || false
@@ -786,7 +790,7 @@
             if( _INTERNAL_DATA.filename && _INTERNAL_DATA.filename.length > 0 && !_INTERNAL_DATA.file_extension) {
                 _INTERNAL_DATA.file_extension = _INTERNAL_DATA.filename.substring( _INTERNAL_DATA.filename.lastIndexOf( "." ) + 1 );
             }
-            if( _INTERNAL_DATA.path && _INTERNAL_DATA.path.startsWith("http") ) {
+            if( _INTERNAL_DATA.path && (_INTERNAL_DATA.path.startsWith("http") || _INTERNAL_DATA.path.startsWith("ftp")) ) {
                 _INTERNAL_DATA.path_type = "url";
             }
         };

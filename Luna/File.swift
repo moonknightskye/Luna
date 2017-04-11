@@ -222,6 +222,28 @@ class File {
         self.init()
     }
     
+    public func update( dict:NSDictionary ) {
+        if let fileName = dict.value(forKeyPath: "filename") as? String{
+            self.setFileName(fileName: fileName)
+        }
+        if let fileExtension = dict.value(forKeyPath: "file_extension") as? String {
+            if let fileExt = FileExtention.init(rawValue: fileExtension) {
+                self.setFileExtension(fileext: fileExt)
+            }
+        }
+        self.setPath(path: dict.value(forKeyPath: "path") as? String)
+        if let filePath = dict.value(forKeyPath: "file_path") as? String {
+            if let filePathURL = URL(string: filePath) {
+                self.setFilePath(filePath: filePathURL)
+            }
+        }
+        if let pathType = dict.value(forKeyPath: "path_type") as? String {
+            if let pathTypeO = FilePathType.init(rawValue: pathType) {
+                self.setPathType(pathType: pathTypeO)
+            }
+        }
+    }
+    
 //    public func setBase64Value( base64:String ) {
 //        self.base64Value = base64
 //    }
