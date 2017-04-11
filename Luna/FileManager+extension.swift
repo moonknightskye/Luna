@@ -43,11 +43,11 @@ extension FileManager {
     
     public class func copyFile( filePath:URL, relativeTo:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         let fileName = filePath.path.substring(from: filePath.path.lastIndexOf(target: "/")! + 1, to: filePath.path.length)
-        let path = filePath.path.substring(from: 0, to: filePath.path.lastIndexOf(target: "/")! + 1) + relativeTo!
-        let toURL = URL( fileURLWithPath: path).appendingPathComponent( fileName )
+        let toURL = FileManager.getDocumentsDirectoryPath(relative:relativeTo)!.appendingPathComponent( fileName )
+
         if isExists(url: toURL) {
             if onFail != nil {
-                onFail!( "\(fileName) already exists" )
+                onFail!( FileError.ALREADY_EXISTS.localizedDescription )
             }
             return false
         }

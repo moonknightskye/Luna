@@ -45,7 +45,7 @@
         CHANGE_ICON                 : 23,
         GET_VIDEO_FILE              : 24,
         DOWNLOAD                    : 25,
- //       NEW_DOWNLOAD_FILE           : 26,
+        GET_ZIP_FILE                : 26,
         ONDOWNLOAD                  : 27,
         ONDOWNLOADED                : 28,
         ONDOWNLOADING               : 29,
@@ -137,7 +137,7 @@
 	        return CommandProcessor.queue( command );
         };
 
-        function getHTMLFile( parameter ) {
+        function getHtmlFile( parameter ) {
             _setPathType( parameter );
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_HTML_FILE,
@@ -145,7 +145,7 @@
 	        });
 	        command.onResolve( function( file_path ) {
 	        	parameter.file_path = file_path;
-	         	return new HTMLFile( parameter );
+	         	return new HtmlFile( parameter );
 	        });
 	        return CommandProcessor.queue( command );
         };
@@ -172,6 +172,19 @@
             command.onResolve( function( file_path ) {
                 parameter.file_path = file_path;
                 return new VideoFile( parameter );
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        function getZipFile(parameter) {
+            _setPathType( parameter );
+            var command = new Command({
+                command_code:   COMMAND.GET_ZIP_FILE,
+                parameter:      parameter
+            });
+            command.onResolve( function( result ) {
+                parameter = utility.mergeJSON( result, parameter )
+                return new ZipFile( parameter );
             });
             return CommandProcessor.queue( command );
         };
@@ -335,13 +348,13 @@
             fallback: fallback,
             getFile: getFile,
             init: init,
-            getHTMLFile: getHTMLFile,
+            getHtmlFile: getHtmlFile,
             getImageFile: getImageFile,
             getMainWebview: getMainWebview,
             getNewAVPlayer: getNewAVPlayer,
             getNewWebview: getNewWebview,
             getVideoFile: getVideoFile,
-            // newDownloadFile: newDownloadFile,
+            getZipFile: getZipFile,
             onReady: onReady,
             processJSCommand: processJSCommand,
             takePhoto: takePhoto,
@@ -436,7 +449,7 @@
                 webview.setStatus(  STATUS.WEBVIEW_LOADED );
             }
             if( !utility.isUndefined( param.html_file ) ) {
-                webview.setHTMLFile( param.html_file );
+                webview.setHtmlFile( param.html_file );
             }
         };
 
@@ -498,15 +511,15 @@
 	        return CommandProcessor.queue( command );
         };
 
-        webview.setHTMLFile = function( html_file ) {
+        webview.setHtmlFile = function( html_file ) {
         	if ( html_file.isClass ) {
 				_INTERNAL_DATA.html_file = html_file;
         	} else {
-        		_INTERNAL_DATA.html_file = new HTMLFile(html_file);
+        		_INTERNAL_DATA.html_file = new HtmlFile(html_file);
         	}
             _INTERNAL_DATA.status = STATUS.WEBVIEW_INIT;
         };
-        webview.getHTMLFile = function(){
+        webview.getHtmlFile = function(){
             return _INTERNAL_DATA.html_file;
         };
 
@@ -605,22 +618,34 @@
         return file;
     };
 
-    function HTMLFile( param ) {
+    function HtmlFile( param ) {
     	var file = {};
 
-    	function init(){
-    		file.setFileExtension( FILEEXTENSION.HTML );
-    	};
+    	function init(){};
 
 		file.greet = function(){
 			this.greet__super();
-        	iOS.debug("HELLO3");
         };
 
         file = utility.mergeJSON( file, new File(param), true );
         init();
 
     	return file;
+    };
+
+    function ZipFile( param ) {
+        var file = {};
+
+        function init(){};
+
+        file.greet = function(){
+            this.greet__super();
+        };
+
+        file = utility.mergeJSON( file, new File(param), true );
+        init();
+
+        return file;
     };
 
     function ImageFile( param ) {
@@ -691,7 +716,6 @@
     	return file;
     };
 
-    //filename, local_path, url_path
     function File( param ) {
         var file = {
         	isClass: true
@@ -707,7 +731,7 @@
         };
 
         function init() {
-            if( _INTERNAL_DATA.filename && _INTERNAL_DATA.file_extension && _INTERNAL_DATA.filename.length > 0) {
+            if( _INTERNAL_DATA.filename && _INTERNAL_DATA.filename.length > 0 && !_INTERNAL_DATA.file_extension) {
                 _INTERNAL_DATA.file_extension = _INTERNAL_DATA.filename.substring( _INTERNAL_DATA.filename.lastIndexOf( "." ) + 1 );
             }
             if( _INTERNAL_DATA.path && _INTERNAL_DATA.path.startsWith("http") ) {
@@ -860,7 +884,7 @@
                 command_code    : COMMAND.COPY_FILE,
                 parameter       : {
                     file        : this.toJSON(),
-                    relative    : param.relative || ""
+                    to          : param.to || ""
                 }
             });
             return CommandProcessor.queue( command );

@@ -38,7 +38,7 @@
 		70D76E751E2F73940089B903 /* resource in Resources */ = {isa = PBXBuildFile; fileRef = 70D76E741E2F73940089B903 /* resource */; };
 		70E966441E96314100CD09E1 /* InternalStorage.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 70E966421E96314100CD09E1 /* InternalStorage.xcdatamodeld */; };
 		70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F790391E7A26860080F51E /* ImageFile.swift */; };
-		70F7903C1E7A65330080F51E /* HTMLFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F7903B1E7A65330080F51E /* HTMLFile.swift */; };
+		70F7903C1E7A65330080F51E /* HtmlFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F7903B1E7A65330080F51E /* HtmlFile.swift */; };
 		70F7903E1E80C27A0080F51E /* VideoFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70F7903D1E80C27A0080F51E /* VideoFile.swift */; };
 /* End PBXBuildFile section */
 
@@ -76,7 +76,7 @@
 		70D76E741E2F73940089B903 /* resource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = resource; sourceTree = "<group>"; };
 		70E966431E96314100CD09E1 /* InternalStorage.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = InternalStorage.xcdatamodel; sourceTree = "<group>"; };
 		70F790391E7A26860080F51E /* ImageFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFile.swift; sourceTree = "<group>"; };
-		70F7903B1E7A65330080F51E /* HTMLFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLFile.swift; sourceTree = "<group>"; };
+		70F7903B1E7A65330080F51E /* HtmlFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HtmlFile.swift; sourceTree = "<group>"; };
 		70F7903D1E80C27A0080F51E /* VideoFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoFile.swift; sourceTree = "<group>"; };
 		8984E360C4499DEE2E43065D /* Pods-Luna.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Luna.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Luna/Pods-Luna.debug.xcconfig"; sourceTree = "<group>"; };
 		AA81131796A7DA3C066F4D68 /* Pods-Luna.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Luna.release.xcconfig"; path = "Pods/Target Support Files/Pods-Luna/Pods-Luna.release.xcconfig"; sourceTree = "<group>"; };
@@ -130,7 +130,7 @@
 				70460F1C1E66CAAA003E43EC /* WebViewManager.swift */,
 				705D13881E82653B0032ECBE /* AVPlayerManager.swift */,
 				7062F0961E6EB51E00CB8144 /* File.swift */,
-				70F7903B1E7A65330080F51E /* HTMLFile.swift */,
+				70F7903B1E7A65330080F51E /* HtmlFile.swift */,
 				47E78F1F1E988A9C0087F8AC /* ZipFile.swift */,
 				70F790391E7A26860080F51E /* ImageFile.swift */,
 				70F7903D1E80C27A0080F51E /* VideoFile.swift */,
@@ -356,7 +356,7 @@
 				70D76E6A1E2F6B760089B903 /* Utility.swift in Sources */,
 				70F7903E1E80C27A0080F51E /* VideoFile.swift in Sources */,
 				70D76E571E2F6A4F0089B903 /* Luna.xcdatamodeld in Sources */,
-				70F7903C1E7A65330080F51E /* HTMLFile.swift in Sources */,
+				70F7903C1E7A65330080F51E /* HtmlFile.swift in Sources */,
 				70D76E511E2F6A4F0089B903 /* ViewController.swift in Sources */,
 				700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */,
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,

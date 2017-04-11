@@ -95,9 +95,9 @@ class CommandProcessor {
 		case CommandCode.DOWNLOAD:
 			processDownloadFile( command: command )
 			break
-//        case CommandCode.NEW_DOWNLOAD_FILE:
-//            processNewDownloadFile( command: command )
-//            break
+        case CommandCode.GET_ZIP_FILE:
+            processGetZipFile( command: command )
+            break
         case CommandCode.ONDOWNLOAD,
              CommandCode.ONDOWNLOADING,
              CommandCode.ONDOWNLOADED:
@@ -194,13 +194,13 @@ class CommandProcessor {
     }
     private class func checkNewWebView( command: Command, onSuccess:((Int)->()), onFail:((String)->()) ) {
         let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "html_file")
-        var htmlFile:HTMLFile?
+        var htmlFile:HtmlFile?
         switch( parameter ) {
-            case is HTMLFile:
-                htmlFile = parameter as? HTMLFile
+            case is HtmlFile:
+                htmlFile = parameter as? HtmlFile
                 break
             case is NSObject:
-                htmlFile = HTMLFile( htmlFile: parameter as! NSDictionary )
+                htmlFile = HtmlFile( htmlFile: parameter as! NSDictionary )
                 break
             default:
                 break;
@@ -458,9 +458,7 @@ class CommandProcessor {
         case is NSDictionary:
 			do {
 				imageFile = try ImageFile( file: parameter as! NSDictionary )
-			} catch  _ as NSError {
-
-			}
+			} catch  _ as NSError {}
             break
         default:
             break;
@@ -484,9 +482,9 @@ class CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    private class func checkGetHTMLFile( command:Command, onSuccess:@escaping ((String, HTMLFile)->()), onFail:@escaping ((String)->()) ) {
+    private class func checkGetHTMLFile( command:Command, onSuccess:@escaping ((String, HtmlFile)->()), onFail:@escaping ((String)->()) ) {
         do {
-            let htmlFile = try HTMLFile( file: command.getParameter() as! NSDictionary )
+            let htmlFile = try HtmlFile( file: command.getParameter() as! NSDictionary )
             if let filePath = htmlFile.getFilePath() {
 				onSuccess(filePath.absoluteString, htmlFile)
             } else {
@@ -524,22 +522,34 @@ class CommandProcessor {
         }
 	}
 
-//    private class func processNewDownloadFile( command: Command ) {
-//        checkNewDownloadFile( command: command, onSuccess: { result, raw in
-//            command.resolve( value: result, raw: raw )
-//        }, onFail: { errorMessage in
-//            command.reject( errorMessage: errorMessage )
-//        })
-//    }
-//    private class func checkNewDownloadFile( command: Command, onSuccess:@escaping ((NSDictionary, DownloadFile)->()), onFail:@escaping ((String)->()) ) {
-//        do {
-//            let downloadFile = try DownloadFile( file: command.getParameter() as! NSDictionary )
-//            onSuccess(downloadFile.toDictionary(), downloadFile)
-//        } catch let error as NSError {
-//            print( error )
-//            onFail( error.localizedDescription )
-//        }
-//    }
+    private class func processGetZipFile( command: Command ) {
+        checkGetZipFile( command: command, onSuccess: { result, raw in
+            command.resolve( value: result, raw: raw )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func checkGetZipFile( command: Command, onSuccess:@escaping ((NSDictionary, ZipFile)->()), onFail:@escaping ((String)->()) ) {
+        let parameter = command.getParameter()
+        var zipFile:ZipFile?
+        switch( parameter ) {
+        case is ZipFile:
+            zipFile = parameter as? ZipFile
+            break
+        case is NSDictionary:
+            do {
+                zipFile = try ZipFile( file: parameter as! NSDictionary )
+            } catch  _ as NSError {}
+            break
+        default:
+            break;
+        }
+        if zipFile != nil {
+            onSuccess(zipFile!.toDictionary(), zipFile!)
+        } else {
+            command.reject( errorMessage: "Failed to get Image" )
+        }
+    }
 
     private class func processGetFile( command: Command ) {
         checkGetFile( command: command, onSuccess: { result, raw in
@@ -1025,8 +1035,8 @@ class CommandProcessor {
             break;
         }
         if file != nil {
-            if let relative = (command.getParameter() as AnyObject).value(forKeyPath: "relative") as? String {
-                let _ = file!.copy(relative: relative, onSuccess: { (newPath) in
+            if let to = (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String {
+                let _ = file!.copy(relative: to, onSuccess: { (newPath) in
                     onSuccess( newPath.path )
                 }, onFail: { (error) in
                     onFail( error )

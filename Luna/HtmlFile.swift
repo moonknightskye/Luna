@@ -8,7 +8,7 @@
 
 import Foundation
 
-class HTMLFile: File {
+class HtmlFile: File {
     
     override init(){
         super.init()

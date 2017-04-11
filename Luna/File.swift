@@ -413,7 +413,7 @@ class File {
     public func copy( relative:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         if self.getPathType() == .URL_TYPE {
             if onFail != nil {
-                onFail!( "Files from path_type \(self.pathType) cannot be copied" )
+                onFail!( FileError.CANNOT_COPY.localizedDescription )
             }
             return false
         }

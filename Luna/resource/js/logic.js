@@ -386,7 +386,7 @@
                     iOS.debug( "iOS.getFile: " +  file.getFilename());
 
                     file.copy({
-                      relative:  "copyfolder"
+                      to:  "copyfolder"
                     }).then(function(url){
                       iOS.debug("file.copyFile: " + url)
                     }, function(error){
@@ -472,7 +472,7 @@
                   });
 
                   file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
+                    //iOS.debug( "onDownloading: " + progress + "%" );
                   }).then(function(result){
                     iOS.debug( "file.onDownloading: " + result );
                   }, function(error){
@@ -483,6 +483,13 @@
                     iOS.debug("file.onDownloaded: ")
                     iOS.debug(result)
 
+                    file.copy({
+                      to:  "copyfolder"
+                    }).then(function(url){
+                      iOS.debug("file.copyFile: " + url)
+                    }, function(error){
+                      iOS.debug("file.copyFile: " + error)
+                    })
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
                       iOS.debug( "imageFile.getResizedDOM: YAY" );
@@ -491,14 +498,12 @@
                       iOS.debug( "imageFile.getResizedDOM: " + error );
                     });
 
-                    file.getFullResolutionDOM().then( function( DOM ){
-                      iOS.debug( "imageFile.getBase64Binary: YAY" );
-
-                      document.body.appendChild( DOM );
-
-                    }, function(error){
-                      iOS.debug( "imageFile.getBase64Binary: " + error );
-                    });
+                    // file.getFullResolutionDOM().then( function( DOM ){
+                    //   iOS.debug( "imageFile.getBase64Binary: YAY" );
+                    //   document.body.appendChild( DOM );
+                    // }, function(error){
+                    //   iOS.debug( "imageFile.getBase64Binary: " + error );
+                    // });
                     
 
                   }, function(error){
@@ -565,12 +570,12 @@
 
               utility.getElement( "show", "id" ).addEventListener( "click", function() {
 
-                iOS.getHTMLFile({
+                iOS.getHtmlFile({
                     filename:   "subindex.html",
                     path:       "resource",
                     path_type:  "bundle"
                 }).then( function( html_file ){
-                    iOS.debug( "iOS.getHTMLFile: " + html_file.getFilename() );
+                    iOS.debug( "iOS.getHtmlFile: " + html_file.getFilename() );
 
                     iOS.getNewWebview({
                       html_file: html_file,
@@ -625,6 +630,19 @@
                 })
 
               });
+
+
+
+
+              utility.getElement( "unzip", "id" ).addEventListener( "click", function() {
+                iOS.getZipFile({
+                    filename:   "myfolder.zip"
+                }).then( function( file ){
+                    iOS.debug( "iOS.getZipFile: ");
+                    iOS.debug(file)
+                });
+              });
+
 
 
             };

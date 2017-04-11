@@ -24,7 +24,7 @@ class WebViewManager {
     static var counter = 0;
     
     private var webview_id = WebViewManager.counter
-    private var htmlFile:HTMLFile!
+    private var htmlFile:HtmlFile!
     
     private var webview:WKWebView!
     private var sourceWebViewID:Int!
@@ -32,7 +32,7 @@ class WebViewManager {
     private var type:FilePathType!
     private var status:Status!
     
-    public init( source_webview_id:Int?=0, htmlFile:HTMLFile ) {
+    public init( source_webview_id:Int?=0, htmlFile:HtmlFile ) {
         self.setStatus(status: Status.INIT)
         
         WebViewManager.counter += 1;
@@ -67,10 +67,10 @@ class WebViewManager {
         }
     }
     
-    public func setHTMLFile( htmlFile: HTMLFile ) {
+    public func setHTMLFile( htmlFile: HtmlFile ) {
         self.htmlFile = htmlFile
     }
-    public func getHTMLFile() -> HTMLFile {
+    public func getHTMLFile() -> HtmlFile {
         return self.htmlFile
     }
     

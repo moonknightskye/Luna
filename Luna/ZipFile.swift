@@ -24,7 +24,6 @@ class ZipFile: File {
 		try super.init(document: document, path: path, filePath: filePath)
 	}
 
-
 	public override init( bundle:String, filePath: URL ) {
 		super.init(bundle: bundle, filePath: filePath)
 	}
@@ -35,49 +34,60 @@ class ZipFile: File {
 	public override init( filePath: URL ) {
 		super.init( filePath:filePath )
 	}
+    
+    public override init( url:String ) throws {
+        try super.init( url:url )
+    }
 
-	public convenience init( file:NSDictionary ) throws {
-		var isValid = true
-
-		let fileName:String? = file.value(forKeyPath: "filename") as? String
-		let path:String? = file.value(forKeyPath: "path") as? String
-
-		if let pathType = file.value(forKeyPath: "path_type") as? String {
-			if let filePathType = FilePathType( rawValue: pathType ) {
-				switch filePathType {
-				case .BUNDLE_TYPE:
-					if fileName != nil {
-						try self.init( bundle: fileName!, path:path)
-						return
-					} else {
-						isValid = false
-					}
-					break
-				case .DOCUMENT_TYPE:
-					if fileName != nil {
-						try self.init( document: fileName!, path:path )
-						return
-					} else {
-						isValid = false
-					}
-					break
-				default:
-					isValid = false
-					break
-				}
-
-			} else {
-				isValid = false
-			}
-		} else {
-			isValid = false
-		}
-
-		if !isValid {
-			throw FileError.INVALID_PARAMETERS
-		}
-		self.init()
-	}
+    public convenience init( file:NSDictionary ) throws {
+        var isValid = true
+        
+        let fileName:String? = file.value(forKeyPath: "filename") as? String
+        let path:String? = file.value(forKeyPath: "path") as? String
+        
+        if let pathType = file.value(forKeyPath: "path_type") as? String {
+            if let filePathType = FilePathType( rawValue: pathType ) {
+                switch filePathType {
+                case FilePathType.BUNDLE_TYPE:
+                    if fileName != nil {
+                        try self.init( bundle: fileName!, path:path)
+                        return
+                    } else {
+                        isValid = false
+                    }
+                    break
+                case FilePathType.DOCUMENT_TYPE:
+                    if fileName != nil {
+                        try self.init( document: fileName!, path:path )
+                        return
+                    } else {
+                        isValid = false
+                    }
+                    break
+                case FilePathType.URL_TYPE:
+                    if path != nil {
+                        try self.init( url: path! )
+                        return
+                    }else {
+                        isValid = false
+                    }
+                default:
+                    isValid = false
+                    break
+                }
+                
+            } else {
+                isValid = false
+            }
+        } else {
+            isValid = false
+        }
+        
+        if !isValid {
+            throw FileError.INVALID_PARAMETERS
+        }
+        self.init()
+    }
 
 	public func setUnzipPath( unzipPath:String ) {
 		self.unzipPath = unzipPath

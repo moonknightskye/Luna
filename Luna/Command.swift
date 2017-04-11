@@ -40,7 +40,7 @@ enum CommandCode:Int {
     case CHANGE_ICON                = 23
     case GET_VIDEO_FILE             = 24
 	case DOWNLOAD					= 25
-    case NEW_DOWNLOAD_FILE          = 26
+    case GET_ZIP_FILE               = 26
     case ONDOWNLOAD                 = 27
     case ONDOWNLOADED               = 28
     case ONDOWNLOADING              = 29
