@@ -9,39 +9,56 @@
 import Foundation
 
 public enum FileError: Error {
-    case FILE_DOES_NOT_EXIST
+    case INEXISTENT
     case SOURCE_UNDEFINED
-    case INVALID_URL
-    case INVALID_FILE_PARAMETERS
+    case INVALID_PARAMETERS
     case DOWNLOAD_ALREADY_INQUEUE
-    case FAILED_TO_CREATE
-    case FILE_ALREADY_EXISTS
+    case ALREADY_EXISTS
+    case ONLY_DOCUMENT_TYPE
 	case ONLY_URL_TYPE
-    case other
+    case CANNOT_CREATE
+    case CANNOT_MOVE
+    case CANNOT_DELETE
+    case CANNOT_COPY
+    case CANNOT_RENAME
+    case INVALID_FORMAT
+    case NO_DATA
+    case UNKNOWN_ERROR
 }
 extension FileError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .FILE_DOES_NOT_EXIST:
+        case .INEXISTENT:
             return NSLocalizedString("File does not exists.", comment: "Error")
         case .SOURCE_UNDEFINED:
             return NSLocalizedString("Provide either code or file to load", comment: "Error")
-        case .INVALID_URL:
-            return NSLocalizedString("URL is invalid", comment: "Error")
-        case .FAILED_TO_CREATE:
+        case .CANNOT_CREATE:
             return NSLocalizedString("Failed to create file/directory", comment: "Error")
         case .DOWNLOAD_ALREADY_INQUEUE:
             return NSLocalizedString("Download already in queue", comment: "Error")
-        case .INVALID_FILE_PARAMETERS:
+        case .INVALID_PARAMETERS:
             return NSLocalizedString("Invalid/insufficient parameter", comment: "Error")
-        case .FILE_ALREADY_EXISTS:
-            return NSLocalizedString("File already exists", comment: "Error")
+        case .ALREADY_EXISTS:
+            return NSLocalizedString("File/directory already exists", comment: "Error")
+        case .ONLY_DOCUMENT_TYPE:
+            return NSLocalizedString("\(FilePathType.DOCUMENT_TYPE) can perform this action", comment: "Error")
 		case .ONLY_URL_TYPE:
-			return NSLocalizedString("\(FilePathType.URL_TYPE) are only allowed to be downloaded", comment: "Error")
-        default:
-            break
+			return NSLocalizedString("\(FilePathType.URL_TYPE) can perform this action", comment: "Error")
+        case .CANNOT_MOVE:
+            return NSLocalizedString("Cannot move file/directory", comment: "Error")
+        case .CANNOT_RENAME:
+            return NSLocalizedString("Cannot rename file/directory", comment: "Error")
+        case .CANNOT_COPY:
+            return NSLocalizedString("Cannot copy file/directory", comment: "Error")
+        case .CANNOT_DELETE:
+            return NSLocalizedString("Cannot delete file/directory", comment: "Error")
+        case .INVALID_FORMAT:
+            return NSLocalizedString("Invalid Format", comment: "Error")
+        case .NO_DATA:
+            return NSLocalizedString("No Data available", comment: "Error")
+        case .UNKNOWN_ERROR:
+            return NSLocalizedString("Unknown Error occured", comment: "Error")
         }
-        return nil
     }
 }
 
@@ -108,7 +125,7 @@ class File {
         self.setPath(path: path)
         self.setFilePath(filePath: filePath)
         if !self.isFileExists() {
-            throw FileError.FILE_DOES_NOT_EXIST
+            throw FileError.INEXISTENT
         }
     }
     
@@ -124,7 +141,7 @@ class File {
         self.setPath(path: path)
         self.setFilePath(filePath: filePath)
         if !self.isFileExists() {
-            throw FileError.FILE_DOES_NOT_EXIST
+            throw FileError.INEXISTENT
         }
     }
     
@@ -138,7 +155,7 @@ class File {
             if let filePath = URL(string: url) {
                 self.setFilePath(filePath: filePath)
             } else {
-                throw FileError.INVALID_URL
+                throw FileError.INVALID_PARAMETERS
             }
             
             if let filename = url.getFilenameFromURL() {
@@ -146,7 +163,7 @@ class File {
             }
             self.setPathType(pathType: FilePathType.URL_TYPE)
         } else {
-            throw FileError.INVALID_URL
+            throw FileError.INVALID_PARAMETERS
         }
     }
     
@@ -197,7 +214,7 @@ class File {
         }
         
         if !isValid {
-            throw FileError.INVALID_FILE_PARAMETERS
+            throw FileError.INVALID_PARAMETERS
         }
         self.init()
     }
@@ -404,7 +421,7 @@ class File {
             if !FileManager.isExists(url: relativeURL) {
                 if !FileManager.createDirectory(absolutePath: relativeURL.path) {
                     if onFail != nil {
-                        onFail!( "Failed to create folder to copy to" )
+                        onFail!( FileError.CANNOT_CREATE.localizedDescription )
                     }
                     return false
                 }
@@ -414,7 +431,7 @@ class File {
             return FileManager.copyFile( filePath: filePath, relativeTo: relative, onSuccess:onSuccess, onFail:onFail)
         }
         if onFail != nil {
-            onFail!( "Unable to copy file" )
+            onFail!( FileError.CANNOT_COPY.localizedDescription )
         }
         return false
     }
@@ -422,7 +439,7 @@ class File {
     public func rename( fileName:String, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil  ) -> Bool {
         if self.getPathType() != .DOCUMENT_TYPE {
             if onFail != nil {
-                onFail!( "Files from path_type \(self.pathType) cannot be renamed" )
+                onFail!( FileError.ONLY_DOCUMENT_TYPE.localizedDescription )
             }
             return false
         }
@@ -434,7 +451,7 @@ class File {
             }, onFail:onFail)
         }
         if onFail != nil {
-            onFail!( "Unable to rename file" )
+            onFail!( FileError.CANNOT_RENAME.localizedDescription )
         }
         return false
     }
@@ -443,7 +460,7 @@ class File {
     public func move( relative:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((URL)->()), onFail:((String)->())?=nil ) -> Bool {
         if self.getPathType() != .DOCUMENT_TYPE {
             if onFail != nil {
-                onFail!( "Files from path_type \(self.pathType) cannot be moved" )
+                onFail!( FileError.ONLY_DOCUMENT_TYPE.localizedDescription )
             }
             return false
         }
@@ -453,13 +470,13 @@ class File {
                 if isOverwrite! {
                     if !FileManager.deleteFile(filePath: file) {
                         if onFail != nil {
-                            onFail!( "Unable to delete file" )
+                            onFail!( FileError.CANNOT_DELETE.localizedDescription )
                         }
                         return false
                     }
                 } else {
                     if onFail != nil {
-                        onFail!( "File already exists" )
+                        onFail!( FileError.ALREADY_EXISTS.localizedDescription )
                     }
                     return false
                 }
@@ -467,7 +484,7 @@ class File {
             if !FileManager.isExists(url: relativeURL) {
                 if !FileManager.createDirectory(absolutePath: relativeURL.path) {
                     if onFail != nil {
-                        onFail!( "Failed to create folder to move to" )
+                        onFail!( FileError.CANNOT_CREATE.localizedDescription )
                     }
                     return false
                 }
@@ -481,7 +498,7 @@ class File {
             }
         }
         if onFail != nil {
-            onFail!( "Unable to move file" )
+            onFail!( FileError.CANNOT_MOVE.localizedDescription )
         }
         return false
     }
@@ -496,12 +513,12 @@ class File {
             }
         } else {
             if onFail != nil {
-                onFail!("Files from path_type \(self.pathType) cannot be deleted")
+                onFail!(FileError.ONLY_DOCUMENT_TYPE.localizedDescription)
             }
             return false
         }
         if onFail != nil {
-            onFail!("Unable to delete file")
+            onFail!(FileError.CANNOT_DELETE.localizedDescription)
         }
         return false
     }

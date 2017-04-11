@@ -707,7 +707,7 @@
         };
 
         function init() {
-            if( _INTERNAL_DATA.filename && _INTERNAL_DATA.filename.length > 0 && _INTERNAL_DATA.file_extension.length <= 0) {
+            if( _INTERNAL_DATA.filename && _INTERNAL_DATA.file_extension && _INTERNAL_DATA.filename.length > 0) {
                 _INTERNAL_DATA.file_extension = _INTERNAL_DATA.filename.substring( _INTERNAL_DATA.filename.lastIndexOf( "." ) + 1 );
             }
             if( _INTERNAL_DATA.path && _INTERNAL_DATA.path.startsWith("http") ) {

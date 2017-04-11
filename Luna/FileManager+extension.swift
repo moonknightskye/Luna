@@ -177,7 +177,7 @@ extension FileManager {
             data = UIImagePNGRepresentation( file as! UIImage )!
         default:
             if onFail != nil {
-                onFail!( "The data is not recognized" )
+                onFail!( FileError.INVALID_FORMAT.localizedDescription )
             }
         }
         

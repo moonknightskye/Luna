@@ -86,7 +86,7 @@ class VideoFile: File {
         }
         
         if !isValid {
-            throw FileError.INVALID_FILE_PARAMETERS
+            throw FileError.INVALID_PARAMETERS
         }
         self.init()
     }
@@ -128,7 +128,7 @@ class VideoFile: File {
             }
             break
         default:
-            onFail( "Error happened" )
+            onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             break
         }
     }

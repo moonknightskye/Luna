@@ -20,7 +20,6 @@
 		704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704835A61E5DACF100F38D39 /* FileManager+extension.swift */; };
 		705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705D13881E82653B0032ECBE /* AVPlayerManager.swift */; };
 		7062F0971E6EB51E00CB8144 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7062F0961E6EB51E00CB8144 /* File.swift */; };
-		7063C2211E9334B400E14ABB /* DownloadFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7063C2201E9334B400E14ABB /* DownloadFile.swift */; };
 		70642E081E77ADB400C50DD7 /* Photos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70642E071E77ADB400C50DD7 /* Photos.swift */; };
 		706DE2091E556C3A005AE646 /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DE2081E556C3A005AE646 /* String+extension.swift */; };
 		7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */; };
@@ -57,7 +56,6 @@
 		704835A61E5DACF100F38D39 /* FileManager+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileManager+extension.swift"; sourceTree = "<group>"; };
 		705D13881E82653B0032ECBE /* AVPlayerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVPlayerManager.swift; sourceTree = "<group>"; };
 		7062F0961E6EB51E00CB8144 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
-		7063C2201E9334B400E14ABB /* DownloadFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadFile.swift; sourceTree = "<group>"; };
 		70642E071E77ADB400C50DD7 /* Photos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photos.swift; sourceTree = "<group>"; };
 		706DE2081E556C3A005AE646 /* String+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
 		7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+URLSessionDownloadDelegate.swift"; sourceTree = "<group>"; };
@@ -134,7 +132,6 @@
 				7062F0961E6EB51E00CB8144 /* File.swift */,
 				70F7903B1E7A65330080F51E /* HTMLFile.swift */,
 				47E78F1F1E988A9C0087F8AC /* ZipFile.swift */,
-				7063C2201E9334B400E14ABB /* DownloadFile.swift */,
 				70F790391E7A26860080F51E /* ImageFile.swift */,
 				70F7903D1E80C27A0080F51E /* VideoFile.swift */,
 				70642E071E77ADB400C50DD7 /* Photos.swift */,
@@ -375,7 +372,6 @@
 				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
 				706DE2091E556C3A005AE646 /* String+extension.swift in Sources */,
 				70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */,
-				7063C2211E9334B400E14ABB /* DownloadFile.swift in Sources */,
 				47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */,
 				70B3A6711E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift in Sources */,
 				7001821A1E8E24B800B28C59 /* UIImage+extension.swift in Sources */,

@@ -517,7 +517,7 @@ class CommandProcessor {
                 })
                 return
             } else {
-                onFail( FileError.INVALID_FILE_PARAMETERS.localizedDescription )
+                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
             }
         } catch let error as NSError {
             onFail( error.localizedDescription )

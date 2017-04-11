@@ -74,7 +74,7 @@ class ZipFile: File {
 		}
 
 		if !isValid {
-			throw FileError.INVALID_FILE_PARAMETERS
+			throw FileError.INVALID_PARAMETERS
 		}
 		self.init()
 	}

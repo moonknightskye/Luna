@@ -30,7 +30,7 @@ class ImageFile: File {
                 didCreated = false
             })
             if !didCreated {
-                throw FileError.FAILED_TO_CREATE
+                throw FileError.CANNOT_CREATE
             }
         }
         
@@ -46,7 +46,7 @@ class ImageFile: File {
             didCreated = false
         }
         if !didCreated {
-            throw FileError.FAILED_TO_CREATE
+            throw FileError.CANNOT_CREATE
         }
     }
     
@@ -59,7 +59,7 @@ class ImageFile: File {
             self.setPathType(pathType: FilePathType.ASSET_TYPE)
             self.setFilePath(filePath: assetURL )
         } else {
-            throw FileError.FILE_DOES_NOT_EXIST
+            throw FileError.INEXISTENT
         }
     }
     
@@ -181,7 +181,7 @@ class ImageFile: File {
 		}
 
 		if !isValid {
-			throw FileError.INVALID_FILE_PARAMETERS
+			throw FileError.INVALID_PARAMETERS
 		}
 		self.init()
 	}
@@ -199,10 +199,10 @@ class ImageFile: File {
             if let file = self.getFile() {
                 onSuccess( Utility.shared.DataToBase64(data: file) )
             }
-            onFail( "Invalid Image Format \(self.getFileExtension()) try converting to PNG" )
+            onFail( FileError.INVALID_FORMAT.localizedDescription + ":  \(self.getFileExtension())" )
             break
         default:
-            onFail( "Error happened" )
+            onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             break
         }
     }
@@ -228,7 +228,7 @@ class ImageFile: File {
                         }
                     }
                 }
-                onFail( "Error in converting file" )
+                onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             }, onFail: { (error) in
                 onFail( error )
             })
@@ -250,10 +250,10 @@ class ImageFile: File {
                     }
                 }
             }
-            onFail( "Error in converting file" )
+            onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             break
         default:
-            onFail( "Error happened" )
+            onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             break
         }
     }
@@ -307,7 +307,7 @@ class ImageFile: File {
                 if let fullImage = CIImage(contentsOf: contentEditingInput!.fullSizeImageURL!) {
                     onSuccess( self.generateEXIFInfo( info: fullImage.properties as NSDictionary) )
                 } else {
-                    onFail( "No EXIF Data available" )
+                    onFail( FileError.NO_DATA.localizedDescription )
                 }
             }
             break
@@ -318,12 +318,12 @@ class ImageFile: File {
                 if let dict = imageProperties as? [String: Any] {
                     onSuccess( self.generateEXIFInfo( info: dict as NSDictionary) )
                 } else {
-                    onFail( "No EXIF Data available" )
+                    onFail( FileError.NO_DATA.localizedDescription )
                 }
             }
             break
         default:
-            onFail( "No EXIF Data available" )
+            onFail( FileError.NO_DATA.localizedDescription )
             break
         }
     }

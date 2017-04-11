@@ -61,7 +61,7 @@ class WebViewManager {
             break;
         default:
             if onFail != nil {
-                onFail!("Unknown web content")
+                onFail!(FileError.INVALID_PARAMETERS.localizedDescription)
                 return
             }
         }

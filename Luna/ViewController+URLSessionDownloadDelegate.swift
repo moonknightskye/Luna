@@ -38,7 +38,7 @@ extension ViewController: URLSessionDownloadDelegate {
                     didCompleteWithError error: Error?){
         
         if let manager = DownloadManager.getManager(urlSession: session) {
-            var errorMessage = "The file has already been downloaded"
+            var errorMessage = FileError.UNKNOWN_ERROR.localizedDescription
             if (error != nil) {
                 errorMessage = (error?.localizedDescription)!
             }

@@ -86,22 +86,22 @@ class DownloadManager {
             if FileManager.isExists(url: file ) {
                 if isOverwrite! {
                     if !FileManager.deleteFile(filePath: file) {
-                        onFail( "Unable to delete file" )
+                        onFail( FileError.CANNOT_DELETE.localizedDescription )
                     }
                 } else {
-                    onFail( "File already exists" )
+                    onFail( FileError.ALREADY_EXISTS.localizedDescription )
                 }
             }
             if !FileManager.isExists(url: relativeURL) {
                 if !FileManager.createDirectory(absolutePath: relativeURL.path) {
-                    onFail( "Failed to create folder to move to" )
+                    onFail( FileError.CANNOT_CREATE.localizedDescription )
                 }
             }
 			let _ = FileManager.moveFile(filePath: self.downloadedFilePath!, newFileName: self.suggestedFilename, relative: self.savePath, onSuccess: { (result) in
 				onSuccess( result )
 			}, onFail: onFail)
         }
-        onFail( "Something went wrong" )
+        onFail( FileError.UNKNOWN_ERROR.localizedDescription )
     }
 
 	func onDownload() {

@@ -131,7 +131,7 @@ class Photos {
             if binaryImage != nil {
                 onSuccess( binaryImage! )
             } else {
-                onFail( "[ERROR] File is not available" )
+                onFail( FileError.INEXISTENT.localizedDescription )
             }
         }
     }
