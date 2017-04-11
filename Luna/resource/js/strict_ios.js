@@ -52,7 +52,11 @@
         MOVE_FILE                   : 30,
         RENAME_FILE                 : 31,
         COPY_FILE                   : 32,
-        DELETE_FILE                 : 33
+        DELETE_FILE                 : 33,
+        UNZIP                       : 34,
+        ON_UNZIP                    : 35,
+        ON_UNZIPPING                : 36,
+        ON_UNZIPPED                 : 37
     };
     var OPTION = {
     	PHOTO_LIBRARY              : "PHOTO_LIBRARY",
@@ -636,11 +640,59 @@
     function ZipFile( param ) {
         var file = {};
 
+        var _INTERNAL_DATA = {
+            id              : param.zipfile_id
+        };
+
         function init(){};
 
         file.greet = function(){
             this.greet__super();
         };
+
+        file.onUnzip = function() {
+            var command = new Command({
+                command_code    : COMMAND.ON_UNZIP,
+                parameter       : {
+                    zipfile_id  : _INTERNAL_DATA.id
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+        file.onUnzipped = function() {
+            var command = new Command({
+                command_code    : COMMAND.ON_UNZIPPED,
+                parameter       : {
+                    zipfile_id  : _INTERNAL_DATA.id
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+        file.onUnzipping = function( fn ) {
+            var command = new Command({
+                command_code    : COMMAND.ON_UNZIPPING,
+                parameter       : {
+                    zipfile_id  : _INTERNAL_DATA.id
+                }
+            });
+            command.onUpdate( fn );
+            return CommandProcessor.queue( command );
+        };
+
+        file.unzip = function( param ) {
+            var command = new Command({
+                command_code    : COMMAND.UNZIP,
+                parameter       : {
+                    zipfile_id  : _INTERNAL_DATA.id,
+                    to          : param.to,
+                    password    : param.password,
+                    isOverwrite : param.isOverwrite || false
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+
 
         file = utility.mergeJSON( file, new File(param), true );
         init();

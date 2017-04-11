@@ -23,6 +23,7 @@ public enum FileError: Error {
     case CANNOT_RENAME
     case INVALID_FORMAT
     case NO_DATA
+    case ALREADY_UNZIPPED
     case UNKNOWN_ERROR
 }
 extension FileError: LocalizedError {
@@ -58,6 +59,8 @@ extension FileError: LocalizedError {
             return NSLocalizedString("No Data available", comment: "Error")
         case .UNKNOWN_ERROR:
             return NSLocalizedString("Unknown Error occured", comment: "Error")
+        case .ALREADY_UNZIPPED:
+            return NSLocalizedString("The file may already have been unzipped", comment: "Error")
         }
     }
 }

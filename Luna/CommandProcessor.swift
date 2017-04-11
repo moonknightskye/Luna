@@ -21,99 +21,107 @@ class CommandProcessor {
         CommandProcessor.QUEUE.append( command )
         
         switch command.getCommandCode() {
-        case CommandCode.NEW_WEB_VIEW:
+        case .NEW_WEB_VIEW:
             processNewWebView( command: command )
             break
-        case CommandCode.LOAD_WEB_VIEW:
+        case .LOAD_WEB_VIEW:
             processLoadWebView( command: command )
             break
-        case CommandCode.ANIMATE_WEB_VIEW:
+        case .ANIMATE_WEB_VIEW:
             processAnimateWebView( command: command )
             break
-        case CommandCode.WEB_VIEW_ONLOAD,
-             CommandCode.WEB_VIEW_ONLOADED,
-             CommandCode.WEB_VIEW_ONLOADING:
+        case .WEB_VIEW_ONLOAD,
+             .WEB_VIEW_ONLOADED,
+             .WEB_VIEW_ONLOADING:
             checkWebViewEvent( command: command )
             break
-        case CommandCode.CLOSE_WEB_VIEW:
+        case .CLOSE_WEB_VIEW:
             processCloseWebView( command: command )
             break
-        case CommandCode.TAKE_PHOTO:
+        case .TAKE_PHOTO:
             checkTakePhoto( command: command )
             break
-        case CommandCode.GET_FILE:
+        case .GET_FILE:
             processGetFile( command: command )
             break
-        case CommandCode.GET_HTML_FILE:
+        case .GET_HTML_FILE:
             processGetHTMLFile( command: command )
             break
-        case CommandCode.GET_IMAGE_FILE:
+        case .GET_IMAGE_FILE:
             processGetImageFile( command: command )
             break
-        case CommandCode.GET_EXIF_IMAGE:
+        case .GET_EXIF_IMAGE:
             processGetExifImage( command: command )
             break
-        case CommandCode.GET_BASE64_BINARY:
+        case .GET_BASE64_BINARY:
             processGetBase64Binary( command: command )
             break
-        case CommandCode.GET_BASE64_RESIZED:
+        case .GET_BASE64_RESIZED:
             processGetBase64Resized( command: command )
             break
-        case CommandCode.GET_VIDEO_BASE64_BINARY:
+        case .GET_VIDEO_BASE64_BINARY:
             processGetVideoBase64Binary( command: command )
             break
-        case CommandCode.GET_VIDEO:
+        case .GET_VIDEO:
             processGetVideo( command: command )
             break
-        case CommandCode.NEW_AV_PLAYER:
+        case .NEW_AV_PLAYER:
             processNewAVPlayer( command: command )
             break
-        case CommandCode.APPEND_AV_PLAYER:
+        case .APPEND_AV_PLAYER:
             processAppendAVPlayer( command: command )
             break
-        case CommandCode.AV_PLAYER_PLAY:
+        case .AV_PLAYER_PLAY:
             processAVPlayerPlay( command: command )
             break
-        case CommandCode.AV_PLAYER_PAUSE:
+        case .AV_PLAYER_PAUSE:
             processAVPlayerPause( command: command )
             break
-        case CommandCode.AV_PLAYER_SEEK:
+        case .AV_PLAYER_SEEK:
             processAVPlayerSeek( command: command )
             break
-        case CommandCode.TAKE_VIDEO:
+        case .TAKE_VIDEO:
             checkTakeVideo( command: command )
             break
-        case CommandCode.MEDIA_PICKER:
+        case .MEDIA_PICKER:
             checkMediaPicker( command: command )
             break
-        case CommandCode.CHANGE_ICON:
+        case .CHANGE_ICON:
             proccessChangeIcon(command: command)
             break
-        case CommandCode.GET_VIDEO_FILE:
+        case .GET_VIDEO_FILE:
             processGetVideoFile( command: command )
             break
-		case CommandCode.DOWNLOAD:
+		case .DOWNLOAD:
 			processDownloadFile( command: command )
 			break
-        case CommandCode.GET_ZIP_FILE:
+        case .GET_ZIP_FILE:
             processGetZipFile( command: command )
             break
-        case CommandCode.ONDOWNLOAD,
-             CommandCode.ONDOWNLOADING,
-             CommandCode.ONDOWNLOADED:
+        case .ONDOWNLOAD,
+             .ONDOWNLOADING,
+             .ONDOWNLOADED:
             checkDownloadEvent( command: command )
             break
-        case CommandCode.MOVE_FILE:
+        case .MOVE_FILE:
             processMoveFile( command: command )
             break
-        case CommandCode.RENAME_FILE:
+        case .RENAME_FILE:
             processRenameFile( command: command )
             break
-        case CommandCode.COPY_FILE:
+        case .COPY_FILE:
             processCopyFile( command: command )
             break
-        case CommandCode.DELETE_FILE:
+        case .DELETE_FILE:
             processDeleteFile( command: command )
+            break
+        case .UNZIP:
+            processUnzip( command: command )
+            break
+        case .ON_UNZIP,
+             .ON_UNZIPPING,
+             .ON_UNZIPPED:
+            checkUnzipEvent( command: command )
             break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
@@ -128,6 +136,16 @@ class CommandProcessor {
         } else {
             command.reject( errorMessage: "[ERROR] No webview with ID of \(command.getTargetWebViewID()) found." )
         }
+        return nil
+    }
+    
+    public class func getZipFile( command: Command ) -> ZipFile? {
+        if let zipfileId = (command.getParameter() as AnyObject).value(forKeyPath: "zipfile_id") as? Int {
+            if let zipfile = ZipFile.getZipFile(zipfile_id: zipfileId ) {
+                return zipfile
+            }
+        }
+        command.reject( errorMessage: FileError.ALREADY_UNZIPPED.localizedDescription )
         return nil
     }
     
@@ -257,6 +275,10 @@ class CommandProcessor {
     
     private class func checkDownloadEvent( command: Command) {
         //let _ = CommandProcessor.getDownloadManager(command: command)
+    }
+    
+    private class func checkUnzipEvent( command: Command) {
+        let _ = CommandProcessor.getZipFile(command: command)
     }
     
     public class func processWebViewOnload( wkmanager: WebViewManager ) {
@@ -547,9 +569,31 @@ class CommandProcessor {
         if zipFile != nil {
             onSuccess(zipFile!.toDictionary(), zipFile!)
         } else {
-            command.reject( errorMessage: "Failed to get Image" )
+            command.reject( errorMessage: FileError.INEXISTENT.errorDescription )
         }
     }
+    
+    private class func processUnzip( command: Command ) {
+        checkUnzip( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func checkUnzip( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
+        
+        if let zipFile = CommandProcessor.getZipFile(command: command) {
+            zipFile.unzip(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
+                , isOverwrite: (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool
+                , password: (command.getParameter() as AnyObject).value(forKeyPath: "password") as? String
+                , onSuccess: { onSuccess(true) }
+                , onFail: { (error) in onFail( error ) }
+            )
+            return
+        }
+        command.reject( errorMessage: FileError.INVALID_PARAMETERS.localizedDescription )
+    }
+    
 
     private class func processGetFile( command: Command ) {
         checkGetFile( command: command, onSuccess: { result, raw in
@@ -1084,6 +1128,39 @@ class CommandProcessor {
             onFail( "Failed to initialize File" )
         }
     }
+    
+    
+    public class func processOnUnzip( file: ZipFile ) {
+        getCommand(commandCode: .ON_UNZIP) { (command) in
+            if let zipFile = getZipFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    command.resolve(value: true)
+                }
+            }
+        }
+    }
+    public class func processOnUnzipped( file: ZipFile, unzippedFilePath:URL ) {
+        getCommand(commandCode: .ON_UNZIPPED) { (command) in
+            if let zipFile = getZipFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    command.resolve(value: unzippedFilePath.absoluteString)
+                }
+            }
+        }
+    }
+    public class func processOnUnzipping( file: ZipFile, progress:Double ) {
+        getCommand(commandCode: .ON_UNZIPPING) { (command) in
+            if let zipFile = getZipFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    command.update(value: progress)
+                    if progress >= 1.0 {
+                        command.resolve(value: true)
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 

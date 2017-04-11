@@ -48,6 +48,10 @@ enum CommandCode:Int {
     case RENAME_FILE                = 31
     case COPY_FILE                  = 32
     case DELETE_FILE                = 33
+    case UNZIP                      = 34
+    case ON_UNZIP                   = 35
+    case ON_UNZIPPING               = 36
+    case ON_UNZIPPED                = 37
 }
 
 class Command {

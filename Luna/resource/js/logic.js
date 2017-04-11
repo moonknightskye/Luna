@@ -636,10 +636,37 @@
 
               utility.getElement( "unzip", "id" ).addEventListener( "click", function() {
                 iOS.getZipFile({
-                    filename:   "myfolder.zip"
+                    filename:   "imagefiles.zip" //myfolder.zip imagefiles.zip
                 }).then( function( file ){
                     iOS.debug( "iOS.getZipFile: ");
                     iOS.debug(file)
+
+                    file.onUnzip().then(function(result){
+                      iOS.debug("file.onUnzip: " + result)
+                    }, function(error){
+                      iOS.debug("file.onUnzip: " + error)
+                    })
+                    file.onUnzipped().then(function(result){
+                      iOS.debug("file.onUnzipped: " + result)
+                    }, function(error){
+                      iOS.debug("file.onUnzipped: " + error)
+                    })
+                    file.onUnzipping(function(progress){
+                      iOS.debug("file.onUnzipping: " + progress)
+                    }).then(function(result){
+                      iOS.debug("file.onUnzipping: " + result)
+                    }, function(error){
+                      iOS.debug("file.onUnzipping: " + error)
+                    })
+
+                    file.unzip({
+                      to: "unzipfolder"
+                    }).then(function(result){
+                      iOS.debug("file.unzip: " + result)
+                    }, function(error){
+                      iOS.debug("file.unzip: " + error)
+                    })
+
                 });
               });
 
