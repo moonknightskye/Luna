@@ -16,7 +16,7 @@
               $window.URL = $window.URL || $window.webkitURL;
 
               utility.getElement( "icon0", "id" ).addEventListener( "click", function() {
-                iOS.changeIcon({name:"default"}).then(function(result){
+                iOS.changeIcon({name:"de"}).then(function(result){
                   iOS.debug( "iOS.changeIcon: " + result );
                 },function(error){
                   iOS.debug( "iOS.changeIcon: " + error );
@@ -448,15 +448,21 @@
 
                 //   file.download({
                 //     isOverwrite   : true
-                //   }).then(function(resut){
-                //     iOS.debug("file.download: " + resut)
+                //   }).then(function(result){
+                //     iOS.debug("file.download: ok" + result)
                 //   },function(error){
-                //     iOS.debug("file.download: " + error)
+                //     iOS.debug("file.download: error" + error)
                 //   });
 
                 // }, function(error){
                 //   iOS.debug("iOS.getFile: " + error)
                 // })
+
+
+
+
+
+
 
                 iOS.getImageFile({
                   path    : "https://goo.gl/cl7FKy"
@@ -472,7 +478,7 @@
                   });
 
                   file.onDownloading(function(progress){
-                    //iOS.debug( "onDownloading: " + progress + "%" );
+                    iOS.debug( "onDownloading: " + progress + "%" );
                   }).then(function(result){
                     iOS.debug( "file.onDownloading: " + result );
                   }, function(error){
@@ -514,43 +520,48 @@
                   iOS.debug("iOS.getFile: " + error)
                 })
 
-                // iOS.getFile({
-                //   path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
-                // }).then( function(file){
 
-                //   iOS.debug("iOS.getFile: " + file.getFilePath())
 
-                //   file.onDownload().then( function(result){
-                //     iOS.debug("file.onDownload: " + result)
-                //   }, function(error){
-                //     iOS.debug("file.onDownload: " + error)
-                //   });
 
-                //   file.onDownloading(function(progress){
-                //     iOS.debug( "onDownloading: " + progress + "%" );
-                //   }).then(function(result){
-                //     iOS.debug( "file.onDownloading: " + result );
-                //   }, function(error){
-                //     iOS.debug( "file.onDownloading: " + error );
-                //   });
 
-                //   file.onDownloaded().then( function(result){
-                //     iOS.debug("file.onDownloaded: " + result)
-                //   }, function(error){
-                //     iOS.debug("file.onDownloaded: " + error)
-                //   });
 
-                //   file.download({
-                //     isOverwrite   : true
-                //   }).then(function(resut){
-                //     iOS.debug("file.download: " + resut)
-                //   },function(error){
-                //     iOS.debug("file.download: " + error)
-                //   });
+                iOS.getFile({
+                  path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
+                }).then( function(file){
 
-                // }, function(error){
-                //   iOS.debug("iOS.getFile: " + error)
-                // })
+                  iOS.debug("iOS.getFile: " + file.getFilePath())
+
+                  file.onDownload().then( function(result){
+                    iOS.debug("file.onDownload: " + result)
+                  }, function(error){
+                    iOS.debug("file.onDownload: " + error)
+                  });
+
+                  file.onDownloading(function(progress){
+                    iOS.debug( "onDownloading: " + progress + "%" );
+                  }).then(function(result){
+                    iOS.debug( "file.onDownloading: " + result );
+                  }, function(error){
+                    iOS.debug( "file.onDownloading: " + error );
+                  });
+
+                  file.onDownloaded().then( function(result){
+                    iOS.debug("file.onDownloaded: " + result)
+                  }, function(error){
+                    iOS.debug("file.onDownloaded: " + error)
+                  });
+
+                  file.download({
+                    isOverwrite   : true
+                  }).then(function(resut){
+                    iOS.debug("file.download: " + resut)
+                  },function(error){
+                    iOS.debug("file.download: " + error)
+                  });
+
+                }, function(error){
+                  iOS.debug("iOS.getFile: " + error)
+                })
 
 
 

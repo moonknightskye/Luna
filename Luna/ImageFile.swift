@@ -120,6 +120,9 @@ class ImageFile: File {
                 self.asset = asset
             }
             return
+		case .ICLOUD_TYPE:
+			print("IMPLELEMNT THIS")
+			break
         }
         super.init()
     }
@@ -168,7 +171,9 @@ class ImageFile: File {
 					} else {
 						isValid = false
 					}
-
+					break
+				case .ICLOUD_TYPE:
+					print("implement this")
 					break
 //				default:
 //					isValid = false

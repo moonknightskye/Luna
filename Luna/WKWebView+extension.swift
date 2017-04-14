@@ -87,6 +87,7 @@ extension WKWebView {
             self.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
             self.removeObserver(self, forKeyPath: #keyPath(WKWebView.loading))
         }
+        //self.load(url: URL(string:"about:blank")!)
         super.removeFromSuperview()
         if onSuccess != nil {
             onSuccess!()

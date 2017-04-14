@@ -15,4 +15,5 @@ final class Shared: NSObject {
     var UIApplication:UIApplication!
     var ViewController:ViewController!
     var DeviceID = UIDevice.current.identifierForVendor!.uuidString
+	var iCloudAvailable = false
 }

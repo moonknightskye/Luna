@@ -75,7 +75,7 @@ class FileCollection {
 
 		let filepath = FileManager.getDocumentsDirectoryPath()!.appendingPathComponent(fileName)
 		try Zip.zipFiles(paths: paths, zipFilePath: filepath, password: nil, progress: { (progress) in
-			print( progress )
+			print( progress*100 )
 		})
 	}
 

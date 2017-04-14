@@ -82,16 +82,17 @@ class DownloadManager {
     
     func processDownloadedFile( onSuccess:@escaping ((URL)->()), onFail:@escaping ((String)->()) ) {
         if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: self.savePath) {
-            let file = FileManager.generateDocumentFilePath(fileName: self.suggestedFilename!, relativePath: self.savePath )
-            if FileManager.isExists(url: file ) {
-                if isOverwrite! {
-                    if !FileManager.deleteFile(filePath: file) {
-                        onFail( FileError.CANNOT_DELETE.localizedDescription )
-                    }
-                } else {
-                    onFail( FileError.ALREADY_EXISTS.localizedDescription )
-                }
-            }
+			if let file = FileManager.generateDocumentFilePath(fileName: self.suggestedFilename!, relativePath: self.savePath ) {
+				if FileManager.isExists(url: file ) {
+					if isOverwrite! {
+						if !FileManager.deleteFile(filePath: file) {
+							onFail( FileError.CANNOT_DELETE.localizedDescription )
+						}
+					} else {
+						onFail( FileError.ALREADY_EXISTS.localizedDescription )
+					}
+				}
+			}
             if !FileManager.isExists(url: relativeURL) {
                 if !FileManager.createDirectory(absolutePath: relativeURL.path) {
                     onFail( FileError.CANNOT_CREATE.localizedDescription )

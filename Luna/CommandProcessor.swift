@@ -896,6 +896,7 @@ class CommandProcessor {
     
     
     //PLEASE NOTE THAT THIS PROCCESS WONT RUN ON ITS OWN WITHOUT USER INTERACTION
+    //DOESNT WORK PROPERLY ON iPad, update or delete Contents.json in Assets catalog
     private class func proccessChangeIcon( command: Command ) {
         checkChangeIcon( command: command, onSuccess: { result in
             command.resolve( value: result )
@@ -904,23 +905,24 @@ class CommandProcessor {
         })
     }
     private class func checkChangeIcon( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let name = (command.getParameter() as AnyObject).value(forKeyPath: "name") as? String {
-            var iconName:String?
-            if name != "default" {
-                iconName = name
-            }
-            Shared.shared.UIApplication.setAlternateIconName(iconName) { (error) in
-                if error != nil {
-                    onFail( error!.localizedDescription )
-                    return
-                } else {
-                    onFail( "unknown error happend" )
-                    return
+        if Shared.shared.UIApplication.supportsAlternateIcons {
+            if let name = (command.getParameter() as AnyObject).value(forKeyPath: "name") as? String {
+                var iconName:String?
+                if name != "default" {
+                    iconName = name
                 }
+                Shared.shared.UIApplication.setAlternateIconName(iconName) { (error) in
+                    if error != nil {
+                        onFail( error!.localizedDescription )
+                    } else {
+                        onSuccess( true )
+                    }
+                }
+            } else {
+                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
             }
-            onSuccess( true )
         } else {
-            onFail( "please set name parameter" )
+            onFail("Device doesn't support alternate icons")
         }
     }
     

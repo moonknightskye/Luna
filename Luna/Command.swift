@@ -53,6 +53,13 @@ enum CommandCode:Int {
     case ON_UNZIPPING               = 36
     case ON_UNZIPPED                = 37
 }
+enum CommandPriority:Int {
+    case CRITICAL                   = 0         //sync Instant execution
+    case HIGH                       = 1         //async instantenious (animations, ui change)
+    case NORMAL                     = 2         //async few seconds (ui events)
+    case LOW                        = 3         //async download, save data
+    case BACKGROUND                 = 4         //async backups/sync
+}
 
 class Command {
     
@@ -60,6 +67,7 @@ class Command {
 
     private var commandID:Int = -1
     private var commandCode:CommandCode = CommandCode.UNDEFINED
+    private var priority:CommandPriority = .NORMAL
     private var sourceWebViewID:Int = -1
     private var targetWebViewID:Int = -1
     private var callbackMethod:String = "fallback"
@@ -73,6 +81,7 @@ class Command {
         
         setCommandID( commandID: command.value(forKey: "command_id") as! Int )
         setCommandCode( commandCode: command.value(forKey: "command_code") as! Int )
+        setPriority( priority: CommandPriority(rawValue: command.value(forKey: "priority") as! Int)! )
         setSourceWebViewID( sourceWebViewID: command.value(forKey: "source_webview_id") as! Int )
         setTargetWebViewID( targetWebViewID: command.value(forKey: "target_webview_id") as! Int )
         setParameter( parameter: command.value(forKey: "parameter") as! NSObject )
@@ -92,6 +101,13 @@ class Command {
         if parameter != nil {
             setParameter( parameter:parameter! )
         }
+    }
+    
+    func setPriority( priority: CommandPriority ) {
+        self.priority = priority
+    }
+    func getPriority() -> CommandPriority {
+        return self.priority
     }
     
     public func resolve( value:Any?=true, raw:Any?=nil ) {

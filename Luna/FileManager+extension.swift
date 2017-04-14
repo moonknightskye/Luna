@@ -37,8 +37,8 @@ extension FileManager {
         return false
     }
     
-    public class func generateDocumentFilePath( fileName:String, relativePath:String?=nil ) -> URL {
-        return URL( fileURLWithPath: getDocumentsDirectoryPath( relative:relativePath )!.path ).appendingPathComponent( fileName )
+    public class func generateDocumentFilePath( fileName:String, relativePath:String?=nil ) -> URL? {
+		return getDocumentsDirectoryPath( relative:relativePath )?.appendingPathComponent(fileName)
     }
     
     public class func copyFile( filePath:URL, relativeTo:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
@@ -56,7 +56,7 @@ extension FileManager {
     
     public class func copyFile( from:URL, to:URL, onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         do {
-            try FileManager.default.copyItem(atPath: from.path, toPath: to.path)
+            try FileManager.default.copyItem(at: from, to: to)
             if onSuccess != nil {
                 onSuccess!( to )
             }
@@ -88,14 +88,18 @@ extension FileManager {
         } else {
             fileName = filePath.path.substring(from: filePath.path.lastIndexOf(target: "/")! + 1, to: filePath.path.length)
         }
-        let toURL = generateDocumentFilePath( fileName:fileName, relativePath:relative )
-        return moveFile( from:filePath, to:toURL, onSuccess:onSuccess, onFail:onFail )
-    }
+		if let toURL = generateDocumentFilePath( fileName:fileName, relativePath:relative ) {
+			return moveFile( from:filePath, to:toURL, onSuccess:onSuccess, onFail:onFail )
+		}
+		return false
+	}
     
     public class func moveFile( document:String, relativeFrom:String?=nil, relativeTo:String?=nil, onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
-        let fromURL = generateDocumentFilePath( fileName:document, relativePath:relativeFrom )
-        let toURL = generateDocumentFilePath( fileName:document, relativePath:relativeTo )
-        return moveFile( from:fromURL, to:toURL, onSuccess:onSuccess, onFail:onFail )
+        if let fromURL = generateDocumentFilePath( fileName:document, relativePath:relativeFrom ),
+			let toURL = generateDocumentFilePath( fileName:document, relativePath:relativeTo ) {
+			return moveFile( from:fromURL, to:toURL, onSuccess:onSuccess, onFail:onFail )
+		}
+		return false
     }
     
     public class func moveFile( from:URL, to:URL, onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
@@ -128,7 +132,14 @@ extension FileManager {
             } else {
                 return URL( fileURLWithPath:Bundle.main.bundlePath )
             }
-        }
+		} else if pathType == .ICLOUD_TYPE {
+			if let path = self.default.url(forUbiquityContainerIdentifier: nil) {
+				if relative != nil {
+					return path.appendingPathComponent(relative!)
+				}
+				return path
+			}
+		}
         return nil
     }
     
@@ -205,8 +216,13 @@ extension FileManager {
     }
     
     public class func deleteDocumentFile( fileName: String, relative:String?=nil, onSuccess:(()->())?=nil, onFail:((String)->())?=nil  ) -> Bool {
-        let filePath = generateDocumentFilePath(fileName: fileName, relativePath: relative)
-        return deleteFile( filePath:filePath, onSuccess:onSuccess, onFail:onFail )
+		if let filePath = generateDocumentFilePath(fileName: fileName, relativePath: relative) {
+			return deleteFile( filePath:filePath, onSuccess:onSuccess, onFail:onFail )
+		}
+		if onFail != nil {
+			onFail!(FileError.UNKNOWN_ERROR.localizedDescription)
+		}
+		return false
     }
     
     public class func deleteFile( filePath: URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ) -> Bool {
@@ -239,4 +255,33 @@ extension FileManager {
         }
         return false
     }
+
+	public class func initiCloudDirectory() {
+		if let iCloudDocumentURL = getDocumentsDirectoryPath(pathType: .ICLOUD_TYPE) {
+			Shared.shared.iCloudAvailable = true
+
+			if !isExists(url: iCloudDocumentURL) {
+				let _ = createDirectory(absolutePath: iCloudDocumentURL.absoluteString)
+			}
+            
+            //Download & sync files
+            if let cloudFileCollection = getDocumentsFileList( path: iCloudDocumentURL ) {
+                for (_, cloudFile) in cloudFileCollection.enumerated() {
+                    if self.default.isUbiquitousItem(at: cloudFile) {
+                        do {
+                            try self.default.startDownloadingUbiquitousItem(at: cloudFile)
+                        } catch{}
+                    }
+                }
+            }
+            
+            //THIS METHOD WILL EVICT ITEMS
+            //try FileManager.default.evictUbiquitousItem(at: image)
+            
+            //https://developer.apple.com/reference/foundation/filemanager/1413989-setubiquitous
+            //Sets whether the item at the specified URL should be stored in the cloud.
+            //func setUbiquitous(_ flag: Bool, itemAt url: URL, destinationURL: URL) throws
+            //Specify true to move the item to iCloud or false to remove it from iCloud (if it is there currently).
+        }
+	}
 }

@@ -89,6 +89,7 @@ public enum FilePathType:String {
     case BUNDLE_TYPE    = "bundle"
     case URL_TYPE       = "url"
     case ASSET_TYPE     = "asset"
+	case ICLOUD_TYPE	= "icloud"
 }
 
 public enum FileType {
@@ -321,7 +322,7 @@ class File {
             if let filePath = self.getFilePath() {
                 return filePath.absoluteString.isValidURL()
             }
-        case .BUNDLE_TYPE, .DOCUMENT_TYPE:
+        case .BUNDLE_TYPE, .DOCUMENT_TYPE, .ICLOUD_TYPE:
             if isFolderExists() {
                 if let filePath = self.getFilePath() {
                     return FileManager.isExists(url: filePath)
@@ -499,22 +500,24 @@ class File {
             return false
         }
         if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: relative) {
-            let file = FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: relative )
-            if FileManager.isExists(url: file ) {
-                if isOverwrite! {
-                    if !FileManager.deleteFile(filePath: file) {
-                        if onFail != nil {
-                            onFail!( FileError.CANNOT_DELETE.localizedDescription )
-                        }
-                        return false
-                    }
-                } else {
-                    if onFail != nil {
-                        onFail!( FileError.ALREADY_EXISTS.localizedDescription )
-                    }
-                    return false
-                }
-            }
+			if let file = FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: relative ) {
+				if FileManager.isExists(url: file ) {
+					if isOverwrite! {
+						if !FileManager.deleteFile(filePath: file) {
+							if onFail != nil {
+								onFail!( FileError.CANNOT_DELETE.localizedDescription )
+							}
+							return false
+						}
+					} else {
+						if onFail != nil {
+							onFail!( FileError.ALREADY_EXISTS.localizedDescription )
+						}
+						return false
+					}
+				}
+			}
+
             if !FileManager.isExists(url: relativeURL) {
                 if !FileManager.createDirectory(absolutePath: relativeURL.path) {
                     if onFail != nil {
