@@ -140,10 +140,12 @@ class CommandProcessor {
     }
     
     public class func getZipFile( command: Command ) -> ZipFile? {
-        if let zipfileId = (command.getParameter() as AnyObject).value(forKeyPath: "zipfile_id") as? Int {
-            if let zipfile = ZipFile.getZipFile(zipfile_id: zipfileId ) {
-                zipfile.update(dict: ((command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary)!)
-                return zipfile
+        if let file = (command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary {
+            if let fileId = file.value(forKey: "file_id") as? Int {
+                if let zipfile = ZipFile.getZipFile(fileId: fileId ) {
+                    zipfile.update(dict: file)
+                    return zipfile
+                }
             }
         }
         command.reject( errorMessage: FileError.ALREADY_UNZIPPED.localizedDescription )
@@ -350,7 +352,7 @@ class CommandProcessor {
                         case PickerType.PHOTO_LIBRARY:
                             do {
                                 if let imageURL = media![UIImagePickerControllerReferenceURL] as? URL {
-                                    let imageFile = try ImageFile(assetURL: imageURL)
+                                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL)
                                     command.resolve(value: imageFile.toDictionary(), raw: imageFile)
                                 }
                             } catch let error as NSError {
@@ -361,7 +363,7 @@ class CommandProcessor {
                             let exifData = NSMutableDictionary(dictionary: media![UIImagePickerControllerMediaMetadata] as! NSDictionary )
                             if let takenImage = media![UIImagePickerControllerOriginalImage] as? UIImage {
                                 do {
-                                    let imageFile = try ImageFile( uiimage:takenImage, exif:exifData, savePath:"CACHE" )
+                                    let imageFile = try ImageFile( fileId:File.generateID(), uiimage:takenImage, exif:exifData, savePath:"CACHE" )
                                     command.resolve(value: imageFile.toDictionary(), raw: imageFile)
                                 } catch let error as NSError {
                                     command.reject( errorMessage: error.localizedDescription )
@@ -419,7 +421,7 @@ class CommandProcessor {
         CommandProcessor.getCommand(commandCode: CommandCode.TAKE_PHOTO) { (command) in
             if imageURL != nil {
                 do {
-                    let imageFile = try ImageFile(assetURL: imageURL!)
+                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL!)
                     command.resolve(value: imageFile.toDictionary(), raw: imageFile)
                 } catch let error as NSError {
                     command.reject(errorMessage: error.localizedDescription)
@@ -453,7 +455,7 @@ class CommandProcessor {
         CommandProcessor.getCommand(commandCode: CommandCode.TAKE_VIDEO) { (command) in
             if imageURL != nil {
                 do {
-                    let imageFile = try ImageFile(assetURL: imageURL!)
+                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL!)
                     command.resolve(value: imageFile.toDictionary(), raw: imageFile)
                 } catch let error as NSError {
                     command.reject(errorMessage: error.localizedDescription)

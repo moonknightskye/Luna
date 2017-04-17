@@ -51,18 +51,18 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         CommandProcessor.queue(command: commandGetFile)
         
 
-        do {
-            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
-            filecol.zip(toFileName: "matozip.zip", onProgress: { (progress) in
-                print( progress )
-            }, onSuccess: { (zipFile) in
-                print(zipFile.toDictionary())
-            }, onFail: { (errorMessage) in
-                print(errorMessage)
-            })
-        } catch let error as NSError {
-            print(error.localizedDescription)
-        }
+//        do {
+//            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
+//            filecol.zip(toFileName: "matozip.zip", onProgress: { (progress) in
+//                print( progress )
+//            }, onSuccess: { (zipFile) in
+//                print(zipFile.toDictionary())
+//            }, onFail: { (errorMessage) in
+//                print(errorMessage)
+//            })
+//        } catch let error as NSError {
+//            print(error.localizedDescription)
+//        }
         //print(UserDefaults.standard.value(forKeyPath: "name_preference"))
         
         

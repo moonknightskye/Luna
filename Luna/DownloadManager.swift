@@ -121,7 +121,6 @@ class DownloadManager {
 			self.downloadFile.setFilePath(filePath: result)
 			self.downloadFile.setPath(path: self.savePath)
 			self.downloadFile.setPathType(pathType: .DOCUMENT_TYPE)
-
 			CommandProcessor.processOnDownloaded( manager: self, result: self.downloadFile.toDictionary() )
 		}, onFail: { (errorMessage) in
 			CommandProcessor.processOnDownloaded( manager: self, errorMessage:errorMessage )

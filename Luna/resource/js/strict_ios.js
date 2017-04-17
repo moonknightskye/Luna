@@ -665,10 +665,6 @@
     function ZipFile( param ) {
         var file = {};
 
-        var _INTERNAL_DATA = {
-            id              : param.zipfile_id
-        };
-
         function init(){};
 
         file.greet = function(){
@@ -680,7 +676,6 @@
                 command_code    : COMMAND.ON_UNZIP,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id,
                     file        : this.toJSON()
                 }
             });
@@ -691,7 +686,6 @@
                 command_code    : COMMAND.ON_UNZIPPED,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id,
                     file        : this.toJSON()
                 }
             });
@@ -702,7 +696,6 @@
                 command_code    : COMMAND.ON_UNZIPPING,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id,
                     file        : this.toJSON()
                 }
             });
@@ -715,7 +708,6 @@
                 command_code    : COMMAND.UNZIP,
                 priority 		: CommandPriority.BACKGROUND,
                 parameter       : {
-                    zipfile_id  : _INTERNAL_DATA.id,
                     file        : this.toJSON(),
                     to          : param.to,
                     password    : param.password,
@@ -823,6 +815,7 @@
         	isClass: true
         };
         var _INTERNAL_DATA = {
+            file_id             : param.file_id,
             filename            : param.filename,
             path                : param.path,         // folder/name, http://www.mysite.com
             path_type           : param.path_type || "document",    //url, bundle, document
@@ -845,9 +838,14 @@
         	iOS.debug("HELLO1");
         };
 
+        file.getID = function() {
+            return _INTERNAL_DATA.file_id;
+        };
+
         file.toJSON = function(){
         	return {
                 filename        : this.getFilename(),
+                file_id         : this.getID(),
                 path            : this.getPath(),
                 path_type       : this.getPathType(),
                 file_path       : this.getFilePath(),

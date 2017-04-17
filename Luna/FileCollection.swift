@@ -19,22 +19,20 @@ class FileCollection {
     
     
     init( relative:String, pathType:FilePathType?=nil, filePath:URL?=nil ) throws {
-		self.path = relative
+		self.setPath(path: relative)
 
         if pathType != nil {
-            self.pathType = pathType!
+            self.setPathType(pathType: pathType!)
         }
         if filePath != nil {
-            self.filePath = filePath!
-        } else {
-            self.filePath = FileManager.getDocumentsDirectoryPath( pathType: self.pathType, relative: self.path )
+            self.setFilePath(filePath: filePath!)
         }
 
-		if !FileManager.isExists(url: self.filePath!) {
+		if !FileManager.isExists(url: self.getFilePath()!) {
 			throw FileError.INEXISTENT
 		}
         
-        if let fileCollection = FileManager.getDocumentsFileList( path: self.filePath! ) {
+        if let fileCollection = FileManager.getDocumentsFileList( path: self.getFilePath()! ) {
             for (_, file) in fileCollection.enumerated() {
                 if file.absoluteString.endsWith(string: "/") {
                     self.DIRECTORIES.append(file)
@@ -43,25 +41,66 @@ class FileCollection {
 					let fileExt = File.getFileExtension(filename: file.absoluteString )
 					switch( File.getFileType(fileExt:fileExt) ) {
                     case .ZIP_FILE:
-						fileObj = ZipFile( path: self.path, filePath: file )
+						fileObj = ZipFile( fileId:File.generateID(), path: self.path, filePath: file )
 						break
 					case .IMAGE_FILE:
-						fileObj = ImageFile( path: self.path, filePath: file )
+						fileObj = ImageFile( fileId:File.generateID(), path: self.path, filePath: file )
 						break
 					case .VIDEO_FILE:
-						fileObj = VideoFile( path: self.path, filePath: file )
+						fileObj = VideoFile( fileId:File.generateID(), path: self.path, filePath: file )
 						break
 					case .HTML_FILE:
-						fileObj = HtmlFile( path: self.path, filePath: file )
+						fileObj = HtmlFile( fileId:File.generateID(), path: self.path, filePath: file )
 						break
                     default:
-						fileObj = File( path: self.path, filePath: file )
+						fileObj = File( fileId:File.generateID(), path: self.path, filePath: file )
                         break
                     }
                     self.FILES.append( fileObj! )
                 }
             }
         }
+    }
+    
+    public func setPathType( pathType: FilePathType ) {
+        self.pathType = pathType
+    }
+    public func setPathType( pathType: String ) {
+        if let ptype = FilePathType(rawValue: pathType) {
+            self.pathType = ptype
+        }
+    }
+    
+    func setFilePath( filePath: URL) {
+        self.filePath = filePath
+    }
+    func getFilePath() -> URL? {
+        if self.filePath == nil {
+            self.filePath = self.generateFilePath()
+        }
+        return self.filePath
+    }
+    
+    public func setPath( path:String ) {
+        self.path = path
+    }
+    public func getPath() -> String? {
+        return self.path
+    }
+    
+    private func generateFilePath() -> URL? {
+        switch self.pathType {
+        case FilePathType.BUNDLE_TYPE:
+            if let url = Bundle.main.path(forResource: nil, ofType: nil, inDirectory: self.getPath()) {
+                return URL( fileURLWithPath:url )
+            }
+            break
+        case FilePathType.DOCUMENT_TYPE:
+            return FileManager.getDocumentsDirectoryPath( pathType: self.pathType, relative: self.path )
+        default:
+            break
+        }
+        return nil
     }
 
 	func zip( toFileName:String, onProgress:@escaping((Double)->()), onSuccess:@escaping((ZipFile)->()), onFail:@escaping((String)->())) {
@@ -85,7 +124,7 @@ class FileCollection {
 
 				if progress >= 1.0 {
 					isFinished = true
-					onSuccess( ZipFile(document:toFileName, filePath: filepath) )
+					onSuccess( ZipFile( fileId:File.generateID(), document:toFileName, filePath: filepath) )
 				}
 
 			})

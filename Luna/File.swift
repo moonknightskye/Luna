@@ -102,27 +102,33 @@ public enum FileType {
 
 class File {
     
+    private var fileId:Int?
     private var fileName:String?
     private var path:String?
     private var pathType:FilePathType = FilePathType.DOCUMENT_TYPE
     private var filePath:URL!
     private var fileExtension:FileExtention?
+    static var counter = 0;
+    
     
     init(){}
     
-    public init( asset:String, filePath:URL ) {
+    public init( fileId:Int, asset:String, filePath:URL ) {
+        self.setID(fileId: fileId)
         self.setFileName(fileName: asset)
         self.setPathType(pathType: FilePathType.ASSET_TYPE )
         self.setFilePath(filePath: filePath )
     }
     
-    public init( document:String, filePath: URL ) {
+    public init( fileId:Int, document:String, filePath: URL ) {
+        self.setID(fileId: fileId)
         self.setFileName(fileName: document)
         self.setPathType(pathType: FilePathType.DOCUMENT_TYPE)
         self.setFilePath(filePath: filePath)
     }
     
-    public init( document:String, path:String?=nil, filePath:URL?=nil ) throws {
+    public init( fileId:Int, document:String, path:String?=nil, filePath:URL?=nil ) throws {
+        self.setID(fileId: fileId)
         self.setFileName(fileName: document)
         self.setPathType(pathType: FilePathType.DOCUMENT_TYPE)
         self.setPath(path: path)
@@ -132,13 +138,14 @@ class File {
         }
     }
     
-    
-    public init( bundle:String, filePath: URL ) {
+    public init( fileId:Int, bundle:String, filePath: URL ) {
+        self.setID(fileId: fileId)
         self.setFileName(fileName: bundle)
         self.setPathType(pathType: FilePathType.BUNDLE_TYPE)
         self.setFilePath(filePath: filePath)
     }
-    public init( bundle:String, path:String?=nil, filePath:URL?=nil ) throws {
+    public init( fileId:Int, bundle:String, path:String?=nil, filePath:URL?=nil ) throws {
+        self.setID(fileId: fileId)
         self.setFileName(fileName: bundle)
         self.setPathType(pathType: FilePathType.BUNDLE_TYPE)
         self.setPath(path: path)
@@ -148,7 +155,8 @@ class File {
         }
     }
     
-    public init( path:String?=nil, filePath: URL ) {
+    public init( fileId:Int, path:String?=nil, filePath: URL ) {
+        self.setID(fileId: fileId)
         self.setFilePath(filePath: filePath)
         self.setPath(path: path)
         self.setPathType(pathType: File.getFilePathType( filePath: filePath ).rawValue)
@@ -157,7 +165,7 @@ class File {
         }
     }
     
-    public init( url:String ) throws {
+    public init( fileId:Int, url:String ) throws {
 		if url.isValidURL() {
             if let filePath = URL(string: url) {
                 self.setFilePath(filePath: filePath)
@@ -169,6 +177,7 @@ class File {
                 self.setFileName(fileName: filename)
             }
             self.setPathType(pathType: FilePathType.URL_TYPE)
+            self.setID(fileId: fileId)
         } else {
             throw FileError.INVALID_PARAMETERS
         }
@@ -180,13 +189,14 @@ class File {
 
         let fileName:String? = file.value(forKeyPath: "filename") as? String
         let path:String? = file.value(forKeyPath: "path") as? String
+        let fileId:Int! = file.value(forKeyPath: "file_id") as? Int ?? File.generateID()
         
         if let pathType = file.value(forKeyPath: "path_type") as? String {
             if let filePathType = FilePathType( rawValue: pathType ) {
                 switch filePathType {
                 case FilePathType.BUNDLE_TYPE:
                     if fileName != nil {
-                        try self.init( bundle: fileName!, path:path)
+                        try self.init( fileId:fileId, bundle: fileName!, path:path)
                         return
                     } else {
                         isValid = false
@@ -194,7 +204,7 @@ class File {
                     break
                 case FilePathType.DOCUMENT_TYPE:
                     if fileName != nil {
-                        try self.init( document: fileName!, path:path )
+                        try self.init( fileId:fileId, document: fileName!, path:path )
                         return
                     } else {
                         isValid = false
@@ -202,7 +212,7 @@ class File {
                     break
                 case FilePathType.URL_TYPE:
                     if path != nil {
-                        try self.init( url: path! )
+                        try self.init( fileId:fileId, url: path! )
 						return
                     }else {
                         isValid = false
@@ -248,6 +258,24 @@ class File {
         }
     }
     
+    func setID(fileId: Int) {
+        if self.fileId == nil {
+            self.fileId = fileId
+        } else {
+            print("[ERROR] File ID already set")
+        }
+    }
+    func getID() -> Int {
+        if self.fileId == nil {
+            self.fileId = File.generateID()
+        }
+        return self.fileId!
+    }
+    public class func generateID() -> Int {
+        File.counter += 1
+        return File.counter
+    }
+    
 //    public func setBase64Value( base64:String ) {
 //        self.base64Value = base64
 //    }
@@ -270,6 +298,7 @@ class File {
             dict.setValue(filePath.absoluteString, forKey: "file_path")
         }
         dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
+        dict.setValue(self.getID(), forKey: "file_id")
         return dict
     }
     
@@ -360,16 +389,12 @@ class File {
     private func generateFilePath() -> URL? {
         switch self.pathType {
         case FilePathType.BUNDLE_TYPE:
-            if self.fileName == nil {
+            if self.getFileName() == nil {
                 return nil
             }
-            var filename = self.fileName!.substring(from: 0, to: self.fileName!.indexOf(target: "."));
+            let filename = self.getFileName()!.substring(from: 0, to: self.getFileName()!.indexOf(target: "."));
             
-            if self.path != nil {
-                filename = self.path! + "/" + filename
-            }
-            
-            if let url = Bundle.main.path(forResource: filename, ofType: self.getFileExtension().rawValue) {
+            if let url = Bundle.main.path(forResource: filename, ofType: self.getFileExtension().rawValue, inDirectory: self.getPath()!) {
                 return URL( fileURLWithPath:url )
             }
             break
@@ -377,7 +402,7 @@ class File {
             if self.fileName == nil {
                 return nil
             }
-            return FileManager.generateDocumentFilePath(fileName: self.fileName!, relativePath: self.path)
+            return FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: self.getPath())
         default:
             break
         }

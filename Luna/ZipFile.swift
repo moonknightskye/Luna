@@ -12,9 +12,9 @@ import Zip
 class ZipFile: File {
 
     static var LIST:[ZipFile] = [ZipFile]()
-    static var counter = 0;
+    //static var counter1 = 0;
     
-    private var zipfile_id = ZipFile.counter
+    //private var zipfile_id = ZipFile.counter1
 	private var unzipPath:String = SystemFilePath.DOCUMENT.rawValue
     private var password:String?
     private var isOverwrite:Bool = false
@@ -23,60 +23,33 @@ class ZipFile: File {
 		super.init()
 	}
 
-	override init( document:String, filePath: URL) {
-		super.init( document:document, filePath:filePath )
+	override init( fileId:Int, document:String, filePath: URL) {
+        super.init( fileId:fileId, document:document, filePath:filePath )
         add()
 	}
 
-	override init( document:String, path:String?=nil, filePath:URL?=nil ) throws {
-		try super.init(document: document, path: path, filePath: filePath)
+	override init( fileId:Int, document:String, path:String?=nil, filePath:URL?=nil ) throws {
+		try super.init( fileId:fileId, document: document, path: path, filePath: filePath)
         add()
 	}
 
-	override init( bundle:String, filePath: URL ) {
-		super.init(bundle: bundle, filePath: filePath)
+	override init( fileId:Int, bundle:String, filePath: URL ) {
+		super.init( fileId:fileId, bundle: bundle, filePath: filePath)
         add()
 	}
-    override init( bundle:String, path:String?=nil, filePath:URL?=nil) throws {
-		try super.init(bundle: bundle, path: path, filePath: filePath)
+    override init( fileId:Int, bundle:String, path:String?=nil, filePath:URL?=nil) throws {
+		try super.init( fileId:fileId, bundle: bundle, path: path, filePath: filePath)
         add()
 	}
 
-	override init ( path:String?=nil, filePath: URL ) {
-		super.init(path: path, filePath: filePath)
+	override init ( fileId:Int, path:String?=nil, filePath: URL ) {
+		super.init( fileId:fileId, path: path, filePath: filePath)
 		add()
 	}
     
-    override init( url:String ) throws {
-        try super.init( url:url )
+    override init( fileId:Int, url:String ) throws {
+        try super.init( fileId:fileId, url:url )
         add()
-    }
-    
-    private func add() {
-        ZipFile.counter += 1;
-        ZipFile.LIST.append( self )
-    }
-    
-    public class func getZipFile( zipfile_id:Int ) -> ZipFile? {
-        for (_, zipfile) in ZipFile.LIST.enumerated() {
-            if  zipfile.getID() == zipfile_id{
-                return zipfile
-            }
-        }
-        return nil
-    }
-    
-    func remove() {
-        ZipFile.remove( file: self )
-        print("Removed zipped file \(self.getID())")
-    }
-    
-    public class func remove( file: ZipFile ) {
-        for ( index, zipfile) in ZipFile.LIST.enumerated() {
-            if zipfile === file{
-                ZipFile.LIST.remove(at: index)
-            }
-        }
     }
 
     convenience init( file:NSDictionary ) throws {
@@ -85,6 +58,8 @@ class ZipFile: File {
         let fileName:String? = file.value(forKeyPath: "filename") as? String
         let path:String? = file.value(forKeyPath: "path") as? String
         let filePath:String? = file.value(forKeyPath: "file_path") as? String
+        let fileId:Int! = file.value(forKeyPath: "file_id") as? Int ?? File.generateID()
+        
         var filePathURL:URL? = nil
         if filePath != nil {
             filePathURL = URL(string: filePath!)!
@@ -95,7 +70,7 @@ class ZipFile: File {
                 switch filePathType {
                 case FilePathType.BUNDLE_TYPE:
                     if fileName != nil {
-                        try self.init( bundle: fileName!, path:path, filePath:filePathURL)
+                        try self.init( fileId:fileId, bundle: fileName!, path:path, filePath:filePathURL)
                         return
                     } else {
                         isValid = false
@@ -103,7 +78,7 @@ class ZipFile: File {
                     break
                 case FilePathType.DOCUMENT_TYPE:
                     if fileName != nil {
-                        try self.init( document: fileName!, path:path, filePath:filePathURL )
+                        try self.init( fileId:fileId, document: fileName!, path:path, filePath:filePathURL )
                         return
                     } else {
                         isValid = false
@@ -111,7 +86,7 @@ class ZipFile: File {
                     break
                 case FilePathType.URL_TYPE:
                     if path != nil {
-                        try self.init( url: path! )
+                        try self.init( fileId:fileId, url: path! )
                         return
                     }else {
                         isValid = false
@@ -132,6 +107,33 @@ class ZipFile: File {
             throw FileError.INVALID_PARAMETERS
         }
         self.init()
+    }
+    
+    private func add() {
+        //ZipFile.counter1 += 1;
+        ZipFile.LIST.append( self )
+    }
+    
+    public class func getZipFile( fileId:Int ) -> ZipFile? {
+        for (_, zipfile) in ZipFile.LIST.enumerated() {
+            if  zipfile.getID() == fileId{
+                return zipfile
+            }
+        }
+        return nil
+    }
+    
+    func remove() {
+        ZipFile.remove( file: self )
+        print("Removed zipped file \(self.getID())")
+    }
+    
+    public class func remove( file: ZipFile ) {
+        for ( index, zipfile) in ZipFile.LIST.enumerated() {
+            if zipfile === file{
+                ZipFile.LIST.remove(at: index)
+            }
+        }
     }
     
     func unzip( to:String?=nil, isOverwrite:Bool?=false, password:String?="", onSuccess:@escaping(()->()), onFail:((String)->()) ) {
@@ -185,28 +187,28 @@ class ZipFile: File {
         remove()
     }
     
-    public override func toDictionary() -> NSDictionary {
-        let dict = NSMutableDictionary()
-        if let filename = self.getFileName() {
-            dict.setValue(filename, forKey: "filename")
-        }
-        if let path = self.getPath() {
-            dict.setValue(path, forKey: "path")
-        }
-        if let pathType = self.getPathType() {
-            dict.setValue(pathType.rawValue, forKey: "path_type")
-        }
-        if let filePath = self.getFilePath() {
-            dict.setValue(filePath.absoluteString, forKey: "file_path")
-        }
-        dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
-        dict.setValue(self.zipfile_id, forKey: "zipfile_id")
-        return dict
-    }
-    
-    func getID() -> Int {
-        return self.zipfile_id
-    }
+//    public override func toDictionary() -> NSDictionary {
+//        let dict = NSMutableDictionary()
+//        if let filename = self.getFileName() {
+//            dict.setValue(filename, forKey: "filename")
+//        }
+//        if let path = self.getPath() {
+//            dict.setValue(path, forKey: "path")
+//        }
+//        if let pathType = self.getPathType() {
+//            dict.setValue(pathType.rawValue, forKey: "path_type")
+//        }
+//        if let filePath = self.getFilePath() {
+//            dict.setValue(filePath.absoluteString, forKey: "file_path")
+//        }
+//        dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
+//        dict.setValue(self.zipfile_id, forKey: "zipfile_id")
+//        return dict
+//    }
+//    
+//    override func getID() -> Int {
+//        return self.zipfile_id
+//    }
 
 	func setUnzipPath( unzipPath:String ) {
 		self.unzipPath = unzipPath
