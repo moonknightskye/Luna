@@ -142,8 +142,8 @@
                 priority        : CommandPriority.LOW,
 	        	parameter: 		parameter
 	        });
-	        command.onResolve( function( file_path ) {
-	        	parameter.file_path = file_path;
+	        command.onResolve( function( result ) {
+	        	parameter = utility.mergeJSON( result, parameter );
 	         	return new File( parameter );
 	        });
 	        return CommandProcessor.queue( command );
@@ -156,8 +156,8 @@
                 priority        : CommandPriority.LOW,
 	        	parameter: 		parameter
 	        });
-	        command.onResolve( function( file_path ) {
-	        	parameter.file_path = file_path;
+	        command.onResolve( function( result ) {
+	        	parameter = utility.mergeJSON( result, parameter );
 	         	return new HtmlFile( parameter );
 	        });
 	        return CommandProcessor.queue( command );
@@ -170,8 +170,8 @@
                 priority        : CommandPriority.LOW,
                 parameter:      parameter
             });
-            command.onResolve( function( file_path ) {
-                parameter.file_path = file_path;
+            command.onResolve( function( result ) {
+                parameter = utility.mergeJSON( result, parameter );
                 return new ImageFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -184,8 +184,8 @@
                 priority        : CommandPriority.LOW,
                 parameter:      parameter
             });
-            command.onResolve( function( file_path ) {
-                parameter.file_path = file_path;
+            command.onResolve( function( result ) {
+                parameter = utility.mergeJSON( result, parameter );
                 return new VideoFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -224,8 +224,9 @@
 
         function closeWebview( webview ) {
         	var command = new Command({
-	        	command_code: 		COMMAND.CLOSE_WEB_VIEW,
-	        	target_webview_id: 	webview.getID()
+	        	command_code        : COMMAND.CLOSE_WEB_VIEW,
+                priority            : CommandPriority.CRITICAL,
+	        	target_webview_id   : webview.getID()
 	        });
 	        return CommandProcessor.queue( command );
         };
@@ -901,7 +902,7 @@
                 command_code    : COMMAND.ONDOWNLOAD,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    path        : this.getPath()
+                    id          : this.getID()
                 }
             });
             return CommandProcessor.queue( command );
@@ -912,7 +913,7 @@
                 command_code    : COMMAND.ONDOWNLOADING,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    path        : this.getPath()
+                    id          : this.getID()
                 }
             });
             command.onUpdate( fn );
@@ -924,7 +925,7 @@
                 command_code    : COMMAND.ONDOWNLOADED,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    path        : this.getPath()
+                    id          : this.getID()
                 }
             });
             command.onResolve( function(result){

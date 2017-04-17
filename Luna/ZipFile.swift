@@ -179,6 +179,10 @@ class ZipFile: File {
                 return
             }
         } catch let error as NSError {
+            print("UNZIP=================================")
+            print(self.getFileName() as Any)
+            print(self.getFilePath() as Any)
+            
             onFail( error.localizedDescription )
             remove()
             return

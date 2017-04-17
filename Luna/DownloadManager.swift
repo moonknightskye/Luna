@@ -11,8 +11,7 @@ import Foundation
 class DownloadManager {
 
 	static var QUEUE:[DownloadManager] = [DownloadManager]();
-	static var counter = 0;
-	private var download_id = DownloadManager.counter
+    private var download_id:Int!
 	private var downloadFile:File!
 
 	private var downloadLink:URL!
@@ -31,14 +30,14 @@ class DownloadManager {
             self.savePath = savePath ?? SystemFilePath.DOWNLOADS.rawValue
             self.isOverwrite = isOverwrite
 
-			if let _ = DownloadManager.getManager(path: (file.getFilePath()?.absoluteString)!) {
+			if let _ = DownloadManager.getManager(download_id: self.getFile().getID()) {
 				throw FileError.DOWNLOAD_ALREADY_INQUEUE
 			}
 
-			DownloadManager.counter += 1;
+            self.download_id = self.getFile().getID()
 			DownloadManager.QUEUE.append(self)
 
-            let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: Bundle.main.bundleIdentifier!)
+            let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: Bundle.main.bundleIdentifier! + self.getID().description)
 			backgroundSessionConfiguration.allowsCellularAccess = Shared.shared.allowsCellularAccess
             backgroundSession = Foundation.URLSession(configuration: backgroundSessionConfiguration, delegate: Shared.shared.ViewController, delegateQueue: OperationQueue.main)
 
@@ -50,14 +49,23 @@ class DownloadManager {
 		}
 	}
     
-    public class func getManager( path: String ) -> DownloadManager? {
+    public class func getManager( download_id: Int ) -> DownloadManager? {
         for (_, manager) in DownloadManager.QUEUE.enumerated() {
-			if manager.getDownloadLink().absoluteString == path {
-				return manager
-			}
+            if manager.getID() == download_id {
+                return manager
+            }
         }
         return nil
     }
+    
+//    public class func getManager( path: String ) -> DownloadManager? {
+//        for (_, manager) in DownloadManager.QUEUE.enumerated() {
+//			if manager.getDownloadLink().absoluteString == path {
+//				return manager
+//			}
+//        }
+//        return nil
+//    }
 
     public class func getManager( urlSession: URLSession ) -> DownloadManager? {
         for (_, manager) in DownloadManager.QUEUE.enumerated() {

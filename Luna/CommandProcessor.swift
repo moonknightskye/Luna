@@ -166,8 +166,8 @@ class CommandProcessor {
     }
     
     public class func getDownloadManager( command: Command ) -> DownloadManager? {
-        if let path = (command.getParameter() as AnyObject).value(forKeyPath: "path") as? String {
-            if let manager = DownloadManager.getManager(path: path) {
+        if let id = (command.getParameter() as AnyObject).value(forKeyPath: "id") as? Int {
+            if let manager = DownloadManager.getManager( download_id: id ) {
                 return manager
             }
         }
@@ -473,7 +473,7 @@ class CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    private class func checkGetImageFile( command:Command, onSuccess:@escaping ((String, ImageFile)->()), onFail:@escaping ((String)->()) ) {
+    private class func checkGetImageFile( command:Command, onSuccess:@escaping ((NSDictionary, ImageFile)->()), onFail:@escaping ((String)->()) ) {
         let parameter = command.getParameter()
         var imageFile:ImageFile?
         switch( parameter ) {
@@ -489,11 +489,7 @@ class CommandProcessor {
             break;
         }
         if imageFile != nil {
-			if let filePath = imageFile!.getFilePath() {
-				onSuccess(filePath.absoluteString, imageFile!)
-			} else {
-				onFail( "File is not available" )
-			}
+			onSuccess(imageFile!.toDictionary(), imageFile!)
         } else {
             command.reject( errorMessage: "Failed to get Image" )
         }
@@ -507,14 +503,10 @@ class CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    private class func checkGetHTMLFile( command:Command, onSuccess:@escaping ((String, HtmlFile)->()), onFail:@escaping ((String)->()) ) {
+    private class func checkGetHTMLFile( command:Command, onSuccess:@escaping ((NSDictionary, HtmlFile)->()), onFail:@escaping ((String)->()) ) {
         do {
             let htmlFile = try HtmlFile( file: command.getParameter() as! NSDictionary )
-            if let filePath = htmlFile.getFilePath() {
-				onSuccess(filePath.absoluteString, htmlFile)
-            } else {
-                onFail( "File is not available" )
-            }
+            onSuccess(htmlFile.toDictionary(), htmlFile)
         } catch let error as NSError {
             onFail( error.localizedDescription )
         }
@@ -607,14 +599,10 @@ class CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    private class func checkGetFile( command: Command, onSuccess:@escaping ((String, File)->()), onFail:@escaping ((String)->()) ) {
+    private class func checkGetFile( command: Command, onSuccess:@escaping ((NSDictionary, File)->()), onFail:@escaping ((String)->()) ) {
         do {
             let file = try File( file: command.getParameter() as! NSObject )
-            if let filePath = file.getFilePath() {
-                onSuccess(filePath.absoluteString, file)
-            } else {
-                onFail( "File is not available" )
-            }
+            onSuccess(file.toDictionary(), file)
         } catch let error as NSError {
             onFail( error.localizedDescription )
         }
@@ -627,14 +615,10 @@ class CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    private class func checkGetVideoFile( command:Command, onSuccess:@escaping ((String, VideoFile)->()), onFail:@escaping ((String)->()) ) {
+    private class func checkGetVideoFile( command:Command, onSuccess:@escaping ((NSDictionary, VideoFile)->()), onFail:@escaping ((String)->()) ) {
         do {
             let videoFile = try VideoFile( file: command.getParameter() as! NSDictionary)
-            if let filePath = videoFile.getFilePath() {
-                onSuccess(filePath.absoluteString, videoFile)
-            } else {
-                onFail( "File is not available" )
-            }
+            onSuccess(videoFile.toDictionary(), videoFile)
         } catch let error as NSError {
             onFail( error.localizedDescription )
         }

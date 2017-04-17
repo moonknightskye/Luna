@@ -29,6 +29,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         commandGetFile.onResolve { ( htmlFile ) in
             parameter = NSMutableDictionary()
             parameter.setValue( htmlFile, forKey: "html_file")
+            
             let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
             command.onResolve { (webview_id) in
 //                let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)

@@ -19,9 +19,9 @@ public enum AVPlayerType:Int {
 class AVPlayerManager {
 
     static var LIST:[AVPlayerManager] = [AVPlayerManager]();
-    static var counter = 0;
+    //static var counter = 0;
     
-    private var avplayer_id = AVPlayerManager.counter
+    private var avplayer_id:Int!
     private var playerLayer:AVPlayerLayer!
     private var videoFile:VideoFile?
     private var type = AVPlayerType.UNSUPPORTED
@@ -29,8 +29,9 @@ class AVPlayerManager {
     private var mute:Bool = false
     
     public init( videoFile: VideoFile ) {
-        AVPlayerManager.counter += 1;
+        //AVPlayerManager.counter += 1;
         
+        self.avplayer_id = videoFile.getID()
         self.setType(type: AVPlayerType.VIDEO)
         self.playerLayer = AVPlayerLayer(player: videoFile.getAVPlayer()!)
         self.playerLayer.frame = Shared.shared.ViewController.view.frame

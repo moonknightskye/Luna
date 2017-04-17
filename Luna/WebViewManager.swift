@@ -21,9 +21,9 @@ class WebViewManager {
     static var SYSTEM_WEBVIEW = 0
     
     static var LIST:[WebViewManager] = [WebViewManager]();
-    static var counter = 0;
+    //static var counter = 0;
     
-    private var webview_id = WebViewManager.counter
+    private var webview_id:Int!
     private var htmlFile:HtmlFile!
     
     private var webview:WKWebView!
@@ -35,11 +35,9 @@ class WebViewManager {
     public init( source_webview_id:Int?=0, htmlFile:HtmlFile ) {
         self.setStatus(status: Status.INIT)
         
-        WebViewManager.counter += 1;
-        
+        self.webview_id = htmlFile.getID()
         self.setHTMLFile(htmlFile: htmlFile)
         self.setType(type: htmlFile.getPathType()!)
-        //self.setValue(value: htmlFile)
         self.setWebview(webview: WKWebView(webview_id: self.webview_id))
         self.setSourceWebViewID(sourceWebViewID: source_webview_id!)
         
