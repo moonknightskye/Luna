@@ -14,6 +14,13 @@ extension FileManager {
     public class func isExists( url:URL ) -> Bool {
         return FileManager.default.fileExists(atPath: url.path)
     }
+
+	public class func share( filePaths:[URL], onSuccess:@escaping((Bool)->()) ) {
+		let activityVC = UIActivityViewController(activityItems: filePaths, applicationActivities: nil)
+		Shared.shared.ViewController.present(activityVC, animated: true, completion: {
+			onSuccess( true )
+		})
+	}
     
     public class func createDirectory( absolutePath:String, onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         do {

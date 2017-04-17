@@ -57,7 +57,8 @@
         ON_UNZIP                    : 35,
         ON_UNZIPPING                : 36,
         ON_UNZIPPED                 : 37,
-        GET_FILE_COL                : 38
+        GET_FILE_COL                : 38,
+        SHARE_FILE                  : 39
     };
     var CommandPriority = {
     	CRITICAL					: 0,
@@ -824,7 +825,7 @@
         function init() {
             if( !utility.isUndefined(param.files) ) {
                 utility.forEvery( param.files, function(file){
-                    switch( file.file_type ) {
+                    switch( file.object_type ) {
                         case "HtmlFile":
                             fileCol.addFile( new HtmlFile( file ) );
                             break;
@@ -843,6 +844,10 @@
                     };
                 });
             }
+        };
+
+        fileCol.getDirectories = function(){
+            return _INTERNAL_DATA.directories;
         };
 
         fileCol.getFiles = function() {
@@ -871,7 +876,7 @@
             file_extension      : param.file_extension,  //zip, html, png, mp4
             status              : STATUS.INIT,
             file_path           : param.file_path,
-            base64_value        : param.base64_value
+            object_type         : param.object_type || "File"
         };
 
         function init() {
@@ -885,6 +890,10 @@
 
         file.greet = function(){
         	iOS.debug("HELLO1");
+        };
+
+        file.objectType = function() {
+            return _INTERNAL_DATA.object_type;
         };
 
         file.getID = function() {
@@ -905,10 +914,6 @@
         file.getFileExtension = function() {
         	return _INTERNAL_DATA.file_extension;
         };
-
-        // file.getBase64Value = function() {
-        // 	return _INTERNAL_DATA.base64_value;
-        // };
 
         file.setFilePath = function( file_path ) {
         	_INTERNAL_DATA.file_path = file_path;
@@ -1038,6 +1043,17 @@
                 parameter       : {
                     file        : this.toJSON(),
                     to          : param.to || ""
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        file.share = function() {
+            var command = new Command({
+                command_code    : COMMAND.SHARE_FILE,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : {
+                    file        : this.toJSON()
                 }
             });
             return CommandProcessor.queue( command );

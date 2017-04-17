@@ -502,6 +502,13 @@
                       iOS.debug( "imageFile.getResizedDOM1: " + error );
                     });
 
+                    file.share().then(function(resut){
+                      iOS.debug("file.share: " + resut)
+                    },function(error){
+                      iOS.debug("file.share: " + error)
+                    });
+
+
                   }, function(error){
                     iOS.debug("file.onDownloaded1: " + error)
                   });
@@ -784,27 +791,68 @@
 
 
               utility.getElement( "filecol", "id" ).addEventListener( "click", function() {
-                iOS.getFileCollection({
-                  path: "Downloads",
-                  path_type: "document"
-                }).then(function( fileCollection ){
-                  iOS.debug("iOS.getFileCollection: ")
-                  iOS.debug( "# of Files: " + fileCollection.getFiles().length )
-                  
-                  utility.forEvery( fileCollection.getFiles(), function(file){
-                    if(file.getResizedDOM) {
-                      file.getResizedDOM({quality:10}).then( function( DOM ){
-                        iOS.debug( "imageFile.getResizedDOM: " );
-                        document.body.appendChild( DOM );
-                      }, function(error){
-                        iOS.debug( "imageFile.getResizedDOM: " + error );
-                      });
-                    }
-                  });
 
-                }, function(error){
-                  iOS.debug("iOS.getFileCollection: " + error)
-                });
+                var listFiles = function( path ) {
+                  iOS.getFileCollection({
+                    path: path,
+                    path_type: "document"
+                  }).then(function( fileCollection ){
+                    iOS.debug("iOS.getFileCollection: ")
+                    iOS.debug( "No of Files: " + fileCollection.getFiles().length )
+
+                    utility.forEvery( fileCollection.getFiles(), function(file){
+                      
+                      if(file.objectType() === "ImageFile") {
+                        file.getResizedDOM({quality:10}).then( function( DOM ){
+                          iOS.debug( "imageFile.getResizedDOM: " );
+                          document.body.appendChild( DOM );
+                        }, function(error){
+                          iOS.debug( "imageFile.getResizedDOM: " + error );
+                        });
+                      }
+
+                      if(file.objectType() === "ZipFile") {
+                        file.unzip({
+                          to: "unzipfolder"
+                        }).then(function(result){
+                          iOS.debug("file.unzip: " + result)
+                        }, function(error){
+                          iOS.debug("file.unzip: " + error)
+                        })
+
+                        file.onUnzip().then(function(result){
+                          iOS.debug("file.onUnzip: " + result)
+                        }, function(error){
+                          iOS.debug("file.onUnzip: " + error)
+                        })
+                        file.onUnzipped().then(function(result){
+                          iOS.debug("file.onUnzipped: " + result)
+                        }, function(error){
+                          iOS.debug("file.onUnzipped: " + error)
+                        })
+                        file.onUnzipping(function(progress){
+                          iOS.debug("file.onUnzipping: " + progress)
+                        }).then(function(result){
+                          iOS.debug("file.onUnzipping: " + result)
+                        }, function(error){
+                          iOS.debug("file.onUnzipping: " + error)
+                        })
+                      }
+                    });
+
+                    utility.forEvery( fileCollection.getDirectories(), function(directory){
+                      listFiles(directory)
+                    });
+
+                  }, function(error){
+                    iOS.debug("iOS.getFileCollection: " + error)
+                  });
+                };
+
+                listFiles("zip3folders")
+
+                
+
               });
 
 

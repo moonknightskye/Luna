@@ -126,6 +126,9 @@ class CommandProcessor {
         case .GET_FILE_COL:
             checkGetFileCollection( command: command )
             break
+		case .SHARE_FILE:
+			checkShareFile( command: command )
+			break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1172,7 +1175,45 @@ class CommandProcessor {
             onFail( error.localizedDescription )
         }
     }
-    
+
+	private class func checkShareFile( command: Command ) {
+		processShareFile( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+
+	private class func processShareFile( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
+		let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
+		var file:File?
+		switch( parameter ) {
+		case is File:
+			file = parameter as? File
+			break
+		case is NSDictionary:
+			do {
+				file = try File( file: parameter as! NSDictionary )
+			} catch let error as NSError {
+				onFail( error.localizedDescription )
+				return
+			}
+			break
+		default:
+			break;
+		}
+		if file != nil {
+			let _ = file!.share( onSuccess: { result in
+				onSuccess( result )
+			}, onFail: { (error) in
+				onFail( error )
+			})
+		} else {
+			onFail( "Failed to initialize File" )
+		}
+	}
+
+
 }
 
 

@@ -134,8 +134,7 @@ class FileCollection {
     public func getPath() -> String? {
         return self.path
     }
-    
-    
+
     private func generateFilePath() -> URL? {
         switch self.pathType {
         case FilePathType.BUNDLE_TYPE:
@@ -150,6 +149,15 @@ class FileCollection {
         }
         return nil
     }
+
+	func extractPath( filePath:URL ) -> String? {
+		if let path = self.getPath() {
+			if let index = filePath.absoluteString.indexOf(target: path) {
+				return filePath.absoluteString.substring( from: index )
+			}
+		}
+		return nil
+	}
     
     public func toDictionary() -> NSDictionary {
         let dict = NSMutableDictionary()
@@ -166,7 +174,9 @@ class FileCollection {
         
         var directories:[String] = [String]()
         for (_, file) in self.DIRECTORIES.enumerated() {
-            directories.append( file.absoluteString )
+			if let directory = self.extractPath(filePath: file) {
+				directories.append( directory )
+			}
         }
         dict.setValue(directories, forKey: "directories")
         
@@ -220,10 +230,7 @@ class FileCollection {
 			paths.append(file.getFilePath()!)
 		}
 
-		let activityVC = UIActivityViewController(activityItems: paths, applicationActivities: nil)
-		Shared.shared.ViewController.present(activityVC, animated: true, completion: {
-			onSuccess( true )
-		})
+		FileManager.share(filePaths: paths, onSuccess: onSuccess )
 	}
 
 

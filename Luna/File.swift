@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 public enum FileError: Error {
     case INEXISTENT
@@ -275,13 +276,7 @@ class File {
         File.counter += 1
         return File.counter
     }
-    
-//    public func setBase64Value( base64:String ) {
-//        self.base64Value = base64
-//    }
-//    public func getBase64Value() -> String? {
-//        return self.base64Value
-//    }
+
     
     public func toDictionary() -> NSDictionary {
         let dict = NSMutableDictionary()
@@ -299,7 +294,7 @@ class File {
         }
         dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
         dict.setValue(self.getID(), forKey: "file_id")
-        dict.setValue(self.getFileType().rawValue, forKey: "file_type")
+        dict.setValue(self.getFileType().rawValue, forKey: "object_type")
         return dict
     }
     
@@ -412,10 +407,12 @@ class File {
     
     public class func getFileType( url: URL ) -> FileType {
         if let fileName = url.absoluteString.getFilenameFromFilePath() {
-            if let fileExt = FileExtention(rawValue: fileName.substring(from: fileName.indexOf(target: ".")! + 1).lowercased() ) {
-                return File.getFileType( fileExt: fileExt )
-            }
-        }
+			if let dotIndex = fileName.indexOf(target: ".") {
+				if let fileExt = FileExtention(rawValue: fileName.substring(from: dotIndex + 1).lowercased() ) {
+					return File.getFileType( fileExt: fileExt )
+				}
+			}
+		}
         return .FILE
     }
     
@@ -585,6 +582,14 @@ class File {
         }
         return false
     }
+
+	public func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
+		if let filePath = self.getFilePath() {
+			FileManager.share(filePaths: [filePath], onSuccess: onSuccess )
+		} else {
+			onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+		}
+	}
 
 	public func download( to:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((Int)->()), onFail:((String)->()) ) {
 		do {

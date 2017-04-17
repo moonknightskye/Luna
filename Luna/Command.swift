@@ -53,6 +53,7 @@ enum CommandCode:Int {
     case ON_UNZIPPING               = 36
     case ON_UNZIPPED                = 37
     case GET_FILE_COL               = 38
+	case SHARE_FILE					= 39
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution
