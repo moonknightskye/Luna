@@ -15,7 +15,7 @@ class FileCollection {
     private var DIRECTORIES:[URL] = [URL]()
     private var path:String = SystemFilePath.DOCUMENT.rawValue
     private var pathType:FilePathType = FilePathType.DOCUMENT_TYPE
-    private var filePath:URL!
+    private var filePath:URL?
     
     
     init( relative:String, pathType:FilePathType?=nil, filePath:URL?=nil ) throws {
@@ -30,11 +30,11 @@ class FileCollection {
             self.filePath = FileManager.getDocumentsDirectoryPath( pathType: self.pathType, relative: self.path )
         }
 
-		if !FileManager.isExists(url: self.filePath) {
+		if !FileManager.isExists(url: self.filePath!) {
 			throw FileError.INEXISTENT
 		}
         
-        if let fileCollection = FileManager.getDocumentsFileList( path: self.filePath ) {
+        if let fileCollection = FileManager.getDocumentsFileList( path: self.filePath! ) {
             for (_, file) in fileCollection.enumerated() {
                 if file.absoluteString.endsWith(string: "/") {
                     self.DIRECTORIES.append(file)
@@ -64,7 +64,7 @@ class FileCollection {
         }
     }
 
-	func zip( fileName:String ) throws {
+	func zip( toFileName:String, onProgress:@escaping((Double)->()), onSuccess:@escaping((ZipFile)->()), onFail:@escaping((String)->())) {
 		var paths:[URL] = [URL]()
 		for (_, file) in self.DIRECTORIES.enumerated() {
 			paths.append(file)
@@ -73,9 +73,40 @@ class FileCollection {
 			paths.append(file.getFilePath()!)
 		}
 
-		let filepath = FileManager.getDocumentsDirectoryPath()!.appendingPathComponent(fileName)
-		try Zip.zipFiles(paths: paths, zipFilePath: filepath, password: nil, progress: { (progress) in
-			print( progress*100 )
+		let filepath = FileManager.getDocumentsDirectoryPath(pathType: self.pathType)!.appendingPathComponent(toFileName)
+		do {
+			var isFinished = false
+			try Zip.zipFiles(paths: paths, zipFilePath: filepath, password: nil, progress: { (progress) in
+				if isFinished {
+					return
+				}
+
+				onProgress( progress * 100 )
+
+				if progress >= 1.0 {
+					isFinished = true
+					onSuccess( ZipFile(document:toFileName, filePath: filepath) )
+				}
+
+			})
+		} catch let error as NSError {
+			onFail( error.localizedDescription )
+		}
+
+	}
+
+	func share( onSuccess:@escaping((Bool)->()) ) {
+		var paths:[URL] = [URL]()
+		for (_, file) in self.DIRECTORIES.enumerated() {
+			paths.append(file)
+		}
+		for (_, file) in self.FILES.enumerated() {
+			paths.append(file.getFilePath()!)
+		}
+
+		let activityVC = UIActivityViewController(activityItems: paths, applicationActivities: nil)
+		Shared.shared.ViewController.present(activityVC, animated: true, completion: {
+			onSuccess( true )
 		})
 	}
 

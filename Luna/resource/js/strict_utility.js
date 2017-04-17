@@ -421,19 +421,24 @@
         
         function appendDOM( child, parent, fn ) {
             parent = parent || getParent( child );
-            addOneTimeEventListener( parent, "DOMNodeInserted", fn );
+            //addOneTimeEventListener( parent, "DOMNodeInserted", fn );
             
             /*
              * http://salesforce.stackexchange.com/questions/146370/cannot-use-select2-jquery-library-in-lightning-components-with-lorckerservice-ac/146380
+             */
             var observer = new MutationObserver( function( mutations ) {
               mutations.forEach( function( mutation ) {
-                console.log( mutation.type );
+                if ( mutation.type === "childList" ) {
+                    if ( fn ) {
+                        fn();
+                    }
+                }
               });    
             });
             observer.observe( parent, { attributes: true, childList: true, characterData: true } );
-            */
-            log( "problem with MutationObserver... this wont work in firefox: TO BE SUPPORTED THIS 11-11-2017" );
-            log( "http://salesforce.stackexchange.com/questions/146370/cannot-use-select2-jquery-library-in-lightning-components-with-lorckerservice-ac/146380" )
+           
+            //log( "problem with MutationObserver... this wont work in firefox: TO BE SUPPORTED THIS 11-11-2017" );
+            //log( "http://salesforce.stackexchange.com/questions/146370/cannot-use-select2-jquery-library-in-lightning-components-with-lorckerservice-ac/146380" )
             parent.appendChild( child );
         };
         

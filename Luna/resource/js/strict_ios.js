@@ -139,6 +139,7 @@
             _setPathType( parameter );
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_FILE,
+                priority        : CommandPriority.LOW,
 	        	parameter: 		parameter
 	        });
 	        command.onResolve( function( file_path ) {
@@ -152,6 +153,7 @@
             _setPathType( parameter );
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_HTML_FILE,
+                priority        : CommandPriority.LOW,
 	        	parameter: 		parameter
 	        });
 	        command.onResolve( function( file_path ) {
@@ -165,6 +167,7 @@
             _setPathType( parameter );
             var command = new Command({
                 command_code:   COMMAND.GET_IMAGE_FILE,
+                priority        : CommandPriority.LOW,
                 parameter:      parameter
             });
             command.onResolve( function( file_path ) {
@@ -178,6 +181,7 @@
             _setPathType( parameter );
             var command = new Command({
                 command_code:   COMMAND.GET_VIDEO_FILE,
+                priority        : CommandPriority.LOW,
                 parameter:      parameter
             });
             command.onResolve( function( file_path ) {
@@ -191,6 +195,7 @@
             _setPathType( parameter );
             var command = new Command({
                 command_code:   COMMAND.GET_ZIP_FILE,
+                priority        : CommandPriority.LOW,
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
@@ -207,6 +212,7 @@
         	}
 	        var command = new Command({
 	        	command_code: 	COMMAND.NEW_WEB_VIEW,
+                priority            : CommandPriority.CRITICAL,
 	        	parameter: 		param
 	        });
 	        command.onResolve( function( webview_id ) {
@@ -299,6 +305,7 @@
             }
             var command = new Command({
                 command_code:   COMMAND.NEW_AV_PLAYER,
+                priority            : CommandPriority.CRITICAL,
                 parameter:      param
             });
             command.onResolve( function( avplayer_id ) {
@@ -392,7 +399,7 @@
         avplayer.play = function() {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_PLAY,
-                priority			: CommandPriority.CRITICAL,
+                priority			: CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID()
                 }
@@ -402,7 +409,7 @@
         avplayer.pause = function() {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_PAUSE,
-                priority			: CommandPriority.CRITICAL,
+                priority			: CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID()
                 }
@@ -412,7 +419,7 @@
         avplayer.seek = function( param ) {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_SEEK,
-                priority			: CommandPriority.CRITICAL,
+                priority			: CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID(),
                     seconds         : param.seconds || 0
@@ -470,6 +477,7 @@
         webview.appendAVPlayer = function( param ) {
             var command = new Command({
                 command_code:       COMMAND.APPEND_AV_PLAYER,
+                priority            : CommandPriority.CRITICAL,
                 target_webview_id:  this.getID(),
                 parameter: {
                     avplayer_id: (!utility.isUndefined(param.avplayer)) ? param.avplayer.getID() : -1,
@@ -496,6 +504,7 @@
         webview.close = function() {
         	var command = new Command({
 	        	command_code: 		COMMAND.CLOSE_WEB_VIEW,
+                priority            : CommandPriority.CRITICAL,
 	        	target_webview_id: 	this.getID()
 	        });
 	        return CommandProcessor.queue( command );
@@ -609,8 +618,9 @@
         file.getFullResolutionDOM = function() {
             var chunks = [];
             var command = new Command({
-                command_code:   COMMAND.GET_VIDEO_BASE64_BINARY,
-                parameter:      this.toJSON()
+                command_code    : COMMAND.GET_VIDEO_BASE64_BINARY,
+                priority        : CommandPriority.LOW,   
+                parameter       : this.toJSON()
             });
             command.onUpdate( function(base64_chunk){
                 chunks.push( utility.base64ToBlob( base64_chunk, "application/octet-binary" ) );
@@ -754,6 +764,7 @@
     	file.getFullResolutionDOM = function() {
 	        var command = new Command({
                 command_code:   COMMAND.GET_BASE64_BINARY,
+                priority        : CommandPriority.LOW,
                 parameter:      this.toJSON()
             });
             command.onResolve( function( base64_value ) {
@@ -769,6 +780,7 @@
         	option.height 		= option.height || option.width || 100;
         	var command = new Command({
 	        	command_code: 	COMMAND.GET_BASE64_RESIZED,
+                priority        : CommandPriority.LOW,
 	        	parameter: 		{
 	        		image_file: this.toJSON(),
 	        		option: 	option
@@ -789,6 +801,21 @@
         file = utility.mergeJSON( file, new File(param), true );
         init();
     	return file;
+    };
+
+    function FileCollection( param ) {
+        var fileCol = {};
+
+        var _INTERNAL_DATA = {
+
+        };
+
+        function init() {
+
+        };
+
+        init();
+        return fileCol;
     };
 
     function File( param ) {

@@ -468,56 +468,57 @@
                   path    : "https://goo.gl/cl7FKy"
                 }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " )
+                  iOS.debug("iOS.getFile1: " )
                   iOS.debug(file)
 
                   file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload: " + result)
+                    iOS.debug("file.onDownload1: " + result)
                   }, function(error){
-                    iOS.debug("file.onDownload: " + error)
+                    iOS.debug("file.onDownload1: " + error)
                   });
 
                   file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
+                    iOS.debug( "onDownloading1: " + progress + "%" );
                   }).then(function(result){
-                    iOS.debug( "file.onDownloading: " + result );
+                    iOS.debug( "file.onDownloading1: " + result );
                   }, function(error){
-                    iOS.debug( "file.onDownloading: " + error );
+                    iOS.debug( "file.onDownloading1: " + error );
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: ")
+                    iOS.debug("file.onDownloaded1: ")
                     iOS.debug(result)
 
-                    file.copy({
-                      to:  "copyfolder"
-                    }).then(function(url){
-                      iOS.debug("file.copyFile: " + url)
-                    }, function(error){
-                      iOS.debug("file.copyFile: " + error)
-                    })
+                    // file.copy({
+                    //   to:  "copyfolder"
+                    // }).then(function(url){
+                    //   iOS.debug("file.copyFile: " + url)
+                    // }, function(error){
+                    //   iOS.debug("file.copyFile: " + error)
+                    // })
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      iOS.debug( "imageFile.getResizedDOM1: " );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      iOS.debug( "imageFile.getResizedDOM1: " + error );
                     });
 
                   }, function(error){
-                    iOS.debug("file.onDownloaded: " + error)
+                    iOS.debug("file.onDownloaded1: " + error)
                   });
 
                   file.download({
                     isOverwrite   : true,
                   }).then(function(resut){
-                    iOS.debug("file.download: " + resut)
+                    iOS.debug("file.download1: " + resut)
                   },function(error){
-                    iOS.debug("file.download: " + error)
+                    iOS.debug("file.download1: " + error)
                   });
 
+
                 }, function(error){
-                  iOS.debug("iOS.getFile: " + error)
+                  iOS.debug("iOS.getFile1: " + error)
                 })
 
 
@@ -525,7 +526,7 @@
 
 
 
-                iOS.getFile({
+                iOS.getImageFile({
                   path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
                 }).then( function(file){
 
@@ -546,7 +547,16 @@
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: " + result)
+                    iOS.debug("file.onDownloaded: ")
+                    iOS.debug(result)
+
+                    file.getResizedDOM({quality:10}).then( function( DOM ){
+                      iOS.debug( "imageFile.getResizedDOM: " );
+                      document.body.appendChild( DOM );
+                    }, function(error){
+                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                    });
+
                   }, function(error){
                     iOS.debug("file.onDownloaded: " + error)
                   });
@@ -595,6 +605,10 @@
 
                       iOS.debug( "iOS.getNewWebview: " + webview.getID() );
 
+                      webview.load().then(function(result){
+                        iOS.debug( "webview.load: " + result );
+                      });
+
                       webview.onLoad().then(function(result){
                         iOS.debug( "webview.onLoad: " + result );
                       });
@@ -617,10 +631,6 @@
                           iOS.debug( "webview.setProperty: " + result );
                         });
 
-                      });
-
-                      webview.load().then(function(result){
-                        iOS.debug( "webview.load: " + result );
                       });
 
                     },function( error ){
@@ -706,73 +716,73 @@
                 })
 
 
-                iOS.getZipFile({
-                    filename:   "imagefiles.zip" //myfolder.zip imagefiles.zip
-                }).then( function( file ){
-                    iOS.debug( "iOS.getZipFile: ");
-                    iOS.debug(file)
+                // iOS.getZipFile({
+                //     filename:   "imagefiles.zip" //myfolder.zip imagefiles.zip
+                // }).then( function( file ){
+                //     iOS.debug( "iOS.getZipFile: ");
+                //     iOS.debug(file)
 
-                    file.onUnzip().then(function(result){
-                      iOS.debug("file.onUnzip: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzip: " + error)
-                    })
-                    file.onUnzipped().then(function(result){
-                      iOS.debug("file.onUnzipped: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzipped: " + error)
-                    })
-                    file.onUnzipping(function(progress){
-                      iOS.debug("file.onUnzipping: " + progress)
-                    }).then(function(result){
-                      iOS.debug("file.onUnzipping: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzipping: " + error)
-                    })
+                //     file.onUnzip().then(function(result){
+                //       iOS.debug("file.onUnzip: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzip: " + error)
+                //     })
+                //     file.onUnzipped().then(function(result){
+                //       iOS.debug("file.onUnzipped: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzipped: " + error)
+                //     })
+                //     file.onUnzipping(function(progress){
+                //       iOS.debug("file.onUnzipping: " + progress)
+                //     }).then(function(result){
+                //       iOS.debug("file.onUnzipping: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzipping: " + error)
+                //     })
 
-                    file.unzip({
-                      to: "unzipfolder"
-                    }).then(function(result){
-                      iOS.debug("file.unzip: " + result)
-                    }, function(error){
-                      iOS.debug("file.unzip: " + error)
-                    })
+                //     file.unzip({
+                //       to: "unzipfolder"
+                //     }).then(function(result){
+                //       iOS.debug("file.unzip: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.unzip: " + error)
+                //     })
 
-                });
+                // });
 
-                iOS.getZipFile({
-                    filename:   "myfolder.zip" //myfolder.zip imagefiles.zip
-                }).then( function( file ){
-                    iOS.debug( "iOS.getZipFile: ");
-                    iOS.debug(file)
+                // iOS.getZipFile({
+                //     filename:   "myfolder.zip" //myfolder.zip imagefiles.zip
+                // }).then( function( file ){
+                //     iOS.debug( "iOS.getZipFile: ");
+                //     iOS.debug(file)
 
-                    file.onUnzip().then(function(result){
-                      iOS.debug("file.onUnzip: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzip: " + error)
-                    })
-                    file.onUnzipped().then(function(result){
-                      iOS.debug("file.onUnzipped: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzipped: " + error)
-                    })
-                    file.onUnzipping(function(progress){
-                      iOS.debug("file.onUnzipping: " + progress)
-                    }).then(function(result){
-                      iOS.debug("file.onUnzipping: " + result)
-                    }, function(error){
-                      iOS.debug("file.onUnzipping: " + error)
-                    })
+                //     file.onUnzip().then(function(result){
+                //       iOS.debug("file.onUnzip: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzip: " + error)
+                //     })
+                //     file.onUnzipped().then(function(result){
+                //       iOS.debug("file.onUnzipped: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzipped: " + error)
+                //     })
+                //     file.onUnzipping(function(progress){
+                //       iOS.debug("file.onUnzipping: " + progress)
+                //     }).then(function(result){
+                //       iOS.debug("file.onUnzipping: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.onUnzipping: " + error)
+                //     })
 
-                    file.unzip({
-                      to: "unzipfolder"
-                    }).then(function(result){
-                      iOS.debug("file.unzip: " + result)
-                    }, function(error){
-                      iOS.debug("file.unzip: " + error)
-                    })
+                //     file.unzip({
+                //       to: "unzipfolder"
+                //     }).then(function(result){
+                //       iOS.debug("file.unzip: " + result)
+                //     }, function(error){
+                //       iOS.debug("file.unzip: " + error)
+                //     })
 
-                });
+                // });
 
 
               });

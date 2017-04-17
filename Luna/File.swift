@@ -560,11 +560,11 @@ class File {
         return false
     }
 
-	public func download( to:String?=nil, isOverwrite:Bool?=false, onSuccess:((Int)->()), onFail:((String)->()) ) {
+	public func download( to:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((Int)->()), onFail:((String)->()) ) {
 		do {
 			let manager = try DownloadManager(file: self, savePath: to, isOverwrite:isOverwrite)
-			manager.onDownload()
 			onSuccess( manager.getID() )
+			manager.onDownload()
 		} catch let error as NSError {
 			onFail( error.localizedDescription )
 		}

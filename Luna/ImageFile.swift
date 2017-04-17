@@ -226,16 +226,15 @@ class ImageFile: File {
                     if quality >= 100 {
                         if let resizedBinary = ImageFile.pngToBase64(image: resizedImage) {
                             onSuccess( resizedBinary )
-                            return
                         }
                     } else {
                         if let resizedBinary = ImageFile.jpgToBase64(image: resizedImage, compressionQuality: compression) {
                             onSuccess( resizedBinary )
-                            return
                         }
                     }
-                }
-                onFail( FileError.UNKNOWN_ERROR.localizedDescription )
+				} else {
+					onFail( FileError.UNKNOWN_ERROR.localizedDescription )
+				}
             }, onFail: { (error) in
                 onFail( error )
             })
@@ -247,17 +246,21 @@ class ImageFile: File {
                     if quality >= 100 {
                         if let resizedBinary = ImageFile.pngToBase64(image: resizedImage) {
                             onSuccess( resizedBinary )
-                            return
                         }
                     } else {
                         if let resizedBinary = ImageFile.jpgToBase64(image: resizedImage, compressionQuality: compression) {
                             onSuccess( resizedBinary )
-                            return
                         }
                     }
-                }
-            }
-            onFail( FileError.UNKNOWN_ERROR.localizedDescription )
+				} else {
+					print("=================================================================")
+					print(self.getFileName())
+					print(self.getFilePath())
+					onFail( FileError.UNKNOWN_ERROR.localizedDescription + " 1" )
+				}
+			} else {
+				onFail( FileError.UNKNOWN_ERROR.localizedDescription + " 2")
+			}
             break
         default:
             onFail( FileError.UNKNOWN_ERROR.localizedDescription )
@@ -379,8 +382,9 @@ class ImageFile: File {
     public class func binaryToUIImage( binary: Data ) -> UIImage? {
         if let uiimage = UIImage( data: binary ) {
             return uiimage
-        }
-        return nil
+		} else {
+			return nil
+		}
     }
     
     public class func pngToBase64( image: UIImage ) -> String? {

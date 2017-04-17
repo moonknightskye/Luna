@@ -87,7 +87,7 @@ class Command {
         setParameter( parameter: command.value(forKey: "parameter") as! NSObject )
         setCallbackMethod( callbackMethod: command.value(forKey: "callback_method") as! String )
     }
-    
+
     public init( commandCode:CommandCode, targetWebViewID:Int?=nil, parameter:NSObject?=nil ) {
         Command.command_id_counter += 1
         setCommandID( commandID: Command.command_id_counter )

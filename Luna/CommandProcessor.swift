@@ -169,7 +169,7 @@ class CommandProcessor {
                 return manager
             }
         }
-        command.reject( errorMessage: "[ERROR] Download Manager does not existsX" )
+        command.reject( errorMessage: "[ERROR] Download Manager does not exists" )
         return nil
     }
     

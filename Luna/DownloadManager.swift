@@ -25,6 +25,7 @@ class DownloadManager {
 
     public init( file: File, savePath:String?, isOverwrite:Bool?=false ) throws {
 		if file.getPathType() == FilePathType.URL_TYPE {
+
 			self.downloadFile = file
 			self.downloadLink = file.getFilePath()
             self.savePath = savePath ?? SystemFilePath.DOWNLOADS.rawValue
@@ -34,13 +35,16 @@ class DownloadManager {
 				throw FileError.DOWNLOAD_ALREADY_INQUEUE
 			}
 
+			DownloadManager.counter += 1;
+			DownloadManager.QUEUE.append(self)
+
             let backgroundSessionConfiguration = URLSessionConfiguration.background(withIdentifier: Bundle.main.bundleIdentifier!)
+			backgroundSessionConfiguration.allowsCellularAccess = Shared.shared.allowsCellularAccess
             backgroundSession = Foundation.URLSession(configuration: backgroundSessionConfiguration, delegate: Shared.shared.ViewController, delegateQueue: OperationQueue.main)
+
 			downloadTask = backgroundSession.downloadTask(with: self.downloadLink)
 			downloadTask.resume()
-            
-			DownloadManager.QUEUE.append(self)
-			DownloadManager.counter += 1;
+
 		} else {
 			throw FileError.ONLY_URL_TYPE
 		}

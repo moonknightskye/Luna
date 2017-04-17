@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
         Fabric.with([Crashlytics.self])
-        
+
         let _ = FileManager.deleteDocumentFolder(relative: "CACHE")
 		FileManager.initiCloudDirectory()
         

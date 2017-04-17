@@ -104,7 +104,6 @@ extension WKWebView {
             if let delay_val = animation!.value(forKey: "delay") as? Double {
                 delay = delay_val
             }
-
             UIView.animate(withDuration: duration, delay: delay, options: UIViewAnimationOptions.curveEaseInOut, animations: {
                 self.setProperty(property: property)
             }, completion: { finished in

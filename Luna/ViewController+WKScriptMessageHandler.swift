@@ -19,9 +19,11 @@ extension ViewController: WKScriptMessageHandler {
                 var dispatchQos = DispatchQoS.default
                 switch command.getPriority() {
                 case .CRITICAL:
-                    DispatchQueue.global().sync(execute: {
-                        CommandProcessor.queue( command: command )
-                    })
+					DispatchQueue.global(qos: .userInteractive).async(execute: {
+						DispatchQueue.main.async {
+							CommandProcessor.queue( command: command )
+						}
+					})
                     return
                 case .HIGH:
                     dispatchQos = DispatchQoS.userInteractive
@@ -36,7 +38,8 @@ extension ViewController: WKScriptMessageHandler {
                     dispatchQos = DispatchQoS.background
                     break
                 }
-                DispatchQueue.main.async(group: nil, qos: dispatchQos, flags: .inheritQoS, execute: {
+				DispatchQueue.global(qos: dispatchQos.qosClass).async(execute: {
+//				DispatchQueue.main.async(group: nil, qos: dispatchQos, flags: .inheritQoS, execute: {
                     CommandProcessor.queue( command: command )
                 })
             }
