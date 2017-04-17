@@ -123,6 +123,9 @@ class CommandProcessor {
              .ON_UNZIPPED:
             checkUnzipEvent( command: command )
             break
+        case .GET_FILE_COL:
+            checkGetFileCollection( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1149,6 +1152,24 @@ class CommandProcessor {
                     }
                 }
             }
+        }
+    }
+    
+    private class func checkGetFileCollection( command: Command ) {
+        processGetFileCollection( command: command, onSuccess: { result, raw in
+            command.resolve( value: result, raw: raw )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    
+    private class func processGetFileCollection( command: Command, onSuccess:@escaping ((NSDictionary, FileCollection)->()), onFail:@escaping ((String)->()) ) {
+        let parameter = command.getParameter() as! NSDictionary
+        do {
+            let fileCol = try FileCollection(fileCol: parameter)
+            onSuccess( fileCol.toDictionary(), fileCol )
+        } catch let error as NSError {
+            onFail( error.localizedDescription )
         }
     }
     

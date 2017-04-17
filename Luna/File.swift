@@ -92,12 +92,12 @@ public enum FilePathType:String {
 	case ICLOUD_TYPE	= "icloud"
 }
 
-public enum FileType {
-    case FILE
-    case HTML_FILE
-    case IMAGE_FILE
-    case VIDEO_FILE
-	case ZIP_FILE
+public enum FileType:String {
+    case FILE           = "File"
+    case HTML_FILE      = "HtmlFile"
+    case IMAGE_FILE     = "ImageFile"
+    case VIDEO_FILE     = "VideoFile"
+	case ZIP_FILE       = "ZipFile"
 }
 
 class File {
@@ -194,7 +194,7 @@ class File {
         if let pathType = file.value(forKeyPath: "path_type") as? String {
             if let filePathType = FilePathType( rawValue: pathType ) {
                 switch filePathType {
-                case FilePathType.BUNDLE_TYPE:
+                case .BUNDLE_TYPE:
                     if fileName != nil {
                         try self.init( fileId:fileId, bundle: fileName!, path:path)
                         return
@@ -202,7 +202,7 @@ class File {
                         isValid = false
                     }
                     break
-                case FilePathType.DOCUMENT_TYPE:
+                case .DOCUMENT_TYPE:
                     if fileName != nil {
                         try self.init( fileId:fileId, document: fileName!, path:path )
                         return
@@ -210,7 +210,7 @@ class File {
                         isValid = false
                     }
                     break
-                case FilePathType.URL_TYPE:
+                case .URL_TYPE:
                     if path != nil {
                         try self.init( fileId:fileId, url: path! )
 						return
@@ -299,6 +299,7 @@ class File {
         }
         dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
         dict.setValue(self.getID(), forKey: "file_id")
+        dict.setValue(self.getFileType().rawValue, forKey: "file_type")
         return dict
     }
     
@@ -410,7 +411,7 @@ class File {
     }
     
     public class func getFileType( url: URL ) -> FileType {
-        if let fileName = url.path.getFilenameFromURL() {
+        if let fileName = url.absoluteString.getFilenameFromFilePath() {
             if let fileExt = FileExtention(rawValue: fileName.substring(from: fileName.indexOf(target: ".")! + 1).lowercased() ) {
                 return File.getFileType( fileExt: fileExt )
             }

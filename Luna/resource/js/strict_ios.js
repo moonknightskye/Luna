@@ -56,7 +56,8 @@
         UNZIP                       : 34,
         ON_UNZIP                    : 35,
         ON_UNZIPPING                : 36,
-        ON_UNZIPPED                 : 37
+        ON_UNZIPPED                 : 37,
+        GET_FILE_COL                : 38
     };
     var CommandPriority = {
     	CRITICAL					: 0,
@@ -133,6 +134,17 @@
 
         function fallback( value ) {
             console.log("This is a fallback method", value);
+        };
+
+        function getFileCollection( parameter ) {
+            var command = new Command({
+                command_code:   COMMAND.GET_FILE_COL,
+                parameter:      parameter
+            });
+            command.onResolve( function( result ) {
+                return new FileCollection( result );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function getFile( parameter ) {
@@ -369,6 +381,7 @@
             init: init,
             getHtmlFile: getHtmlFile,
             getImageFile: getImageFile,
+            getFileCollection: getFileCollection,
             getMainWebview: getMainWebview,
             getNewAVPlayer: getNewAVPlayer,
             getNewWebview: getNewWebview,
@@ -800,11 +813,46 @@
         var fileCol = {};
 
         var _INTERNAL_DATA = {
-
+            id                  : param.id,
+            path                : param.path,
+            path_type           : param.path_type || "document",
+            file_path           : param.file_path,
+            directories         : param.directories || [],
+            files               : []
         };
 
         function init() {
+            if( !utility.isUndefined(param.files) ) {
+                utility.forEvery( param.files, function(file){
+                    switch( file.file_type ) {
+                        case "HtmlFile":
+                            fileCol.addFile( new HtmlFile( file ) );
+                            break;
+                        case "VideoFile":
+                            fileCol.addFile( new VideoFile( file ) );
+                            break;
+                        case "ImageFile":
+                            fileCol.addFile( new ImageFile( file ) );
+                            break;
+                        case "ZipFile":
+                            fileCol.addFile( new ZipFile( file ) );
+                            break;
+                        default:
+                            fileCol.addFile( new File( file ) );
+                            break;
+                    };
+                });
+            }
+        };
 
+        fileCol.getFiles = function() {
+            return _INTERNAL_DATA.files;
+        };
+
+        fileCol.addFile = function( file ) {
+            if (file.isClass) {
+                _INTERNAL_DATA.files.push( file )
+            }
         };
 
         init();

@@ -416,6 +416,8 @@
                   },function(error){
                     iOS.debug( error );
                   });
+
+                  
               });
 
               utility.getElement( "download", "id" ).addEventListener( "click", function() {
@@ -643,8 +645,6 @@
 
 
               utility.getElement( "unzip", "id" ).addEventListener( "click", function() {
-
-
                 iOS.getZipFile({
                   path    : "https://s3.amazonaws.com/data.openaddresses.io/runs/176076/br/am/statewide.zip"
                 }).then( function(file){
@@ -780,10 +780,32 @@
                     })
 
                 });
-
-
               });
 
+
+              utility.getElement( "filecol", "id" ).addEventListener( "click", function() {
+                iOS.getFileCollection({
+                  path: "Downloads",
+                  path_type: "document"
+                }).then(function( fileCollection ){
+                  iOS.debug("iOS.getFileCollection: ")
+                  iOS.debug( "# of Files: " + fileCollection.getFiles().length )
+                  
+                  utility.forEvery( fileCollection.getFiles(), function(file){
+                    if(file.getResizedDOM) {
+                      file.getResizedDOM({quality:10}).then( function( DOM ){
+                        iOS.debug( "imageFile.getResizedDOM: " );
+                        document.body.appendChild( DOM );
+                      }, function(error){
+                        iOS.debug( "imageFile.getResizedDOM: " + error );
+                      });
+                    }
+                  });
+
+                }, function(error){
+                  iOS.debug("iOS.getFileCollection: " + error)
+                });
+              });
 
 
             };

@@ -11,12 +11,38 @@ import Zip
 
 class FileCollection {
     
+    private var Id:Int?
     private var FILES:[File] = [File]()
     private var DIRECTORIES:[URL] = [URL]()
     private var path:String = SystemFilePath.DOCUMENT.rawValue
     private var pathType:FilePathType = FilePathType.DOCUMENT_TYPE
     private var filePath:URL?
+    static var counter = 0;
     
+    public init(){}
+    
+    convenience init( fileCol: NSDictionary ) throws {
+        let path:String? = fileCol.value(forKeyPath: "path") as? String
+        var filePathURL:URL?
+        let filePath:String? = fileCol.value(forKeyPath: "file_path") as? String
+        if filePath != nil {
+            filePathURL = URL(string: filePath!)
+        }
+        
+        if let pathType = fileCol.value(forKeyPath: "path_type") as? String {
+            if let filePathType = FilePathType( rawValue: pathType ) {
+                switch filePathType {
+                case .BUNDLE_TYPE, .DOCUMENT_TYPE, .ICLOUD_TYPE:
+                    try self.init(relative: path!, pathType: filePathType, filePath:filePathURL )
+                    return
+                default:
+                    break
+                }
+            }
+        }
+        throw FileError.INVALID_PARAMETERS
+        self.init()
+    }
     
     init( relative:String, pathType:FilePathType?=nil, filePath:URL?=nil ) throws {
 		self.setPath(path: relative)
@@ -62,6 +88,27 @@ class FileCollection {
         }
     }
     
+    func setID(Id: Int) {
+        if self.Id == nil {
+            self.Id = Id
+        } else {
+            print("[ERROR] File ID already set")
+        }
+    }
+    func getID() -> Int {
+        if self.Id == nil {
+            self.Id = FileCollection.generateID()
+        }
+        return self.Id!
+    }
+    public class func generateID() -> Int {
+        FileCollection.counter += 1
+        return FileCollection.counter
+    }
+    
+    public func getPathType() -> FilePathType? {
+        return self.pathType
+    }
     public func setPathType( pathType: FilePathType ) {
         self.pathType = pathType
     }
@@ -88,6 +135,7 @@ class FileCollection {
         return self.path
     }
     
+    
     private func generateFilePath() -> URL? {
         switch self.pathType {
         case FilePathType.BUNDLE_TYPE:
@@ -101,6 +149,35 @@ class FileCollection {
             break
         }
         return nil
+    }
+    
+    public func toDictionary() -> NSDictionary {
+        let dict = NSMutableDictionary()
+        if let path = self.getPath() {
+            dict.setValue(path, forKey: "path")
+        }
+        if let pathType = self.getPathType() {
+            dict.setValue(pathType.rawValue, forKey: "path_type")
+        }
+        if let filePath = self.getFilePath() {
+            dict.setValue(filePath.absoluteString, forKey: "file_path")
+        }
+        dict.setValue(self.getID(), forKey: "id")
+        
+        var directories:[String] = [String]()
+        for (_, file) in self.DIRECTORIES.enumerated() {
+            directories.append( file.absoluteString )
+        }
+        dict.setValue(directories, forKey: "directories")
+        
+        var files:[NSDictionary] = [NSDictionary]()
+        for (_, file) in self.FILES.enumerated() {
+            files.append(file.toDictionary())
+        }
+        dict.setValue(files, forKey: "files")
+        
+        
+        return dict
     }
 
 	func zip( toFileName:String, onProgress:@escaping((Double)->()), onSuccess:@escaping((ZipFile)->()), onFail:@escaping((String)->())) {
