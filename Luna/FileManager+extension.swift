@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Zip
 
 extension FileManager {
 
@@ -261,6 +262,55 @@ extension FileManager {
             }
         }
         return false
+    }
+    
+    public class func zip( filePaths:[URL], resultFilePath:URL, password:String?=nil, onProgress:@escaping((Double)->()), onSuccess:@escaping((Bool)->()), onFail:@escaping((String)->()), onFinished:@escaping ((URL)->())) {
+    
+        do {
+            var isStart = false
+            var isFinished = false
+            try Zip.zipFiles(paths: filePaths, zipFilePath: resultFilePath, password: password, compression: .BestCompression, progress: { (progress) in
+                
+                if isFinished {
+                    return
+                }
+                if !isStart {
+                    onSuccess( true )
+                    isStart = true
+                }
+                
+                onProgress( progress * 100 )
+                
+                if progress >= 1.0 {
+                    onFinished( resultFilePath )
+                    isFinished = true
+                }
+            })
+        } catch let error as NSError {
+            onFail( error.localizedDescription )
+        }
+    }
+    
+    public class func unzip( filePath:URL, destination:URL, overwrite:Bool, password:String?=nil, onProgress:@escaping ((Double)->()), onSuccess:@escaping ((Bool)->()), onFail:((String)->()), onFinished:@escaping ((URL)->()) ) {
+    
+        do {
+            var isStart = false
+            try Zip.unzipFile(filePath, destination: destination, overwrite: overwrite, password: password, progress: { (progress) -> () in
+                
+                if !isStart {
+                    isStart = true
+                    onSuccess( true )
+                }
+                
+                onProgress( progress * 100 )
+                
+                if progress >= 1.0 {
+                    onFinished( destination )
+                }
+            })
+        } catch let error as NSError {
+            onFail( error.localizedDescription )
+        }
     }
 
 	public class func initiCloudDirectory() {

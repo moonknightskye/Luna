@@ -190,7 +190,7 @@ class FileCollection {
         return dict
     }
 
-	func zip( toFileName:String, onProgress:@escaping((Double)->()), onSuccess:@escaping((ZipFile)->()), onFail:@escaping((String)->())) {
+    func zip( toFileName:String, toPath:String?=nil, onProgress:@escaping((Double)->()), onSuccess:@escaping((ZipFile)->()), onFail:@escaping((String)->())) {
 		var paths:[URL] = [URL]()
 		for (_, file) in self.DIRECTORIES.enumerated() {
 			paths.append(file)
@@ -199,7 +199,14 @@ class FileCollection {
 			paths.append(file.getFilePath()!)
 		}
 
-		let filepath = FileManager.getDocumentsDirectoryPath(pathType: self.pathType)!.appendingPathComponent(toFileName)
+		let filepath = FileManager.getDocumentsDirectoryPath(pathType: self.pathType, relative: toPath ?? self.getPath())!.appendingPathComponent(toFileName)
+        if !FileManager.isExists(url: filepath) {
+            if !FileManager.createDirectory(absolutePath: filepath.path) {
+                onFail( FileError.CANNOT_CREATE.localizedDescription )
+                return
+            }
+        }
+        
 		do {
 			var isFinished = false
 			try Zip.zipFiles(paths: paths, zipFilePath: filepath, password: nil, progress: { (progress) in

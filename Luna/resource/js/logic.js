@@ -652,6 +652,7 @@
 
 
               utility.getElement( "unzip", "id" ).addEventListener( "click", function() {
+
                 iOS.getZipFile({
                   path    : "https://s3.amazonaws.com/data.openaddresses.io/runs/176076/br/am/statewide.zip"
                 }).then( function(file){
@@ -789,6 +790,46 @@
                 });
               });
 
+              utility.getElement( "zip", "id" ).addEventListener( "click", function() {
+                iOS.getImageFile({
+                  filename: "spiderman.jpg",
+                  path_type: "document"
+                }).then(function(file){
+
+                  file.zip({
+                    filename    : "spiderman.zip",
+                    isOverwrite : true
+                  }).then(function(result){
+                    iOS.debug("file.zip: " + result)
+                  }, function(error){
+                    iOS.debug("file.zip: " + error)
+                  })
+
+                  file.onZip().then(function(result){
+                    iOS.debug("file.onZip: " + result)
+                  }, function(error){
+                    iOS.debug("file.onZip: " + error)
+                  })
+                  file.onZipped().then(function(zipFile){
+                    iOS.debug("file.onZipped: ")
+                    iOS.debug( zipFile.toJSON() )
+                  }, function(error){
+                    iOS.debug("file.onZipped: " + error)
+                  })
+                  file.onZipping(function(progress){
+                    iOS.debug("file.onZipping: " + progress)
+                  }).then(function(result){
+                    iOS.debug("file.onZipping: " + result)
+                  }, function(error){
+                    iOS.debug("file.onZipping: " + error)
+                  });
+
+                },function(error){
+                  iOS.debug("iOS.getImageFile: " + error)
+                });
+              });
+
+
 
               utility.getElement( "filecol", "id" ).addEventListener( "click", function() {
 
@@ -849,7 +890,7 @@
                   });
                 };
 
-                listFiles("zip3folders")
+                listFiles("zip3folders");
 
                 
 

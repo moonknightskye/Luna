@@ -129,6 +129,14 @@ class CommandProcessor {
 		case .SHARE_FILE:
 			checkShareFile( command: command )
 			break
+        case .ZIP:
+            checkZip( command: command )
+            break
+        case .ON_ZIP,
+             .ON_ZIPPING,
+             .ON_ZIPPED:
+            checkZipEvent( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -144,17 +152,18 @@ class CommandProcessor {
         }
         return nil
     }
+  
+    public class func getToBeZippedFile( command: Command ) -> File? {
+        if let fileId = (command.getParameter() as AnyObject).value(forKeyPath: "file_id") as? Int {
+            return File.getToBeZippedFile(fileId: fileId)
+        }
+        return nil
+    }
     
     public class func getZipFile( command: Command ) -> ZipFile? {
-        if let file = (command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary {
-            if let fileId = file.value(forKey: "file_id") as? Int {
-                if let zipfile = ZipFile.getZipFile(fileId: fileId ) {
-                    zipfile.update(dict: file)
-                    return zipfile
-                }
-            }
+        if let fileId = (command.getParameter() as AnyObject).value(forKeyPath: "file_id") as? Int {
+            return ZipFile.getZipFile(fileId: fileId)
         }
-        command.reject( errorMessage: FileError.ALREADY_UNZIPPED.localizedDescription )
         return nil
     }
     
@@ -287,7 +296,10 @@ class CommandProcessor {
     }
     
     private class func checkUnzipEvent( command: Command) {
-        let _ = CommandProcessor.getZipFile(command: command)
+        //let _ = CommandProcessor.getZipFile(command: command)
+    }
+    private class func checkZipEvent( command: Command) {
+        //let _ = CommandProcessor.getZipFile(command: command)
     }
     
     public class func processWebViewOnload( wkmanager: WebViewManager ) {
@@ -584,17 +596,30 @@ class CommandProcessor {
         })
     }
     private class func checkUnzip( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        
-        if let zipFile = CommandProcessor.getZipFile(command: command) {
-            zipFile.unzip(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
+        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
+        var zipFile:ZipFile?
+        switch( parameter ) {
+        case is ZipFile:
+            zipFile = parameter as? ZipFile
+            break
+        case is NSDictionary:
+            do {
+                zipFile = try ZipFile( file: parameter as! NSDictionary )
+            } catch  let error as NSError {
+                onFail( error.localizedDescription )
+            }
+            break
+        default:
+            break;
+        }
+        if zipFile != nil {
+            zipFile!.unzip(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
                 , isOverwrite: (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool
                 , password: (command.getParameter() as AnyObject).value(forKeyPath: "password") as? String
-                , onSuccess: { onSuccess(true) }
-                , onFail: { (error) in onFail( error ) }
+                , onSuccess: { result in onSuccess(result) }
+                , onFail: { error in onFail( error ) }
             )
-            return
         }
-        command.reject( errorMessage: FileError.INVALID_PARAMETERS.localizedDescription )
     }
     
 
@@ -1212,6 +1237,84 @@ class CommandProcessor {
 			onFail( "Failed to initialize File" )
 		}
 	}
+    
+    private class func checkZip( command: Command ) {
+        processZip( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    
+    private class func processZip( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
+        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
+        var file:File?
+        switch( parameter ) {
+        case is File:
+            file = parameter as? File
+            break
+        case is NSDictionary:
+            do {
+                file = try File( file: parameter as! NSDictionary )
+            } catch let error as NSError {
+                onFail( error.localizedDescription )
+                return
+            }
+            break
+        default:
+            break;
+        }
+        if file != nil {
+            if let fileName = (command.getParameter() as AnyObject).value(forKeyPath: "filename") as? String {
+                let to = (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
+                let isOverwrite = (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool ?? false
+                let password = (command.getParameter() as AnyObject).value(forKeyPath: "password") as? String
+                
+                file!.zip(fileName: fileName, to: to, isOverwrite: isOverwrite, password: password, onProgress: { (progress) in
+                    print(progress)
+                }, onSuccess: { (result) in
+                    onSuccess( result )
+                }, onFail: { (error) in
+                    onFail( error )
+                })
+            } else {
+                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+            }
+            
+        }
+    }
+    
+    public class func processOnZip( file: File ) {
+        getCommand(commandCode: .ON_ZIP) { (command) in
+            if let zipFile = getToBeZippedFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    command.resolve(value: true)
+                }
+            }
+        }
+    }
+    public class func processOnZipped( fileName:String, file: File, zippedFilePath:URL ) {
+        getCommand(commandCode: .ON_ZIPPED) { (command) in
+            if let zipFile = getToBeZippedFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    let zipFile = ZipFile(fileId: File.generateID(), document: fileName, filePath: zippedFilePath)
+                    command.resolve(value: zipFile.toDictionary(), raw: zipFile)
+                }
+            }
+        }
+    }
+    public class func processOnZipping( file: File, progress:Double ) {
+        getCommand(commandCode: .ON_ZIPPING) { (command) in
+            if let zipFile = getToBeZippedFile(command: command) {
+                if zipFile.getID() == file.getID() {
+                    command.update(value: progress)
+                    if progress >= 100.0 {
+                        command.resolve(value: true)
+                    }
+                }
+            }
+        }
+    }
 
 
 }

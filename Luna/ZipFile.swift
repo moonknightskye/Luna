@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Zip
 
 class ZipFile: File {
 
@@ -25,31 +24,25 @@ class ZipFile: File {
 
 	override init( fileId:Int, document:String, filePath: URL) {
         super.init( fileId:fileId, document:document, filePath:filePath )
-        add()
 	}
 
 	override init( fileId:Int, document:String, path:String?=nil, filePath:URL?=nil ) throws {
 		try super.init( fileId:fileId, document: document, path: path, filePath: filePath)
-        add()
 	}
 
 	override init( fileId:Int, bundle:String, filePath: URL ) {
 		super.init( fileId:fileId, bundle: bundle, filePath: filePath)
-        add()
 	}
     override init( fileId:Int, bundle:String, path:String?=nil, filePath:URL?=nil) throws {
 		try super.init( fileId:fileId, bundle: bundle, path: path, filePath: filePath)
-        add()
 	}
 
 	override init ( fileId:Int, path:String?=nil, filePath: URL ) {
 		super.init( fileId:fileId, path: path, filePath: filePath)
-		add()
 	}
     
     override init( fileId:Int, url:String ) throws {
         try super.init( fileId:fileId, url:url )
-        add()
     }
 
     convenience init( file:NSDictionary ) throws {
@@ -110,7 +103,10 @@ class ZipFile: File {
     }
     
     private func add() {
-        //ZipFile.counter1 += 1;
+        if let _ = ZipFile.getZipFile( fileId: self.getID() ) {
+            print("Zip file already in queue")
+            return
+        }
         ZipFile.LIST.append( self )
     }
     
@@ -123,7 +119,7 @@ class ZipFile: File {
         return nil
     }
     
-    func remove() {
+    private func remove() {
         ZipFile.remove( file: self )
         print("Removed zipped file \(self.getID())")
     }
@@ -136,7 +132,7 @@ class ZipFile: File {
         }
     }
     
-    func unzip( to:String?=nil, isOverwrite:Bool?=false, password:String?="", onSuccess:@escaping(()->()), onFail:((String)->()) ) {
+    func unzip( to:String?=nil, isOverwrite:Bool?=false, password:String?="", onSuccess:@escaping((Bool)->()), onFail:((String)->()) ) {
 
         if self.getPathType() == FilePathType.URL_TYPE {
             onFail( FileError.INVALID_FORMAT.localizedDescription )
@@ -146,73 +142,41 @@ class ZipFile: File {
         self.password = password ?? ""
         self.isOverwrite = isOverwrite ?? false
         
-        do {
-            var destination:URL?
-            if to != nil {
-                self.unzipPath = to!
-                destination = FileManager.getDocumentsDirectoryPath()!.appendingPathComponent(to!)
-            } else {
-                if let filePath = self.getFilePath()?.absoluteString {
-                    let path = filePath.substring(from: 0, to: filePath.lastIndexOf(target: "/")! + 1)
-                    destination = URL(string: path)
-                }
+        var destination:URL?
+        if to != nil {
+            self.unzipPath = to!
+            destination = FileManager.getDocumentsDirectoryPath()!.appendingPathComponent(to!)
+        } else {
+            if let filePath = self.getFilePath()?.absoluteString {
+                let path = filePath.substring(from: 0, to: filePath.lastIndexOf(target: "/")! + 1)
+                destination = URL(string: path)
             }
-            
-            if let filePath = self.getFilePath(), let url = destination {
-                var isStart = false
-                try Zip.unzipFile(filePath, destination: url, overwrite: self.isOverwrite, password: self.password, progress: { (progress) -> () in
-                    
-                    if !isStart {
-                        isStart = true
-                        self.onUnzip()
-                        onSuccess()
-                    }
-                    
-                    self.onUnzipping( progress: progress * 100 )
-                    
-                    if progress >= 1.0 {
-                        self.onUnzipped(unzippedFilePath: url)
-                        self.remove()
-                    }
-                })
-                
-                return
-            }
-        } catch let error as NSError {
-            print("UNZIP=================================")
-            print(self.getFileName() as Any)
-            print(self.getFilePath() as Any)
-            
-            onFail( error.localizedDescription )
-            remove()
+        }
+        
+        if let filePath = self.getFilePath(), let url = destination {
+            FileManager.unzip(filePath: filePath, destination: url, overwrite: self.isOverwrite, onProgress: { (progress) in
+                self.onUnzipping( progress: progress )
+            }, onSuccess: { (result) in
+                self.add()
+                onSuccess( true )
+                self.onUnzip()
+            }, onFail: { (error) in
+                onFail( error )
+                self.remove()
+            }, onFinished: { (unzippedFilePath) in
+                self.onUnzipped(unzippedFilePath: unzippedFilePath)
+                self.remove()
+            })
             return
         }
+        
         onFail( FileError.UNKNOWN_ERROR.localizedDescription )
         remove()
     }
     
-//    public override func toDictionary() -> NSDictionary {
-//        let dict = NSMutableDictionary()
-//        if let filename = self.getFileName() {
-//            dict.setValue(filename, forKey: "filename")
-//        }
-//        if let path = self.getPath() {
-//            dict.setValue(path, forKey: "path")
-//        }
-//        if let pathType = self.getPathType() {
-//            dict.setValue(pathType.rawValue, forKey: "path_type")
-//        }
-//        if let filePath = self.getFilePath() {
-//            dict.setValue(filePath.absoluteString, forKey: "file_path")
-//        }
-//        dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
-//        dict.setValue(self.zipfile_id, forKey: "zipfile_id")
-//        return dict
-//    }
-//    
-//    override func getID() -> Int {
-//        return self.zipfile_id
-//    }
+    override func zip(fileName: String, to: String?, isOverwrite: Bool, password: String?, onProgress: @escaping ((Double) -> ()), onSuccess: @escaping ((Bool) -> ()), onFail: @escaping ((String) -> ())) {
+        onFail( FileError.INVALID_FILETYPE.localizedDescription + " : \(self.getFileType())" )
+    }
 
 	func setUnzipPath( unzipPath:String ) {
 		self.unzipPath = unzipPath

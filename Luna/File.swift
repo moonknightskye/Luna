@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Zip
 
 public enum FileError: Error {
     case INEXISTENT
@@ -25,6 +26,7 @@ public enum FileError: Error {
     case INVALID_FORMAT
     case NO_DATA
     case ALREADY_UNZIPPED
+    case INVALID_FILETYPE
     case UNKNOWN_ERROR
 }
 extension FileError: LocalizedError {
@@ -62,6 +64,8 @@ extension FileError: LocalizedError {
             return NSLocalizedString("Unknown Error occured", comment: "Error")
         case .ALREADY_UNZIPPED:
             return NSLocalizedString("The file may already have been unzipped", comment: "Error")
+        case .INVALID_FILETYPE:
+            return NSLocalizedString("This filetype cannot perform this command", comment: "Error")
         }
     }
 }
@@ -110,6 +114,7 @@ class File {
     private var filePath:URL!
     private var fileExtension:FileExtention?
     static var counter = 0;
+    static var ZIPLIST:[File] = [File]()
     
     
     init(){}
@@ -600,4 +605,86 @@ class File {
 			onFail( error.localizedDescription )
 		}
 	}
+    
+    private func add() {
+        if let _ = File.getToBeZippedFile( fileId: self.getID() ) {
+            print("File to be zipped already in queue")
+            return
+        }
+        File.ZIPLIST.append( self )
+    }
+    
+    public class func getToBeZippedFile( fileId:Int ) -> File? {
+        for (_, file) in File.ZIPLIST.enumerated() {
+            if  file.getID() == fileId{
+                return file
+            }
+        }
+        return nil
+    }
+    
+    private func remove() {
+        File.remove( file: self )
+        print("Removed file from to be zipped list \(self.getID())")
+    }
+    
+    public class func remove( file: File ) {
+        for ( index, zfile) in File.ZIPLIST.enumerated() {
+            if zfile === file {
+                File.ZIPLIST.remove(at: index)
+            }
+        }
+    }
+    
+    func zip( fileName:String, to:String?=nil, isOverwrite:Bool, password:String?=nil, onProgress:@escaping((Double)->()), onSuccess:@escaping((Bool)->()), onFail:@escaping((String)->())) {
+        
+        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: to ?? self.getPath()) {
+            if !FileManager.isExists(url: relativeURL) {
+                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
+                    onFail( FileError.CANNOT_CREATE.localizedDescription )
+                    return
+                }
+            }
+            
+            let resultFilePath = relativeURL.appendingPathComponent( fileName )
+            if FileManager.isExists(url: resultFilePath ) {
+                if isOverwrite {
+                    if !FileManager.deleteFile(filePath: resultFilePath) {
+                        onFail( FileError.CANNOT_DELETE.localizedDescription )
+                        return
+                    }
+                } else {
+                    onFail( FileError.ALREADY_EXISTS.localizedDescription )
+                    return
+                }
+            }
+            
+            FileManager.zip(filePaths: [self.getFilePath()!], resultFilePath: resultFilePath, password: password, onProgress: { (progress) in
+                self.onZipping( progress: progress )
+            }, onSuccess: { (result) in
+                self.add()
+                onSuccess( result )
+                self.onZip()
+            }, onFail: { (error) in
+                onFail( error )
+                self.remove()
+            }, onFinished: { (zippedFilePath) in
+                self.onZipped( fileName:fileName, zippedFilePath: zippedFilePath )
+                self.remove()
+            })
+        }
+        
+    }
+    
+    func onZip() {
+        CommandProcessor.processOnZip(file: self)
+    }
+    
+    func onZipped( fileName:String, zippedFilePath:URL ) {
+        CommandProcessor.processOnZipped(fileName:fileName, file: self, zippedFilePath:zippedFilePath)
+    }
+    
+    func onZipping( progress: Double ) {
+        CommandProcessor.processOnZipping(file: self, progress: progress)
+    }
 }

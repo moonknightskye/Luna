@@ -58,7 +58,11 @@
         ON_UNZIPPING                : 36,
         ON_UNZIPPED                 : 37,
         GET_FILE_COL                : 38,
-        SHARE_FILE                  : 39
+        SHARE_FILE                  : 39,
+        ZIP                         : 40,
+        ON_ZIP                      : 41,
+        ON_ZIPPING                  : 42,
+        ON_ZIPPED                   : 43
     };
     var CommandPriority = {
     	CRITICAL					: 0,
@@ -691,7 +695,7 @@
                 command_code    : COMMAND.ON_UNZIP,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    file        : this.toJSON()
+                    file_id     : this.getID()
                 }
             });
             return CommandProcessor.queue( command );
@@ -701,7 +705,7 @@
                 command_code    : COMMAND.ON_UNZIPPED,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    file        : this.toJSON()
+                    file_id     : this.getID()
                 }
             });
             return CommandProcessor.queue( command );
@@ -711,7 +715,7 @@
                 command_code    : COMMAND.ON_UNZIPPING,
                 priority		: CommandPriority.CRITICAL,
                 parameter       : {
-                    file        : this.toJSON()
+                    file_id     : this.getID()
                 }
             });
             command.onUpdate( fn );
@@ -1070,6 +1074,54 @@
                 file.setFilePath( undefined );
                 return result;
             });
+            return CommandProcessor.queue( command );
+        };
+
+        file.zip = function( param ) {
+            var command = new Command({
+                command_code    : COMMAND.ZIP,
+                priority        : CommandPriority.BACKGROUND,
+                parameter       : {
+                    file        : this.toJSON(),
+                    filename    : param.filename,
+                    isOverwrite : param.isOverwrite || false
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        file.onZip = function() {
+            var command = new Command({
+                command_code    : COMMAND.ON_ZIP,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : {
+                    file_id     : this.getID()
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+        file.onZipped = function() {
+            var command = new Command({
+                command_code    : COMMAND.ON_ZIPPED,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : {
+                    file_id     : this.getID()
+                }
+            });
+            command.onResolve( function( result ) {
+                return new ZipFile( result );
+            });
+            return CommandProcessor.queue( command );
+        };
+        file.onZipping = function( fn ) {
+            var command = new Command({
+                command_code    : COMMAND.ON_ZIPPING,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : {
+                    file_id     : this.getID()
+                }
+            });
+            command.onUpdate( fn );
             return CommandProcessor.queue( command );
         };
 
