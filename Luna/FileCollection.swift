@@ -170,7 +170,7 @@ class FileCollection {
         if let filePath = self.getFilePath() {
             dict.setValue(filePath.absoluteString, forKey: "file_path")
         }
-        dict.setValue(self.getID(), forKey: "id")
+        dict.setValue(self.getID(), forKey: "collection_id")
         
         var directories:[String] = [String]()
         for (_, file) in self.DIRECTORIES.enumerated() {
@@ -228,16 +228,20 @@ class FileCollection {
 
 	}
 
-	func share( onSuccess:@escaping((Bool)->()) ) {
-		var paths:[URL] = [URL]()
+	func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
+		var filePaths:[URL] = [URL]()
 		for (_, file) in self.DIRECTORIES.enumerated() {
-			paths.append(file)
+			filePaths.append(file)
 		}
 		for (_, file) in self.FILES.enumerated() {
-			paths.append(file.getFilePath()!)
+			filePaths.append(file.getFilePath()!)
 		}
 
-		FileManager.share(filePaths: paths, onSuccess: onSuccess )
+        if filePaths.count > 0 {
+            FileManager.share(filePaths: filePaths, onSuccess: onSuccess )
+        } else {
+            onFail( FileError.NO_DATA.localizedDescription )
+        }
 	}
 
 

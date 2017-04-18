@@ -1210,32 +1210,37 @@ class CommandProcessor {
 	}
 
 	private class func processShareFile( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-		let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
-		var file:File?
-		switch( parameter ) {
-		case is File:
-			file = parameter as? File
-			break
-		case is NSDictionary:
-			do {
-				file = try File( file: parameter as! NSDictionary )
-			} catch let error as NSError {
-				onFail( error.localizedDescription )
-				return
-			}
-			break
-		default:
-			break;
-		}
-		if file != nil {
-			let _ = file!.share( onSuccess: { result in
-				onSuccess( result )
-			}, onFail: { (error) in
-				onFail( error )
-			})
-		} else {
-			onFail( "Failed to initialize File" )
-		}
+        if let fileObj = (command.getParameter() as AnyObject).value(forKeyPath: "file") {
+            var file:File?
+            switch( fileObj ) {
+            case is File:
+                file = fileObj as? File
+                break
+            case is NSDictionary:
+                do {
+                    file = try File( file: fileObj as! NSDictionary )
+                } catch let error as NSError {
+                    onFail( error.localizedDescription )
+                    return
+                }
+                break
+            default:
+                break;
+            }
+            if file != nil {
+                let _ = file!.share( onSuccess: { result in
+                    onSuccess( result )
+                }, onFail: { (error) in
+                    onFail( error )
+                })
+            } else {
+                onFail( "Failed to initialize File" )
+            }
+        } else if let fileColObj = (command.getParameter() as AnyObject).value(forKeyPath: "file_collection") {
+            print( fileColObj )
+        } else {
+            onFail( FileError.INEXISTENT.localizedDescription )
+        }
 	}
     
     private class func checkZip( command: Command ) {

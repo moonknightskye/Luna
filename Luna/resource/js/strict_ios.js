@@ -818,7 +818,7 @@
         var fileCol = {};
 
         var _INTERNAL_DATA = {
-            id                  : param.id,
+            collection_id       : param.collection_id,
             path                : param.path,
             path_type           : param.path_type || "document",
             file_path           : param.file_path,
@@ -850,12 +850,72 @@
             }
         };
 
+        fileCol.toJSON = function(){
+            var getFilesJSON = function(){
+                var JSON = [];
+                utility.forEvery( fileCol.getFiles(), function(file){
+                    JSON.push( file.toJSON() );
+                });
+                return JSON;
+            };
+            var getDirectories = function(){
+                var JSON = [];
+                utility.forEvery( fileCol.getDirectories(), function(directory){
+                    JSON.push( directory );
+                });
+                return JSON;
+            };
+            return {
+                collection_id   : this.getID(),
+                path            : this.getPath(),
+                path_type       : this.getPathType(),
+                file_path       : this.getFilePath(),
+                files           : getFilesJSON(),
+                directories     : getDirectories()
+            };
+        };
+
+        fileCol.getID = function() {
+            return _INTERNAL_DATA.collection_id;
+        };
+
+        fileCol.setFilePath = function( file_path ) {
+            _INTERNAL_DATA.file_path = file_path;
+        };
+        fileCol.getFilePath = function() {
+            return _INTERNAL_DATA.file_path;
+        };
+        fileCol.setPath = function( path ) {
+            _INTERNAL_DATA.path = path;
+        };
+        fileCol.getPath = function( ) {
+            return _INTERNAL_DATA.path;
+        };
+
+        fileCol.setPathType = function( path_type ) {
+            _INTERNAL_DATA.path_type = path_type;
+        };
+        fileCol.getPathType = function( ) {
+            return _INTERNAL_DATA.path_type;
+        };
+
         fileCol.getDirectories = function(){
             return _INTERNAL_DATA.directories;
         };
 
         fileCol.getFiles = function() {
             return _INTERNAL_DATA.files;
+        };
+
+        fileCol.share = function() {
+            var command = new Command({
+                command_code    : COMMAND.SHARE_FILE,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : {
+                    file_collection : this.toJSON()
+                }
+            });
+            return CommandProcessor.queue( command );
         };
 
         fileCol.addFile = function( file ) {

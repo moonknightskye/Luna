@@ -881,8 +881,14 @@
                       }
                     });
 
+                    fileCollection.share().then(function(resut){
+                      iOS.debug("fileCollection.share: " + resut)
+                    },function(error){
+                      iOS.debug("fileCollection.share: " + error)
+                    });
+
                     utility.forEvery( fileCollection.getDirectories(), function(directory){
-                      listFiles(directory)
+                      //listFiles(directory)
                     });
 
                   }, function(error){
@@ -890,7 +896,9 @@
                   });
                 };
 
-                listFiles("zip3folders");
+                //zip3folders
+                //zip3files
+                listFiles("zip3files");
 
                 
 
