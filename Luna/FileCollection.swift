@@ -22,18 +22,52 @@ class FileCollection {
     public init(){}
     
     convenience init( fileCol: NSDictionary ) throws {
+		let Id = fileCol.value(forKeyPath: "collection_id") as? Int ?? FileCollection.generateID()
         let path:String? = fileCol.value(forKeyPath: "path") as? String
         var filePathURL:URL?
         let filePath:String? = fileCol.value(forKeyPath: "file_path") as? String
         if filePath != nil {
             filePathURL = URL(string: filePath!)
         }
+
+		var files:[File] = [File]()
+		if let filesObj = fileCol.value(forKeyPath: "files") as? [NSDictionary] {
+			for ( _, fileObj) in filesObj.enumerated() {
+				if let fileType = FileType(rawValue: (fileObj.value(forKeyPath: "object_type") as! String) ) {
+					switch( fileType ) {
+					case .IMAGE_FILE:
+						files.append(ImageFile(imageFile: fileObj))
+						break
+					case .HTML_FILE:
+						files.append( HtmlFile(htmlFile: fileObj))
+						break
+					case .VIDEO_FILE:
+						files.append( VideoFile(videoFile: fileObj ))
+						break
+					case .ZIP_FILE:
+						files.append( ZipFile(zipFile: fileObj ) )
+						break
+					default:
+						files.append( File( filedict:fileObj))
+						break
+					}
+				}
+			}
+		}
         
         if let pathType = fileCol.value(forKeyPath: "path_type") as? String {
+
+			var directories:[URL] = [URL]()
+			if let dirsObj = fileCol.value(forKey: "directories") as? [String] {
+				for( _, dirObj) in dirsObj.enumerated() {
+					directories.append( FileManager.getDocumentsDirectoryPath(pathType: FilePathType(rawValue: pathType), relative: dirObj)! )
+				}
+			}
+
             if let filePathType = FilePathType( rawValue: pathType ) {
                 switch filePathType {
                 case .BUNDLE_TYPE, .DOCUMENT_TYPE, .ICLOUD_TYPE:
-                    try self.init(relative: path!, pathType: filePathType, filePath:filePathURL )
+					try self.init( Id:Id, relative: path!, pathType: filePathType, filePath:filePathURL, files:files, directories:directories )
                     return
                 default:
                     break
@@ -44,7 +78,8 @@ class FileCollection {
         self.init()
     }
     
-    init( relative:String, pathType:FilePathType?=nil, filePath:URL?=nil ) throws {
+	init( Id:Int, relative:String, pathType:FilePathType?=nil, filePath:URL?=nil, files:[File]?=nil, directories:[URL]?=nil ) throws {
+		self.setID(Id: Id)
 		self.setPath(path: relative)
 
         if pathType != nil {
@@ -57,37 +92,45 @@ class FileCollection {
 		if !FileManager.isExists(url: self.getFilePath()!) {
 			throw FileError.INEXISTENT
 		}
-        
-        if let fileCollection = FileManager.getDocumentsFileList( path: self.getFilePath()! ) {
-            for (_, file) in fileCollection.enumerated() {
-                if file.absoluteString.endsWith(string: "/") {
-                    self.DIRECTORIES.append(file)
-                } else {
-					var fileObj:File?
-					let fileExt = File.getFileExtension(filename: file.absoluteString )
-					switch( File.getFileType(fileExt:fileExt) ) {
-                    case .ZIP_FILE:
-						fileObj = ZipFile( fileId:File.generateID(), path: self.path, filePath: file )
-						break
-					case .IMAGE_FILE:
-						fileObj = ImageFile( fileId:File.generateID(), path: self.path, filePath: file )
-						break
-					case .VIDEO_FILE:
-						fileObj = VideoFile( fileId:File.generateID(), path: self.path, filePath: file )
-						break
-					case .HTML_FILE:
-						fileObj = HtmlFile( fileId:File.generateID(), path: self.path, filePath: file )
-						break
-                    default:
-						fileObj = File( fileId:File.generateID(), path: self.path, filePath: file )
-                        break
-                    }
-                    self.FILES.append( fileObj! )
-                }
-            }
-        }
+
+		if directories != nil && directories!.count > 0 {
+			self.DIRECTORIES = directories!
+		}
+		if files != nil && files!.count > 0 {
+			self.FILES = files!
+		} else {
+			if let fileCollection = FileManager.getDocumentsFileList( path: self.getFilePath()! ) {
+				for (_, file) in fileCollection.enumerated() {
+					if file.absoluteString.endsWith(string: "/") {
+						self.DIRECTORIES.append(file)
+					} else {
+						var fileObj:File?
+						let fileExt = File.getFileExtension(filename: file.absoluteString )
+						switch( File.getFileType(fileExt:fileExt) ) {
+						case .ZIP_FILE:
+							fileObj = ZipFile( fileId:File.generateID(), path: self.path, filePath: file )
+							break
+						case .IMAGE_FILE:
+							fileObj = ImageFile( fileId:File.generateID(), path: self.path, filePath: file )
+							break
+						case .VIDEO_FILE:
+							fileObj = VideoFile( fileId:File.generateID(), path: self.path, filePath: file )
+							break
+						case .HTML_FILE:
+							fileObj = HtmlFile( fileId:File.generateID(), path: self.path, filePath: file )
+							break
+						default:
+							fileObj = File( fileId:File.generateID(), path: self.path, filePath: file )
+							break
+						}
+						self.FILES.append( fileObj! )
+					}
+				}
+			}
+
+		}
     }
-    
+
     func setID(Id: Int) {
         if self.Id == nil {
             self.Id = Id
@@ -228,11 +271,11 @@ class FileCollection {
 
 	}
 
-	func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
+	public func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
 		var filePaths:[URL] = [URL]()
-		for (_, file) in self.DIRECTORIES.enumerated() {
-			filePaths.append(file)
-		}
+//		for (_, file) in self.DIRECTORIES.enumerated() {
+//			filePaths.append(file)
+//		}
 		for (_, file) in self.FILES.enumerated() {
 			filePaths.append(file.getFilePath()!)
 		}

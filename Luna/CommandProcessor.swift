@@ -1237,12 +1237,36 @@ class CommandProcessor {
                 onFail( "Failed to initialize File" )
             }
         } else if let fileColObj = (command.getParameter() as AnyObject).value(forKeyPath: "file_collection") {
-            print( fileColObj )
+			var fileCol:FileCollection?
+			switch( fileColObj ) {
+			case is FileCollection:
+				fileCol = fileColObj as? FileCollection
+				break
+			case is NSDictionary:
+				do {
+					fileCol = try FileCollection( fileCol: fileColObj as! NSDictionary )
+					let _ = fileCol!.share( onSuccess: { result in
+						onSuccess( result )
+					}, onFail: { (error) in
+						onFail( error )
+					})
+				} catch let error as NSError {
+					onFail( error.localizedDescription )
+					return
+				}
+				break
+			default:
+				break;
+			}
+			if fileCol != nil {
+				print(fileCol!)
+			}
+
         } else {
             onFail( FileError.INEXISTENT.localizedDescription )
         }
 	}
-    
+
     private class func checkZip( command: Command ) {
         processZip( command: command, onSuccess: { result in
             command.resolve( value: result )

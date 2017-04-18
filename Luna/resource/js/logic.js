@@ -844,12 +844,23 @@
                     utility.forEvery( fileCollection.getFiles(), function(file){
                       
                       if(file.objectType() === "ImageFile") {
-                        file.getResizedDOM({quality:10}).then( function( DOM ){
+                        file.getResizedDOM({quality:100, height: 150}).then( function( DOM ){
                           iOS.debug( "imageFile.getResizedDOM: " );
                           document.body.appendChild( DOM );
                         }, function(error){
                           iOS.debug( "imageFile.getResizedDOM: " + error );
                         });
+                      }
+
+                      if(file.objectType() === "File") {
+                        iOS.debug( file.toJSON() )
+                        if( file.getFilename() === ".DS_Store" ) {
+                          file.delete().then(function(result){
+                            iOS.debug("deleted" + file.getFilename())
+                          }, function(error){
+                            iOS.debug(error)
+                          })
+                        }
                       }
 
                       if(file.objectType() === "ZipFile") {
@@ -898,7 +909,7 @@
 
                 //zip3folders
                 //zip3files
-                listFiles("zip3files");
+                listFiles("zip3folders");
 
                 
 

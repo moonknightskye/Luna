@@ -627,7 +627,9 @@
     function VideoFile( param ) {
         var file = {};
 
-        function init(){};
+        function init(){
+            file.setObjectType( "VideoFile" );
+        };
 
         file.greet = function(){
             this.greet__super();
@@ -669,7 +671,9 @@
     function HtmlFile( param ) {
     	var file = {};
 
-    	function init(){};
+    	function init(){
+            file.setObjectType( "HtmlFile" );
+        };
 
 		file.greet = function(){
 			this.greet__super();
@@ -684,7 +688,9 @@
     function ZipFile( param ) {
         var file = {};
 
-        function init(){};
+        function init(){
+            this.setObjectType( "ZipFile" );
+        };
 
         file.greet = function(){
             this.greet__super();
@@ -750,7 +756,9 @@
     	var _INTERNAL_DATA = {
     	};
 
-    	function init(){};
+    	function init(){
+            file.setObjectType( "ImageFile" );
+        };
 
     	file.getEXIFInfo = function(){
     		var command = new Command({
@@ -956,6 +964,9 @@
         	iOS.debug("HELLO1");
         };
 
+        file.setObjectType = function( object_type ) {
+            _INTERNAL_DATA.object_type = object_type;
+        };
         file.objectType = function() {
             return _INTERNAL_DATA.object_type;
         };
@@ -972,6 +983,7 @@
                 path_type       : this.getPathType(),
                 file_path       : this.getFilePath(),
                 file_extension  : this.getFileExtension(),
+                object_type     : this.objectType()
             };
         };
 

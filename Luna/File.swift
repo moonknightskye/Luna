@@ -189,7 +189,34 @@ class File {
         }
     }
     
-    
+	convenience init( filedict: NSDictionary ) {
+		let filePath:URL = URL( string: filedict.value(forKeyPath: "file_path") as! String )!
+		let pathType = FilePathType( rawValue: filedict.value(forKeyPath: "path_type") as! String )!
+		let fileId:Int! = filedict.value(forKeyPath: "file_id") as? Int ?? File.generateID()
+
+		switch pathType {
+		case .BUNDLE_TYPE:
+			let fileName:String = filedict.value(forKeyPath: "filename") as! String
+			self.init( fileId:fileId, bundle:fileName, filePath:filePath )
+			return
+		case .DOCUMENT_TYPE:
+			let fileName:String = filedict.value(forKeyPath: "filename") as! String
+			self.init( fileId:fileId, document:fileName, filePath:filePath )
+			return
+		case .URL_TYPE:
+			self.init()
+			self.setFilePath(filePath: filePath)
+			self.setPathType(pathType: FilePathType.URL_TYPE)
+			return
+		case .ICLOUD_TYPE:
+			print("IMPLELEMNT THIS")
+			break
+		default:
+			break
+		}
+		self.init()
+	}
+
     public convenience init( file:NSObject ) throws {
         var isValid = true
 

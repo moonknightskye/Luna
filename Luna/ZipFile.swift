@@ -45,9 +45,38 @@ class ZipFile: File {
         try super.init( fileId:fileId, url:url )
     }
 
+	init( zipFile: NSDictionary ) {
+		let filePath:URL = URL( string: zipFile.value(forKeyPath: "file_path") as! String )!
+		let pathType = FilePathType( rawValue: zipFile.value(forKeyPath: "path_type") as! String )!
+		let fileId:Int! = zipFile.value(forKeyPath: "file_id") as? Int ?? File.generateID()
+
+		switch pathType {
+		case .BUNDLE_TYPE:
+			let fileName:String = zipFile.value(forKeyPath: "filename") as! String
+			super.init( fileId:fileId, bundle:fileName, filePath:filePath )
+			return
+		case .DOCUMENT_TYPE:
+			let fileName:String = zipFile.value(forKeyPath: "filename") as! String
+			super.init( fileId:fileId, document:fileName, filePath:filePath )
+			return
+		case .URL_TYPE:
+			super.init()
+			self.setFilePath(filePath: filePath)
+			self.setPathType(pathType: FilePathType.URL_TYPE)
+			return
+		case .ICLOUD_TYPE:
+			print("IMPLELEMNT THIS")
+			break
+		default:
+			break
+		}
+		super.init()
+	}
+
+
     convenience init( file:NSDictionary ) throws {
         var isValid = true
-        
+
         let fileName:String? = file.value(forKeyPath: "filename") as? String
         let path:String? = file.value(forKeyPath: "path") as? String
         let filePath:String? = file.value(forKeyPath: "file_path") as? String
