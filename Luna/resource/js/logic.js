@@ -1,5 +1,5 @@
 (function( $window, $document ) {
- "use strict";
+  "use strict";
 
       var utility = $window.utility;
  
@@ -892,7 +892,7 @@
                       }
                     });
 
-                    fileCollection.share().then(function(resut){
+                    fileCollection.share({includeSubdirectoryFiles:true}).then(function(resut){
                       iOS.debug("fileCollection.share: " + resut)
                     },function(error){
                       iOS.debug("fileCollection.share: " + error)

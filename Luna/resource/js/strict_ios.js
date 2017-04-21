@@ -1,5 +1,5 @@
-(function( $window, $document ) {
- "use strict";
+(function( $window, $document, $parent ) {
+    "use strict";
 
     var utility = $window.utility;
 
@@ -7,16 +7,37 @@
         console.error( "[ ERROR ] ios.js is dependent on utility.js" );
         return;
     } 
+    
+    var html = utility.getElement( "HTML", "TAG" )[ 0 ];
 
     if ( typeof webkit === "undefined" ) {
         console.error( "[ ERROR ] ios.js can only be used inside an iOS application" );
-        //return;
+        return;
     }
 
     if ( !utility.isUndefined( $window.iOS ) ) {
         utility.log( "ios.js has already been initialized", "ERROR" );
         return;
     }
+    
+    //if this is running on iFrame, send message to parent
+    if ( utility.isOniFrame() ) {
+        html.classList.add("luna-iframe");
+        console.log("SENDING MESSAGE TO PARENT")
+        parent.postMessage("Luna","*");
+        
+        var messageListener = function( event ) {
+           console.log("======================");
+           console.log( event );
+           console.log( event.target.document )
+           console.log( event.source.attributes )
+           //event.source.postMessage('WORLD!', event.origin);
+        };
+        $window.removeEventListener( "message", messageListener );
+        $window.addEventListener( "message", messageListener );
+    } else {
+        html.classList.add("luna-window");
+    };
     
     var COMMAND = {
         NEW_WEB_VIEW                : 0,
@@ -65,26 +86,26 @@
         ON_ZIPPED                   : 43
     };
     var CommandPriority = {
-    	CRITICAL					: 0,
-    	HIGH 						: 1,
-    	NORMAL 						: 2,
-    	LOW 						: 3,
-    	BACKGROUND 					: 4
+        CRITICAL                    : 0,
+        HIGH                        : 1,
+        NORMAL                      : 2,
+        LOW                         : 3,
+        BACKGROUND                  : 4
     };
     var OPTION = {
-    	PHOTO_LIBRARY              : "PHOTO_LIBRARY",
-    	CAMERA                     : "CAMERA",
+        PHOTO_LIBRARY              : "PHOTO_LIBRARY",
+        CAMERA                     : "CAMERA",
         VIDEO_LIBRARY              : "VIDEO_LIBRARY",
         CAMCORDER                  : "CAMCORDER"
     };
     var FILEEXTENSION = {
-    	PNG: 				"png",
-    	JPG: 				"jpg",
-    	JPEG: 				"jpeg",
-    	GIF: 				"gif",
-    	HTML: 				"html",
-    	ZIP: 				"zip",
-    	UNSUPPORTED: 		"unsupported"
+        PNG:                "png",
+        JPG:                "jpg",
+        JPEG:               "jpeg",
+        GIF:                "gif",
+        HTML:               "html",
+        ZIP:                "zip",
+        UNSUPPORTED:        "unsupported"
     };
     var STATUS = {
         SELF: -3,
@@ -109,7 +130,7 @@
         function init( webview_id ) {
             _INTERNAL_DATA.webview = new Webview({
                 parent_webview_id:  STATUS.SYSTEM,
-                webview_id: 		webview_id
+                webview_id:         webview_id
             });
             _INTERNAL_DATA.status = STATUS.IOS_READY;
             utility.forEvery( _INTERNAL_DATA.initFns, function( initFn ) {
@@ -154,30 +175,30 @@
 
         function getFile( parameter ) {
             _setPathType( parameter );
-        	var command = new Command({
-	        	command_code: 	COMMAND.GET_FILE,
+            var command = new Command({
+                command_code:   COMMAND.GET_FILE,
                 priority        : CommandPriority.LOW,
-	        	parameter: 		parameter
-	        });
-	        command.onResolve( function( result ) {
-	        	parameter = utility.mergeJSON( result, parameter );
-	         	return new File( parameter );
-	        });
-	        return CommandProcessor.queue( command );
+                parameter:      parameter
+            });
+            command.onResolve( function( result ) {
+                parameter = utility.mergeJSON( result, parameter );
+                return new File( parameter );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function getHtmlFile( parameter ) {
             _setPathType( parameter );
-        	var command = new Command({
-	        	command_code: 	COMMAND.GET_HTML_FILE,
+            var command = new Command({
+                command_code:   COMMAND.GET_HTML_FILE,
                 priority        : CommandPriority.LOW,
-	        	parameter: 		parameter
-	        });
-	        command.onResolve( function( result ) {
-	        	parameter = utility.mergeJSON( result, parameter );
-	         	return new HtmlFile( parameter );
-	        });
-	        return CommandProcessor.queue( command );
+                parameter:      parameter
+            });
+            command.onResolve( function( result ) {
+                parameter = utility.mergeJSON( result, parameter );
+                return new HtmlFile( parameter );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function getImageFile(parameter) {
@@ -223,57 +244,57 @@
         };
 
         function getNewWebview( parameter ) {
-        	var param = { html_file: parameter.html_file.toJSON() };
-        	if( !utility.isUndefined( parameter.property ) ) {
-        		param.property = parameter.property
-        	}
-	        var command = new Command({
-	        	command_code: 	COMMAND.NEW_WEB_VIEW,
+            var param = { html_file: parameter.html_file.toJSON() };
+            if( !utility.isUndefined( parameter.property ) ) {
+                param.property = parameter.property
+            }
+            var command = new Command({
+                command_code:   COMMAND.NEW_WEB_VIEW,
                 priority            : CommandPriority.CRITICAL,
-	        	parameter: 		param
-	        });
-	        command.onResolve( function( webview_id ) {
-	        	parameter.webview_id = webview_id;
-	        	return new Webview( parameter );
-	        });
-	        return CommandProcessor.queue( command );
+                parameter:      param
+            });
+            command.onResolve( function( webview_id ) {
+                parameter.webview_id = webview_id;
+                return new Webview( parameter );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function closeWebview( webview ) {
-        	var command = new Command({
-	        	command_code        : COMMAND.CLOSE_WEB_VIEW,
+            var command = new Command({
+                command_code        : COMMAND.CLOSE_WEB_VIEW,
                 priority            : CommandPriority.CRITICAL,
-	        	target_webview_id   : webview.getID()
-	        });
-	        return CommandProcessor.queue( command );
+                target_webview_id   : webview.getID()
+            });
+            return CommandProcessor.queue( command );
         };
 
         function takePhoto( option ) {
-        	if( utility.isUndefined( option ) ) {
-        		option = {};
-        	}
-        	if( utility.isUndefined( option.from ) ) {
-        		option.from = OPTION.CAMERA;
-        	} else {
-        		switch (option.from.trim().toUpperCase()) {
-        			case "PHOTO_LIBRARY":
-        				option.from = OPTION.PHOTO_LIBRARY;
-        				break;
-        			case "CAMERA":
-        				option.from = OPTION.CAMERA;
-        				break;
-        			default:
-        				option.from = OPTION.PHOTO_LIBRARY;
-        		};
-        	}
-        	var command = new Command({
-	        	command_code: 		COMMAND.MEDIA_PICKER,
-	        	parameter: 			option
-	        });
-	        command.onResolve( function( result ) {
-	        	return new ImageFile( result );
-	        });
-	        return CommandProcessor.queue( command );
+            if( utility.isUndefined( option ) ) {
+                option = {};
+            }
+            if( utility.isUndefined( option.from ) ) {
+                option.from = OPTION.CAMERA;
+            } else {
+                switch (option.from.trim().toUpperCase()) {
+                    case "PHOTO_LIBRARY":
+                        option.from = OPTION.PHOTO_LIBRARY;
+                        break;
+                    case "CAMERA":
+                        option.from = OPTION.CAMERA;
+                        break;
+                    default:
+                        option.from = OPTION.PHOTO_LIBRARY;
+                };
+            }
+            var command = new Command({
+                command_code:       COMMAND.MEDIA_PICKER,
+                parameter:          option
+            });
+            command.onResolve( function( result ) {
+                return new ImageFile( result );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function takeVideo( option ) {
@@ -305,15 +326,15 @@
         };
 
         function takeVideo_( parameter ) {
-			var command = new Command({
-	        	command_code: 	COMMAND.GET_VIDEO,
-	        	parameter: 		parameter
-	        });
-	        command.onResolve( function( file_path ) {
+            var command = new Command({
+                command_code:   COMMAND.GET_VIDEO,
+                parameter:      parameter
+            });
+            command.onResolve( function( file_path ) {
                 parameter.file_path = file_path;
                 return new VideoFile( parameter );
-	        });
-	        return CommandProcessor.queue( command );
+            });
+            return CommandProcessor.queue( command );
         };
 
         function getNewAVPlayer( parameter ) {
@@ -377,9 +398,9 @@
             param.path_type = type;
         };
 
-		return {
+        return {
             changeIcon: changeIcon,
-			closeWebview: closeWebview,
+            closeWebview: closeWebview,
             debug: debug,
             fallback: fallback,
             getFile: getFile,
@@ -418,7 +439,7 @@
         avplayer.play = function() {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_PLAY,
-                priority			: CommandPriority.HIGH,
+                priority            : CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID()
                 }
@@ -428,7 +449,7 @@
         avplayer.pause = function() {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_PAUSE,
-                priority			: CommandPriority.HIGH,
+                priority            : CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID()
                 }
@@ -438,7 +459,7 @@
         avplayer.seek = function( param ) {
             var command = new Command({
                 command_code        : COMMAND.AV_PLAYER_SEEK,
-                priority			: CommandPriority.HIGH,
+                priority            : CommandPriority.HIGH,
                 parameter           : {
                     avplayer_id     : this.getID(),
                     seconds         : param.seconds || 0
@@ -480,7 +501,7 @@
             id:                 param.webview_id,
             parentWebviewID:    param.parent_webview_id || STATUS.SYSTEM,
             html_file:          undefined,
-            property:         	param.property || { isOpaque: false },
+            property:           param.property || { isOpaque: false },
             av_player:          []
         };
 
@@ -511,58 +532,58 @@
         };  
 
         webview.load = function() {
-        	var command = new Command({
-	        	command_code: 		COMMAND.LOAD_WEB_VIEW,
-	        	priority			: CommandPriority.BACKGROUND,
-	        	target_webview_id: 	this.getID()
-	        });
-	        this.setStatus( STATUS.WEBVIEW_LOAD )
-	        return CommandProcessor.queue( command );
+            var command = new Command({
+                command_code:       COMMAND.LOAD_WEB_VIEW,
+                priority            : CommandPriority.BACKGROUND,
+                target_webview_id:  this.getID()
+            });
+            this.setStatus( STATUS.WEBVIEW_LOAD )
+            return CommandProcessor.queue( command );
         };
 
         webview.close = function() {
-        	var command = new Command({
-	        	command_code: 		COMMAND.CLOSE_WEB_VIEW,
+            var command = new Command({
+                command_code:       COMMAND.CLOSE_WEB_VIEW,
                 priority            : CommandPriority.CRITICAL,
-	        	target_webview_id: 	this.getID()
-	        });
-	        return CommandProcessor.queue( command );
+                target_webview_id:  this.getID()
+            });
+            return CommandProcessor.queue( command );
         };
 
         webview.onLoad = function() {
-        	var command = new Command({
-	        	command_code		: COMMAND.WEB_VIEW_ONLOAD,
-	        	priority			: CommandPriority.CRITICAL,
-	        	target_webview_id 	: this.getID()
-	        });
-	        return CommandProcessor.queue( command );
+            var command = new Command({
+                command_code        : COMMAND.WEB_VIEW_ONLOAD,
+                priority            : CommandPriority.CRITICAL,
+                target_webview_id   : this.getID()
+            });
+            return CommandProcessor.queue( command );
         };
 
         webview.onLoaded = function() {
-        	var command = new Command({
-	        	command_code: 		COMMAND.WEB_VIEW_ONLOADED,
-	        	priority			: CommandPriority.CRITICAL,
-	        	target_webview_id: 	this.getID()
-	        });
-	        return CommandProcessor.queue( command );
+            var command = new Command({
+                command_code:       COMMAND.WEB_VIEW_ONLOADED,
+                priority            : CommandPriority.CRITICAL,
+                target_webview_id:  this.getID()
+            });
+            return CommandProcessor.queue( command );
         };
 
         webview.onLoading = function( fn ) {
-        	var command = new Command({
-	        	command_code: 		COMMAND.WEB_VIEW_ONLOADING,
-	        	priority			: CommandPriority.CRITICAL,
-	        	target_webview_id: 	this.getID()
-	        });
-	        command.onUpdate( fn )
-	        return CommandProcessor.queue( command );
+            var command = new Command({
+                command_code:       COMMAND.WEB_VIEW_ONLOADING,
+                priority            : CommandPriority.CRITICAL,
+                target_webview_id:  this.getID()
+            });
+            command.onUpdate( fn )
+            return CommandProcessor.queue( command );
         };
 
         webview.setHtmlFile = function( html_file ) {
-        	if ( html_file.isClass ) {
-				_INTERNAL_DATA.html_file = html_file;
-        	} else {
-        		_INTERNAL_DATA.html_file = new HtmlFile(html_file);
-        	}
+            if ( html_file.isClass ) {
+                _INTERNAL_DATA.html_file = html_file;
+            } else {
+                _INTERNAL_DATA.html_file = new HtmlFile(html_file);
+            }
             _INTERNAL_DATA.status = STATUS.WEBVIEW_INIT;
         };
         webview.getHtmlFile = function(){
@@ -597,27 +618,27 @@
         };
 
         webview.setProperty = function( property, animation ) {
-        	if( utility.isUndefined( animation ) ) {
-        		animation = {};
-        	}
-        	if ( utility.isUndefined( animation.duration ) ) {
-        		animation.duration = 0;
-        	}
-        	_INTERNAL_DATA.property = utility.mergeJSON( property, _INTERNAL_DATA.property );
+            if( utility.isUndefined( animation ) ) {
+                animation = {};
+            }
+            if ( utility.isUndefined( animation.duration ) ) {
+                animation.duration = 0;
+            }
+            _INTERNAL_DATA.property = utility.mergeJSON( property, _INTERNAL_DATA.property );
 
-        	var command = new Command({
-	        	command_code			: COMMAND.ANIMATE_WEB_VIEW,
-	        	priority				: CommandPriority.CRITICAL,
-	        	target_webview_id		: this.getID(),
-	        	parameter: {
-	        		property: 			this.getProperty(),
-	        		animation: 			animation
-	        	}
-	        });
-	        return CommandProcessor.queue( command );
+            var command = new Command({
+                command_code            : COMMAND.ANIMATE_WEB_VIEW,
+                priority                : CommandPriority.CRITICAL,
+                target_webview_id       : this.getID(),
+                parameter: {
+                    property:           this.getProperty(),
+                    animation:          animation
+                }
+            });
+            return CommandProcessor.queue( command );
         };
         webview.getProperty = function() {
-        	return _INTERNAL_DATA.property;
+            return _INTERNAL_DATA.property;
         };
 
         init();
@@ -669,20 +690,20 @@
     };
 
     function HtmlFile( param ) {
-    	var file = {};
+        var file = {};
 
-    	function init(){
+        function init(){
             file.setObjectType( "HtmlFile" );
         };
 
-		file.greet = function(){
-			this.greet__super();
+        file.greet = function(){
+            this.greet__super();
         };
 
         file = utility.mergeJSON( file, new File(param), true );
         init();
 
-    	return file;
+        return file;
     };
 
     function ZipFile( param ) {
@@ -699,7 +720,7 @@
         file.onUnzip = function() {
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIP,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     file_id     : this.getID()
                 }
@@ -709,7 +730,7 @@
         file.onUnzipped = function() {
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIPPED,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     file_id     : this.getID()
                 }
@@ -719,7 +740,7 @@
         file.onUnzipping = function( fn ) {
             var command = new Command({
                 command_code    : COMMAND.ON_UNZIPPING,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     file_id     : this.getID()
                 }
@@ -731,7 +752,7 @@
         file.unzip = function( param ) {
             var command = new Command({
                 command_code    : COMMAND.UNZIP,
-                priority 		: CommandPriority.BACKGROUND,
+                priority        : CommandPriority.BACKGROUND,
                 parameter       : {
                     file        : this.toJSON(),
                     to          : param.to,
@@ -751,17 +772,17 @@
     };
 
     function ImageFile( param ) {
-    	var file = {};
+        var file = {};
 
-    	var _INTERNAL_DATA = {
-    	};
+        var _INTERNAL_DATA = {
+        };
 
-    	function init(){
+        function init(){
             file.setObjectType( "ImageFile" );
         };
 
-    	file.getEXIFInfo = function(){
-    		var command = new Command({
+        file.getEXIFInfo = function(){
+            var command = new Command({
                 command_code:   COMMAND.GET_EXIF_IMAGE,
                 parameter:      this.toJSON()
             });
@@ -769,19 +790,19 @@
                 return exif_info;
             });
             return CommandProcessor.queue( command );
-    	};
+        };
 
-    	var generateDOM = function( base64, fileExtension ) {
-    		var contentType = "image/" + fileExtension;
-    		var DOM = {
-    			tag: "IMG",
-    			src: utility.base64ToObjectURL( base64, contentType )
-    		};
-    		return utility.JSONtoDOM( DOM );
-    	};
+        var generateDOM = function( base64, fileExtension ) {
+            var contentType = "image/" + fileExtension;
+            var DOM = {
+                tag: "IMG",
+                src: utility.base64ToObjectURL( base64, contentType )
+            };
+            return utility.JSONtoDOM( DOM );
+        };
 
-    	file.getFullResolutionDOM = function() {
-	        var command = new Command({
+        file.getFullResolutionDOM = function() {
+            var command = new Command({
                 command_code:   COMMAND.GET_BASE64_BINARY,
                 priority        : CommandPriority.LOW,
                 parameter:      this.toJSON()
@@ -793,33 +814,33 @@
         };
 
         file.getResizedDOM = function( option ) {
-        	option 				= option || {};
-        	option.quality 		= option.quality || 100;
-        	option.width		= option.width || option.height || 100;
-        	option.height 		= option.height || option.width || 100;
-        	var command = new Command({
-	        	command_code: 	COMMAND.GET_BASE64_RESIZED,
+            option              = option || {};
+            option.quality      = option.quality || 100;
+            option.width        = option.width || option.height || 100;
+            option.height       = option.height || option.width || 100;
+            var command = new Command({
+                command_code:   COMMAND.GET_BASE64_RESIZED,
                 priority        : CommandPriority.LOW,
-	        	parameter: 		{
-	        		image_file: this.toJSON(),
-	        		option: 	option
-	        	}
-	        });
-	        command.onResolve( function( base64_resized ) {
-	        	var ext = ( option.quality >= 100 ) ? FILEEXTENSION.PNG: FILEEXTENSION.JPG
+                parameter:      {
+                    image_file: this.toJSON(),
+                    option:     option
+                }
+            });
+            command.onResolve( function( base64_resized ) {
+                var ext = ( option.quality >= 100 ) ? FILEEXTENSION.PNG: FILEEXTENSION.JPG
                 return generateDOM( base64_resized, ext );
-	        });
-        	return CommandProcessor.queue( command );
+            });
+            return CommandProcessor.queue( command );
         };
 
-		file.greet = function(){
-			this.greet__super();
-        	iOS.debug("HELLO2");
+        file.greet = function(){
+            this.greet__super();
+            iOS.debug("HELLO2");
         };
 
         file = utility.mergeJSON( file, new File(param), true );
         init();
-    	return file;
+        return file;
     };
 
     function FileCollection( param ) {
@@ -915,12 +936,13 @@
             return _INTERNAL_DATA.files;
         };
 
-        fileCol.share = function() {
+        fileCol.share = function( parameter ) {
             var command = new Command({
                 command_code    : COMMAND.SHARE_FILE,
                 priority        : CommandPriority.CRITICAL,
                 parameter       : {
-                    file_collection : this.toJSON()
+                    file_collection : this.toJSON(),
+                    includeSubdirectoryFiles: parameter.includeSubdirectoryFiles || false
                 }
             });
             return CommandProcessor.queue( command );
@@ -938,7 +960,7 @@
 
     function File( param ) {
         var file = {
-        	isClass: true
+            isClass: true
         };
         var _INTERNAL_DATA = {
             file_id             : param.file_id,
@@ -961,7 +983,7 @@
         };
 
         file.greet = function(){
-        	iOS.debug("HELLO1");
+            iOS.debug("HELLO1");
         };
 
         file.setObjectType = function( object_type ) {
@@ -976,7 +998,7 @@
         };
 
         file.toJSON = function(){
-        	return {
+            return {
                 filename        : this.getFilename(),
                 file_id         : this.getID(),
                 path            : this.getPath(),
@@ -988,14 +1010,14 @@
         };
 
         file.getFileExtension = function() {
-        	return _INTERNAL_DATA.file_extension;
+            return _INTERNAL_DATA.file_extension;
         };
 
         file.setFilePath = function( file_path ) {
-        	_INTERNAL_DATA.file_path = file_path;
+            _INTERNAL_DATA.file_path = file_path;
         };
         file.getFilePath = function() {
-        	return _INTERNAL_DATA.file_path;
+            return _INTERNAL_DATA.file_path;
         };
 
         file.setFilename = function( filename ) {
@@ -1029,7 +1051,7 @@
         file.onDownload = function() {
             var command = new Command({
                 command_code    : COMMAND.ONDOWNLOAD,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     id          : this.getID()
                 }
@@ -1040,7 +1062,7 @@
         file.onDownloading = function(fn) {
             var command = new Command({
                 command_code    : COMMAND.ONDOWNLOADING,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     id          : this.getID()
                 }
@@ -1052,7 +1074,7 @@
         file.onDownloaded = function() {
             var command = new Command({
                 command_code    : COMMAND.ONDOWNLOADED,
-                priority		: CommandPriority.CRITICAL,
+                priority        : CommandPriority.CRITICAL,
                 parameter       : {
                     id          : this.getID()
                 }
@@ -1067,7 +1089,7 @@
         file.download = function( parameter ) {
             var command = new Command({
                 command_code    : COMMAND.DOWNLOAD,
-                priority 		: CommandPriority.BACKGROUND,
+                priority        : CommandPriority.BACKGROUND,
                 parameter       : {
                     to          : parameter.to,
                     file        : this.toJSON(),
@@ -1209,16 +1231,16 @@
             return new Promise( function ( resolve, reject ) {
                 var response = function( result ) {
                     if( result.status === STATUS.RESOLVE ) {
-                    	command.resolve( resolve, result );
+                        command.resolve( resolve, result );
                     } else if( result.status === STATUS.REJECT ) {
                         command.reject( reject, result );
                     } else if ( result.status === STATUS.UPDATE ) {
-                    	command.update( result );
+                        command.update( result );
                     }
                 };
 
                 command.onResponse( response );
-				_queue( command )
+                _queue( command )
             });
         };
 
@@ -1237,27 +1259,27 @@
         };
 
         function remove( command ) {
-        	utility.splice( _INTERNAL_DATA.queue, command );
+            utility.splice( _INTERNAL_DATA.queue, command );
         };
 
         function generateCommandID(){
-        	_INTERNAL_DATA.command_id += 1;
-        	return _INTERNAL_DATA.command_id;
+            _INTERNAL_DATA.command_id += 1;
+            return _INTERNAL_DATA.command_id;
         };
 
         function process( param ) {
-        	var command = getCommand( param.command_id );
-        	if( command ) {
-        		command.respond( param.result );
-        	}
+            var command = getCommand( param.command_id );
+            if( command ) {
+                command.respond( param.result );
+            }
         };
 
         function getCommand( command_id ) {
-        	return utility.forEvery( _INTERNAL_DATA.queue, function( command ){
-        		if( command.getID() === command_id ) {
-        			return command;
-        		}
-        	})
+            return utility.forEvery( _INTERNAL_DATA.queue, function( command ){
+                if( command.getID() === command_id ) {
+                    return command;
+                }
+            })
         };
 
         var _INTERNAL_DATA = {
@@ -1266,8 +1288,8 @@
         };
 
         return {
-        	generateCommandID: generateCommandID,
-        	getCommand: getCommand,
+            generateCommandID: generateCommandID,
+            getCommand: getCommand,
             queue: queue,
             process: process,
             resolve: resolve,
@@ -1281,33 +1303,33 @@
         var command = {};
 
         var _INTERNAL_DATA = {
-            status 				: STATUS.INIT,
-            command_id 			: CommandProcessor.generateCommandID(),
-            source_webview_id 	: iOS.getMainWebview().getID(),
-            target_webview_id 	: undefined,
-            command_code 		: param.command_code,
-            priority 			: param.priority,
-            parameter 			: param.parameter || {},
-            callback_method		: param.callback_method || "processJSCommand",
-            respondFn 			: param.onResponse,
-            resolveFn 			: param.onResolve,
-            rejectFn			: param.onReject,
-            updateFn 			: param.onUpdate
+            status              : STATUS.INIT,
+            command_id          : CommandProcessor.generateCommandID(),
+            source_webview_id   : iOS.getMainWebview().getID(),
+            target_webview_id   : undefined,
+            command_code        : param.command_code,
+            priority            : param.priority,
+            parameter           : param.parameter || {},
+            callback_method     : param.callback_method || "processJSCommand",
+            respondFn           : param.onResponse,
+            resolveFn           : param.onResolve,
+            rejectFn            : param.onReject,
+            updateFn            : param.onUpdate
         };
 
 
         function init() {
             command.setTargetWebviewID( param.target_webview_id );
             if( utility.isUndefined( param.priority ) ) {
-            	_INTERNAL_DATA.priority = CommandPriority.NORMAL;
+                _INTERNAL_DATA.priority = CommandPriority.NORMAL;
             }
         };
 
         command.prepare = function() {
             return JSON.stringify({
-                command_code		: this.getCommandCode(),
+                command_code        : this.getCommandCode(),
                 command_id:         this.getID(),
-                priority			: this.getPriority(),
+                priority            : this.getPriority(),
                 source_webview_id:  this.getSourceWebviewID(),
                 target_webview_id:  this.getTargetWebviewID(),
                 parameter:          this.getParameter(),
@@ -1316,56 +1338,56 @@
         };
 
         command.getPriority = function() {
-        	return _INTERNAL_DATA.priority;
+            return _INTERNAL_DATA.priority;
         };
 
         command.onResponse = function( fn ) {
-        	_INTERNAL_DATA.respondFn = fn;
+            _INTERNAL_DATA.respondFn = fn;
         };
 
         command.onResolve = function( fn ) {
-        	_INTERNAL_DATA.resolveFn = fn;
+            _INTERNAL_DATA.resolveFn = fn;
         };
 
         command.onReject = function( fn ) {
-			_INTERNAL_DATA.rejectFn = fn;
+            _INTERNAL_DATA.rejectFn = fn;
         };
 
         command.onUpdate = function( fn ) {
-			_INTERNAL_DATA.updateFn = fn;
+            _INTERNAL_DATA.updateFn = fn;
         };
 
         command.update = function( result ) {
-        	if( !utility.isUndefined( _INTERNAL_DATA.updateFn ) ) {
-        		_INTERNAL_DATA.updateFn( result.value );
-        	} else {
-        		console.log( result.value );
-        	}
+            if( !utility.isUndefined( _INTERNAL_DATA.updateFn ) ) {
+                _INTERNAL_DATA.updateFn( result.value );
+            } else {
+                console.log( result.value );
+            }
         };
 
         command.respond = function( result ) {
-        	if( !utility.isUndefined( _INTERNAL_DATA.respondFn ) ) {
-        		_INTERNAL_DATA.respondFn( result );
-        	} else {
-        		console.log( result );
-        	}
+            if( !utility.isUndefined( _INTERNAL_DATA.respondFn ) ) {
+                _INTERNAL_DATA.respondFn( result );
+            } else {
+                console.log( result );
+            }
         };
 
         command.resolve = function( resolve, result ) {
-        	if( utility.isUndefined( _INTERNAL_DATA.resolveFn ) ) {
-        		resolve( result.value );
-        	} else {
-        		resolve( _INTERNAL_DATA.resolveFn( result.value ) );
-        	}
-        	CommandProcessor.remove( this )
+            if( utility.isUndefined( _INTERNAL_DATA.resolveFn ) ) {
+                resolve( result.value );
+            } else {
+                resolve( _INTERNAL_DATA.resolveFn( result.value ) );
+            }
+            CommandProcessor.remove( this )
         };
         command.reject = function( reject, result ) {
-        	if( utility.isUndefined( _INTERNAL_DATA.rejectFn ) ) {
-        		reject( result.message );
-        	} else {
-        		reject( _INTERNAL_DATA.rejectFn( result.message ) );
-        	}
-        	CommandProcessor.remove( this )
+            if( utility.isUndefined( _INTERNAL_DATA.rejectFn ) ) {
+                reject( result.message );
+            } else {
+                reject( _INTERNAL_DATA.rejectFn( result.message ) );
+            }
+            CommandProcessor.remove( this )
         };
 
 
@@ -1388,9 +1410,9 @@
         };
 
         command.setTargetWebviewID = function( target_webview_id ) {
-        	if( utility.isUndefined( target_webview_id ) ) {
-        		target_webview_id = STATUS.SELF;
-        	}
+            if( utility.isUndefined( target_webview_id ) ) {
+                target_webview_id = STATUS.SELF;
+            }
             target_webview_id = parseInt( target_webview_id );
             if( target_webview_id === STATUS.SELF ) {
                 _INTERNAL_DATA.target_webview_id = iOS.getMainWebview().getID();
@@ -1426,4 +1448,4 @@
 
 
 
-})( typeof window !== "undefined" ? window : this, document );
+})( typeof window !== "undefined" ? window : this, document, typeof window !== "undefined" ? window.parent : null );

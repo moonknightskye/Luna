@@ -18,6 +18,9 @@ extension FileManager {
 
 	public class func share( filePaths:[URL], onSuccess:@escaping((Bool)->()) ) {
 		let activityVC = UIActivityViewController(activityItems: filePaths, applicationActivities: nil)
+        activityVC.completionWithItemsHandler = { activity, success, items, error in
+            print("activity: \(String(describing: activity)), success: \(success), items: \(String(describing: items)), error: \(String(describing: error?.localizedDescription))")
+        }
 		Shared.shared.ViewController.present(activityVC, animated: true, completion: {
 			onSuccess( true )
 		})

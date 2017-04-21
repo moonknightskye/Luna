@@ -22,8 +22,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         parameter.setValue( "resource", forKey: "path")
         parameter.setValue( "bundle", forKey: "path_type")
         
-//        parameter.setValue( "http://techslides.com/demos/video/dragdrop-video-screenshot.html", forKey: "path")
-//        parameter.setValue( "url", forKey: "path_type")
+        parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
+        //parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
+        parameter.setValue( "url", forKey: "path_type")
         let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
         
         commandGetFile.onResolve { ( htmlFile ) in
@@ -32,11 +33,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             
             let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
             command.onResolve { (webview_id) in
-//                let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
-//                commandOnLoading.onUpdate(fn: { (progress) in
-//                    print( "Loading... \(progress)%" )
-//                })
-//                CommandProcessor.queue(command: commandOnLoading)
+                let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
+                commandOnLoading.onUpdate(fn: { (progress) in
+                    print( "Loading... \(progress)%" )
+                })
+                CommandProcessor.queue(command: commandOnLoading)
                 
                 CommandProcessor.queue(command:
                     Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int )

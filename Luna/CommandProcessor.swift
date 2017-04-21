@@ -1237,6 +1237,7 @@ class CommandProcessor {
                 onFail( "Failed to initialize File" )
             }
         } else if let fileColObj = (command.getParameter() as AnyObject).value(forKeyPath: "file_collection") {
+            let includeSubdirectoryFiles = (command.getParameter() as AnyObject).value(forKeyPath: "includeSubdirectoryFiles") as? Bool ?? false
 			var fileCol:FileCollection?
 			switch( fileColObj ) {
 			case is FileCollection:
@@ -1245,7 +1246,7 @@ class CommandProcessor {
 			case is NSDictionary:
 				do {
 					fileCol = try FileCollection( fileCol: fileColObj as! NSDictionary )
-					let _ = fileCol!.share( onSuccess: { result in
+                    let _ = fileCol!.share( includeSubdirectoryFiles:includeSubdirectoryFiles, onSuccess: { result in
 						onSuccess( result )
 					}, onFail: { (error) in
 						onFail( error )

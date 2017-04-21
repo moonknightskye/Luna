@@ -11,7 +11,7 @@ import Zip
 
 class FileCollection {
     
-    private var Id:Int?
+    private var collectionId:Int?
     private var FILES:[File] = [File]()
     private var DIRECTORIES:[URL] = [URL]()
     private var path:String = SystemFilePath.DOCUMENT.rawValue
@@ -22,7 +22,7 @@ class FileCollection {
     public init(){}
     
     convenience init( fileCol: NSDictionary ) throws {
-		let Id = fileCol.value(forKeyPath: "collection_id") as? Int ?? FileCollection.generateID()
+		let collectionId = fileCol.value(forKeyPath: "collection_id") as? Int ?? FileCollection.generateID()
         let path:String? = fileCol.value(forKeyPath: "path") as? String
         var filePathURL:URL?
         let filePath:String? = fileCol.value(forKeyPath: "file_path") as? String
@@ -67,7 +67,7 @@ class FileCollection {
             if let filePathType = FilePathType( rawValue: pathType ) {
                 switch filePathType {
                 case .BUNDLE_TYPE, .DOCUMENT_TYPE, .ICLOUD_TYPE:
-					try self.init( Id:Id, relative: path!, pathType: filePathType, filePath:filePathURL, files:files, directories:directories )
+                    try self.init( Id:collectionId, relative: path!, pathType: filePathType, filePath:filePathURL, files:files, directories:directories )
                     return
                 default:
                     break
@@ -132,17 +132,17 @@ class FileCollection {
     }
 
     func setID(Id: Int) {
-        if self.Id == nil {
-            self.Id = Id
+        if self.collectionId == nil {
+            self.collectionId = Id
         } else {
             print("[ERROR] File ID already set")
         }
     }
     func getID() -> Int {
-        if self.Id == nil {
-            self.Id = FileCollection.generateID()
+        if self.collectionId == nil {
+            self.collectionId = FileCollection.generateID()
         }
-        return self.Id!
+        return self.collectionId!
     }
     public class func generateID() -> Int {
         FileCollection.counter += 1
@@ -271,11 +271,18 @@ class FileCollection {
 
 	}
 
-	public func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
+    public func share( includeSubdirectoryFiles:Bool, onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
 		var filePaths:[URL] = [URL]()
-//		for (_, file) in self.DIRECTORIES.enumerated() {
-//			filePaths.append(file)
-//		}
+        if includeSubdirectoryFiles {
+            for (_, directory) in self.DIRECTORIES.enumerated() {
+                if let fileCollection = FileManager.getDocumentsFileList( path: directory ) {
+                    for (_, file) in fileCollection.enumerated() {
+                        filePaths.append(file)
+                    }
+                }
+            }
+        }
+
 		for (_, file) in self.FILES.enumerated() {
 			filePaths.append(file.getFilePath()!)
 		}

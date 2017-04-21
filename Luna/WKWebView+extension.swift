@@ -18,7 +18,17 @@ extension WKWebView {
             name: "webcommand"
         )
         
-        WKWebView.appendJavascript( script:WKWebView.generateJavaScript(commandName: "init", params: webview_id), contentController: contentController )
+        
+        var jsScript = ""
+        do {
+            let jsFile = try File(fileId: File.generateID(), bundle: "Sputnik1.js", path: "resource/js")
+            jsScript.append(try jsFile.getStringContent() ?? "")
+        } catch _ as NSError {}
+        jsScript.append( WKWebView.generateJavaScript(commandName: "init", params: webview_id) )
+        
+        
+        WKWebView.appendJavascript( script: jsScript, contentController: contentController )
+        
         
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -54,8 +64,8 @@ extension WKWebView {
         contentController.addUserScript(
             WKUserScript(
                 source: script,
-                injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
-                forMainFrameOnly: true
+                injectionTime: .atDocumentEnd,
+                forMainFrameOnly: false
             )
         )
     }
@@ -66,7 +76,7 @@ extension WKWebView {
         if( params != nil ) {
             command.setValue(params, forKey: "params")
         }
-        return "(function(){ iOS.runJSCommand('\(Utility.shared.dictionaryToJSON(dictonary: command))'); })();"
+        return "(function(){ Sputnik1.beamMessage('\(Utility.shared.dictionaryToJSON(dictonary: command))'); })();"
     }
     
     func runJSCommand( commandName:String, params: NSDictionary, onComplete:((Any?, Error?)->Void)?=nil ) {

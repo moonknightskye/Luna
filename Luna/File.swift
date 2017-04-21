@@ -86,6 +86,9 @@ public enum FileExtention:String {
     case MP4            = "mp4"
     case MOV            = "mov"
     case M4V            = "m4v"
+    case JS             = "js"
+    case CSS            = "css"
+    case TXT            = "txt"
     case UNSUPPORTED    = "unsupported"
 }
 
@@ -269,6 +272,16 @@ class File {
         self.init()
     }
     
+    public func getStringContent() throws -> String? {
+        switch( self.getFileExtension() ) {
+        case .CSS, .HTML, .JS, .TXT:
+            return try String(contentsOf: self.getFilePath()!, encoding: String.Encoding.utf8)
+        default:
+            break
+        }
+        throw FileError.INVALID_FILETYPE
+    }
+    
     public func update( dict:NSDictionary ) {
         if let fileName = dict.value(forKeyPath: "filename") as? String{
             self.setFileName(fileName: fileName)
@@ -421,8 +434,9 @@ class File {
                 return nil
             }
             let filename = self.getFileName()!.substring(from: 0, to: self.getFileName()!.indexOf(target: "."));
+            let fileext = self.getFileName()!.substring(from: self.getFileName()!.indexOf(target: ".")! + 1, to: self.getFileName()!.length);
             
-            if let url = Bundle.main.path(forResource: filename, ofType: self.getFileExtension().rawValue, inDirectory: self.getPath()!) {
+            if let url = Bundle.main.path(forResource: filename, ofType: fileext, inDirectory: self.getPath()!) {
                 return URL( fileURLWithPath:url )
             }
             break

@@ -675,6 +675,14 @@
         function base64ToObjectURL( base64, contentType ) {
             return $window.URL.createObjectURL( base64ToBlob( base64, contentType ) );
         };
+        
+        function isOniFrame() {
+            try {
+                return $window.self !== $window.top;
+            } catch (e) {
+                return true;
+            }
+        };
 
         // function encode64(input) {
         //     input = escape(input);
@@ -878,6 +886,7 @@
             isRestrictedMode: isRestrictedMode,
             isTouchDevice: isTouchDevice,
             isMobile:isMobile,
+            isOniFrame: isOniFrame,
             log: log,
             loadResource: loadResource,
             loadGoogleFonts: loadGoogleFonts,
