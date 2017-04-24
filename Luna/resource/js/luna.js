@@ -1,13 +1,8 @@
 (function( $window, $document, $parent ) {
     "use strict";
 
-    if ( typeof webkit === "undefined" ) {
-        console.error( "[ ERROR ] ios.js can only be used inside an iOS application" );
-        return;
-    }
-
-    if ( typeof $window.iOS !== "undefined" ) {
-        console.error( "ios.js has already been initialized", "ERROR" );
+    if ( typeof $window.luna !== "undefined" ) {
+        console.error( "luna.js has already been initialized", "ERROR" );
         return;
     }
     
@@ -97,15 +92,27 @@
         UPDATE: 2
     };
  
-    $window.iOS = (function(){
+    $window.luna = (function(){
 
+        function setLightningId( lightning_id ) {
+            if( $window.sputnik1 ) {
+                _INTERNAL_DATA.lightning_id = lightning_id;
+                $window.sputnik1.lightningStrike( _INTERNAL_DATA.lightning_id );
+            }
+        };
+        
+        function getLightningId() {
+            return _INTERNAL_DATA.lightning_id;
+        }
+        
         function init( webview_id ) {
+            _INTERNAL_DATA.debugDOM = apollo11.getElement( ".debug", "SELECT" ) || $document.body;
             _INTERNAL_DATA.webview = new Webview({
                 parent_webview_id:  STATUS.SYSTEM,
                 webview_id:         webview_id
             });
             _INTERNAL_DATA.status = STATUS.IOS_READY;
-            $window.apollo11.forEvery( _INTERNAL_DATA.initFns, function( initFn ) {
+            apollo11.forEvery( _INTERNAL_DATA.initFns, function( initFn ) {
                 initFn();
             });
         };
@@ -120,8 +127,8 @@
 
         function runJSCommand( cmd ) {
             (function( _cmd ) {
-                if( $window.iOS[ _cmd.command ].constructor === Function  ) {
-                    $window.iOS[ _cmd.command ]( _cmd.params );
+                if( $window.luna[ _cmd.command ] && $window.luna[ _cmd.command ].constructor === Function  ) {
+                    $window.luna[ _cmd.command ]( _cmd.params );
                 }
             })( JSON.parse( cmd ) );
         };
@@ -153,7 +160,7 @@
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
-                parameter = $window.apollo11.mergeJSON( result, parameter );
+                parameter = apollo11.mergeJSON( result, parameter );
                 return new File( parameter );
             });
             return CommandProcessor.queue( command );
@@ -167,7 +174,7 @@
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
-                parameter = $window.apollo11.mergeJSON( result, parameter );
+                parameter = apollo11.mergeJSON( result, parameter );
                 return new HtmlFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -181,7 +188,7 @@
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
-                parameter = $window.apollo11.mergeJSON( result, parameter );
+                parameter = apollo11.mergeJSON( result, parameter );
                 return new ImageFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -195,7 +202,7 @@
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
-                parameter = $window.apollo11.mergeJSON( result, parameter );
+                parameter = apollo11.mergeJSON( result, parameter );
                 return new VideoFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -209,7 +216,7 @@
                 parameter:      parameter
             });
             command.onResolve( function( result ) {
-                parameter = $window.apollo11.mergeJSON( result, parameter )
+                parameter = apollo11.mergeJSON( result, parameter )
                 return new ZipFile( parameter );
             });
             return CommandProcessor.queue( command );
@@ -217,7 +224,7 @@
 
         function getNewWebview( parameter ) {
             var param = { html_file: parameter.html_file.toJSON() };
-            if( !$window.apollo11.isUndefined( parameter.property ) ) {
+            if( !apollo11.isUndefined( parameter.property ) ) {
                 param.property = parameter.property
             }
             var command = new Command({
@@ -242,10 +249,10 @@
         };
 
         function takePhoto( option ) {
-            if( $window.apollo11.isUndefined( option ) ) {
+            if( apollo11.isUndefined( option ) ) {
                 option = {};
             }
-            if( $window.apollo11.isUndefined( option.from ) ) {
+            if( apollo11.isUndefined( option.from ) ) {
                 option.from = OPTION.CAMERA;
             } else {
                 switch (option.from.trim().toUpperCase()) {
@@ -270,10 +277,10 @@
         };
 
         function takeVideo( option ) {
-            if( $window.apollo11.isUndefined( option ) ) {
+            if( apollo11.isUndefined( option ) ) {
                 option = {};
             }
-            if( $window.apollo11.isUndefined( option.from ) ) {
+            if( apollo11.isUndefined( option.from ) ) {
                 option.from = OPTION.CAMCORDER;
             } else {
                 switch (option.from.trim().toUpperCase()) {
@@ -311,7 +318,7 @@
 
         function getNewAVPlayer( parameter ) {
             var param = { video_file: parameter.video_file.toJSON() };
-            if( !$window.apollo11.isUndefined( parameter.property ) ) {
+            if( !apollo11.isUndefined( parameter.property ) ) {
                 param.property = parameter.property
             }
             var command = new Command({
@@ -331,14 +338,14 @@
             if( param.constructor === Object ) {
                 param = JSON.stringify( param )
             }
-            $window.apollo11.appendJSONDOM({
+            apollo11.appendJSONDOM( {
                 tag:"DIV",
                 text: param
-            });
+            }, _INTERNAL_DATA.debugDOM );
         };
 
         function getMainWebview() {
-            if( !$window.apollo11.isUndefined( _INTERNAL_DATA.webview ) ) {
+            if( !apollo11.isUndefined( _INTERNAL_DATA.webview ) ) {
                 return _INTERNAL_DATA.webview;
             }
             return false;
@@ -355,7 +362,9 @@
         var _INTERNAL_DATA = {
             status:     STATUS.IOS_INIT,
             initFns:    [],
-            webview:    undefined
+            webview:    undefined,
+            debugDOM   : undefined,
+            lightning_id: undefined
         };
 
         var _setPathType = function( param ) {
@@ -380,6 +389,7 @@
             getHtmlFile: getHtmlFile,
             getImageFile: getImageFile,
             getFileCollection: getFileCollection,
+            getLightningId : getLightningId,
             getMainWebview: getMainWebview,
             getNewAVPlayer: getNewAVPlayer,
             getNewWebview: getNewWebview,
@@ -387,6 +397,7 @@
             getZipFile: getZipFile,
             onReady: onReady,
             processJSCommand: processJSCommand,
+            setLightningId: setLightningId,
             takePhoto: takePhoto,
             takeVideo: takeVideo,
             runJSCommand: runJSCommand
@@ -403,7 +414,7 @@
         };
 
         function init() {
-            if( !$window.apollo11.isUndefined( param.video_file ) ) {
+            if( !apollo11.isUndefined( param.video_file ) ) {
                 avplayer.setVideoFile( param.video_file );
             }
         };
@@ -481,7 +492,7 @@
             if( _INTERNAL_DATA.parentWebviewID === STATUS.SYSTEM ) {
                 webview.setStatus(  STATUS.WEBVIEW_LOADED );
             }
-            if( !$window.apollo11.isUndefined( param.html_file ) ) {
+            if( !apollo11.isUndefined( param.html_file ) ) {
                 webview.setHtmlFile( param.html_file );
             }
         };
@@ -492,7 +503,7 @@
                 priority            : CommandPriority.CRITICAL,
                 target_webview_id:  this.getID(),
                 parameter: {
-                    avplayer_id: (!$window.apollo11.isUndefined(param.avplayer)) ? param.avplayer.getID() : -1,
+                    avplayer_id: (!apollo11.isUndefined(param.avplayer)) ? param.avplayer.getID() : -1,
                     isFixed:        param.isFixed || false
                 }
             });
@@ -590,13 +601,13 @@
         };
 
         webview.setProperty = function( property, animation ) {
-            if( $window.apollo11.isUndefined( animation ) ) {
+            if( apollo11.isUndefined( animation ) ) {
                 animation = {};
             }
-            if ( $window.apollo11.isUndefined( animation.duration ) ) {
+            if ( apollo11.isUndefined( animation.duration ) ) {
                 animation.duration = 0;
             }
-            _INTERNAL_DATA.property = $window.apollo11.mergeJSON( property, _INTERNAL_DATA.property );
+            _INTERNAL_DATA.property = apollo11.mergeJSON( property, _INTERNAL_DATA.property );
 
             var command = new Command({
                 command_code            : COMMAND.ANIMATE_WEB_VIEW,
@@ -626,7 +637,7 @@
 
         file.greet = function(){
             this.greet__super();
-            iOS.debug("HELLO3");
+            luna.debug("HELLO3");
         };
 
         file.getFullResolutionDOM = function() {
@@ -637,7 +648,7 @@
                 parameter       : this.toJSON()
             });
             command.onUpdate( function(base64_chunk){
-                chunks.push( $window.apollo11.base64ToBlob( base64_chunk, "application/octet-binary" ) );
+                chunks.push( apollo11.base64ToBlob( base64_chunk, "application/octet-binary" ) );
             });
             command.onResolve( function( result ) {
                 return generateDOM( chunks, file.getFileExtension() );
@@ -650,12 +661,12 @@
                 tag: "VIDEO",
                 src: $window.URL.createObjectURL( new Blob( chunks, { type: "video/" + fileExtension } ) )
             };
-            return $window.apollo11.JSONtoDOM( DOM );
+            return apollo11.JSONtoDOM( DOM );
         };
 
 
 
-        file = $window.apollo11.mergeJSON( file, new File(param), true );
+        file = apollo11.mergeJSON( file, new File(param), true );
         init();
 
         return file;
@@ -672,7 +683,7 @@
             this.greet__super();
         };
 
-        file = $window.apollo11.mergeJSON( file, new File(param), true );
+        file = apollo11.mergeJSON( file, new File(param), true );
         init();
 
         return file;
@@ -737,7 +748,7 @@
 
 
 
-        file = $window.apollo11.mergeJSON( file, new File(param), true );
+        file = apollo11.mergeJSON( file, new File(param), true );
         init();
 
         return file;
@@ -768,9 +779,9 @@
             var contentType = "image/" + fileExtension;
             var DOM = {
                 tag: "IMG",
-                src: $window.apollo11.base64ToObjectURL( base64, contentType )
+                src: apollo11.base64ToObjectURL( base64, contentType )
             };
-            return $window.apollo11.JSONtoDOM( DOM );
+            return apollo11.JSONtoDOM( DOM );
         };
 
         file.getFullResolutionDOM = function() {
@@ -807,10 +818,10 @@
 
         file.greet = function(){
             this.greet__super();
-            iOS.debug("HELLO2");
+            luna.debug("HELLO2");
         };
 
-        file = $window.apollo11.mergeJSON( file, new File(param), true );
+        file = apollo11.mergeJSON( file, new File(param), true );
         init();
         return file;
     };
@@ -828,8 +839,8 @@
         };
 
         function init() {
-            if( !$window.apollo11.isUndefined(param.files) ) {
-                $window.apollo11.forEvery( param.files, function(file){
+            if( !apollo11.isUndefined(param.files) ) {
+                apollo11.forEvery( param.files, function(file){
                     switch( file.object_type ) {
                         case "HtmlFile":
                             fileCol.addFile( new HtmlFile( file ) );
@@ -854,14 +865,14 @@
         fileCol.toJSON = function(){
             var getFilesJSON = function(){
                 var JSON = [];
-                $window.apollo11.forEvery( fileCol.getFiles(), function(file){
+                apollo11.forEvery( fileCol.getFiles(), function(file){
                     JSON.push( file.toJSON() );
                 });
                 return JSON;
             };
             var getDirectories = function(){
                 var JSON = [];
-                $window.apollo11.forEvery( fileCol.getDirectories(), function(directory){
+                apollo11.forEvery( fileCol.getDirectories(), function(directory){
                     JSON.push( directory );
                 });
                 return JSON;
@@ -955,7 +966,7 @@
         };
 
         file.greet = function(){
-            iOS.debug("HELLO1");
+            luna.debug("HELLO1");
         };
 
         file.setObjectType = function( object_type ) {
@@ -1052,7 +1063,7 @@
                 }
             });
             command.onResolve( function(result){
-                _INTERNAL_DATA = $window.apollo11.mergeJSON( result, _INTERNAL_DATA );
+                _INTERNAL_DATA = apollo11.mergeJSON( result, _INTERNAL_DATA );
                 return _INTERNAL_DATA;
             });
             return CommandProcessor.queue( command );
@@ -1217,11 +1228,14 @@
         };
 
         function run( func_name, message ) {
-            webkit.messageHandlers[ func_name ].postMessage( message );
+            //$window.webkit.messageHandlers[ func_name ].postMessage( message );
+            if( $window.sputnik1 ) {
+                sputnik1.sendSOS( func_name, message );
+            }
         };
 
         function resolve( data ) {
-            $window.apollo11.appendJSONDOM({tag:"DIV",text:JSON.stringify(data)});
+            apollo11.appendJSONDOM({tag:"DIV",text:JSON.stringify(data)});
         };
 
         function _queue( command ) {
@@ -1231,7 +1245,7 @@
         };
 
         function remove( command ) {
-            $window.apollo11.splice( _INTERNAL_DATA.queue, command );
+            apollo11.splice( _INTERNAL_DATA.queue, command );
         };
 
         function generateCommandID(){
@@ -1247,7 +1261,7 @@
         };
 
         function getCommand( command_id ) {
-            return $window.apollo11.forEvery( _INTERNAL_DATA.queue, function( command ){
+            return apollo11.forEvery( _INTERNAL_DATA.queue, function( command ){
                 if( command.getID() === command_id ) {
                     return command;
                 }
@@ -1277,7 +1291,7 @@
         var _INTERNAL_DATA = {
             status              : STATUS.INIT,
             command_id          : CommandProcessor.generateCommandID(),
-            source_webview_id   : iOS.getMainWebview().getID(),
+            source_webview_id   : luna.getMainWebview().getID(),
             target_webview_id   : undefined,
             command_code        : param.command_code,
             priority            : param.priority,
@@ -1387,7 +1401,7 @@
             }
             target_webview_id = parseInt( target_webview_id );
             if( target_webview_id === STATUS.SELF ) {
-                _INTERNAL_DATA.target_webview_id = iOS.getMainWebview().getID();
+                _INTERNAL_DATA.target_webview_id = luna.getMainWebview().getID();
             } else {
                 _INTERNAL_DATA.target_webview_id = target_webview_id;
             }

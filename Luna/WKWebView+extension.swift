@@ -21,9 +21,13 @@ extension WKWebView {
         
         var jsScript = ""
         do {
-            let jsFile = try File(fileId: File.generateID(), bundle: "Sputnik1.js", path: "resource/js")
+            var jsFile = try File(fileId: File.generateID(), bundle: "apollo11.js", path: "")
             jsScript.append(try jsFile.getStringContent() ?? "")
-        } catch _ as NSError {}
+			jsFile = try File(fileId: File.generateID(), bundle: "sputnik1.js", path: "")
+			jsScript.append(try jsFile.getStringContent() ?? "")
+        } catch _ as NSError {
+			print("FILE NOT FOUND>>>>")
+		}
         jsScript.append( WKWebView.generateJavaScript(commandName: "init", params: webview_id) )
         
         
@@ -76,7 +80,7 @@ extension WKWebView {
         if( params != nil ) {
             command.setValue(params, forKey: "params")
         }
-        return "(function(){ Sputnik1.beamMessage('\(Utility.shared.dictionaryToJSON(dictonary: command))'); })();"
+        return "(function(){ sputnik1.beamMessage('\(Utility.shared.dictionaryToJSON(dictonary: command))'); })();"
     }
     
     func runJSCommand( commandName:String, params: NSDictionary, onComplete:((Any?, Error?)->Void)?=nil ) {

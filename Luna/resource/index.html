@@ -5,10 +5,8 @@
         <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
         <link href="css/style.css" rel="newer stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/luna.js" ></script>
         <script type="text/javascript" src="js/strict_utility.js" ></script>
-        <script type="text/javascript" src="js/strict_utilitycss.js" ></script>
-        <script type="text/javascript" src="js/strict_utilitysf.js" ></script>
-        <script type="text/javascript" src="js/strict_ios.js" ></script>
         <script type="text/javascript" src="js/logic.js" ></script>
     <style>
             body {
@@ -36,13 +34,9 @@
         </style>
         <script>
             (function(){
-                iOS.onReady(function(){
-                    iOS.debug( "iOS initialized" )
+                luna.onReady(function(){
+                    luna.debug( "iOS initialized" )
                     App.activatePage( );
-                });
-
-                utility.onPageLoad(function(){
-
                 });
              })();
         </script>

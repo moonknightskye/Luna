@@ -1,7 +1,5 @@
 (function( $window, $document ) {
   "use strict";
-
-      var utility = $window.utility;
  
       $window.App = (function(){
 
@@ -16,35 +14,35 @@
               $window.URL = $window.URL || $window.webkitURL;
 
               utility.getElement( "icon0", "id" ).addEventListener( "click", function() {
-                iOS.changeIcon({name:"de"}).then(function(result){
-                  iOS.debug( "iOS.changeIcon: " + result );
+                luna.changeIcon({name:"de"}).then(function(result){
+                  luna.debug( "luna.changeIcon: " + result );
                 },function(error){
-                  iOS.debug( "iOS.changeIcon: " + error );
+                  luna.debug( "luna.changeIcon: " + error );
                 })
               });
               utility.getElement( "icon1", "id" ).addEventListener( "click", function() {
-                iOS.changeIcon({name:"bluemoon"}).then(function(result){
-                  iOS.debug( "iOS.changeIcon: " + result );
+                luna.changeIcon({name:"bluemoon"}).then(function(result){
+                  luna.debug( "luna.changeIcon: " + result );
                 },function(error){
-                  iOS.debug( "iOS.changeIcon: " + error );
+                  luna.debug( "luna.changeIcon: " + error );
                 })
               });
               utility.getElement( "icon2", "id" ).addEventListener( "click", function() {
-                iOS.changeIcon({name:"redmoon"}).then(function(result){
-                  iOS.debug( "iOS.changeIcon: " + result );
+                luna.changeIcon({name:"redmoon"}).then(function(result){
+                  luna.debug( "luna.changeIcon: " + result );
                 },function(error){
-                  iOS.debug( "iOS.changeIcon: " + error );
+                  luna.debug( "luna.changeIcon: " + error );
                 })
               });
 
               utility.getElement( "getvideo2", "id" ).addEventListener( "click", function() {
-                  iOS.getVideoFile({
+                  luna.getVideoFile({
                     filename:   "video 2.mp4",
                     path_type:  "document"
                   }).then(function( video_file ){
-                    iOS.debug( "iOS.takeVideo:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
+                    luna.debug( "luna.takeVideo:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
 
-                    iOS.getNewAVPlayer({
+                    luna.getNewAVPlayer({
                       video_file: video_file,
                       property: {
                         frame: {
@@ -57,23 +55,23 @@
                       }
                     }).then(function( avplayer2 ){
 
-                      iOS.getMainWebview().appendAVPlayer({
+                      luna.getMainWebview().appendAVPlayer({
                         avplayer: avplayer2,
                         isFixed: false
                       }).then( function(result){
-                        iOS.debug( "appendAVPlayer: " + result )
+                        luna.debug( "appendAVPlayer: " + result )
                       });
 
 
-                      iOS.debug( "iOS.getNewAVPlayer: " +  avplayer2.getID());
+                      luna.debug( "luna.getNewAVPlayer: " +  avplayer2.getID());
                     }, function(error){
-                      iOS.debug( error );
+                      luna.debug( error );
                     })
 
 
 
                   },function(error){
-                    iOS.debug( error );
+                    luna.debug( error );
                   });
 
 
@@ -81,13 +79,13 @@
 
               utility.getElement( "getvideo1", "id" ).addEventListener( "click", function() {
                   
-                  iOS.getVideoFile({
+                  luna.getVideoFile({
                     filename:   "video 7_4k_60fps.mp4",
                     path_type:  "document"
                   }).then(function( video_file ){
-                    iOS.debug( "iOS.takeVideo:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
+                    luna.debug( "luna.takeVideo:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
 
-                    iOS.getNewAVPlayer({
+                    luna.getNewAVPlayer({
                       video_file: video_file,
                       property: {
                         opacity:    1,
@@ -98,23 +96,23 @@
                       
                       avplayer = _avplayer;
 
-                      iOS.getMainWebview().appendAVPlayer({
+                      luna.getMainWebview().appendAVPlayer({
                         avplayer: avplayer,
                         isFixed: true
                       }).then( function(result){
-                        iOS.debug( "appendAVPlayer: " + result )
+                        luna.debug( "appendAVPlayer: " + result )
                       });
 
 
-                      iOS.debug( "iOS.getNewAVPlayer: " +  avplayer.getID());
+                      luna.debug( "luna.getNewAVPlayer: " +  avplayer.getID());
                     }, function(error){
-                      iOS.debug( error );
+                      luna.debug( error );
                     })
 
 
 
                   },function(error){
-                    iOS.debug( error );
+                    luna.debug( error );
                   });
 
 
@@ -123,65 +121,65 @@
               utility.getElement( "play", "id" ).addEventListener( "click", function() {
                 if( avplayer ) {
                   avplayer.play().then( function(result){
-                    iOS.debug( "avplayer.play: " + result );
+                    luna.debug( "avplayer.play: " + result );
                   });
                 }
               });
               utility.getElement( "pause", "id" ).addEventListener( "click", function() {
                 if( avplayer ) {
                   avplayer.pause().then( function(result){
-                    iOS.debug( "avplayer.pause: " + result );
+                    luna.debug( "avplayer.pause: " + result );
                   });
                 }
               });
               utility.getElement( "seek", "id" ).addEventListener( "click", function() {
                 if( avplayer ) {
                   avplayer.seek({seconds:2.0}).then( function(result){
-                    iOS.debug( "avplayer.seek: " + result );
+                    luna.debug( "avplayer.seek: " + result );
                   }, function(error){
-                    iOS.debug( "avplayer.seek: " + error );
+                    luna.debug( "avplayer.seek: " + error );
                   });
                 }
               });
 
 
               utility.getElement( "getVideo", "id" ).addEventListener( "click", function() {
-                iOS.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
-                  iOS.debug( "iOS.takeVideo:" );
+                luna.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
+                  luna.debug( "luna.takeVideo:" );
 
 
                     videoFile.getFullResolutionDOM().then( function( DOM ){
-                      iOS.debug( "videoFile.getBase64Binary: YAY" );
+                      luna.debug( "videoFile.getBase64Binary: YAY" );
 
                       document.body.appendChild( DOM );
 
                     }, function(error){
-                      iOS.debug( "videoFile.getBase64Binary: " + error );
+                      luna.debug( "videoFile.getBase64Binary: " + error );
                     });
 
                 }, function(error){
-                  iOS.debug( "iOS.takeVideo: " + error );
+                  luna.debug( "luna.takeVideo: " + error );
                 });
 
-                // iOS.getVideoFile({
+                // luna.getVideoFile({
                 //     filename:   "video 1.mp4", //1,2,3,6
                 //     path_type:  "document"
                 //   }).then(function( videoFile ){
-                //     iOS.debug( "iOS.takeVideo:" +  videoFile.getFilename());
+                //     luna.debug( "luna.takeVideo:" +  videoFile.getFilename());
 
                 //     // console.log( videoFile )
 
                 //     videoFile.getFullResolutionDOM().then( function( DOM ){
-                //       iOS.debug( "videoFile.getBase64Binary: YAY" );
+                //       luna.debug( "videoFile.getBase64Binary: YAY" );
 
                 //       document.body.appendChild( DOM );
 
                 //     }, function(error){
-                //       iOS.debug( "videoFile.getBase64Binary: " + error );
+                //       luna.debug( "videoFile.getBase64Binary: " + error );
                 //     });
 
                 //   },function(error){
-                //     iOS.debug( error );
+                //     luna.debug( error );
                 //   });
               });
 
@@ -189,92 +187,92 @@
 
 
               utility.getElement( "takePhoto", "id" ).addEventListener( "click", function() {
-                iOS.takePhoto({from:"CAMERA"}).then( function(imageFile){
-                    iOS.debug( "iOS.takePhoto: OK" );
-                    iOS.debug( "iOS.takePhoto: " + imageFile.getFilePath());
+                luna.takePhoto({from:"CAMERA"}).then( function(imageFile){
+                    luna.debug( "luna.takePhoto: OK" );
+                    luna.debug( "luna.takePhoto: " + imageFile.getFilePath());
 
                     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      luna.debug( "imageFile.getResizedDOM: YAY" );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     // imageFile.move({
                     //     to:  "Camera Roll",
                     //     isOverwrite: true
                     // }).then(function(url){
-                    //     iOS.debug("file.moveFile: " + imageFile.getFilePath())
+                    //     luna.debug("file.moveFile: " + imageFile.getFilePath())
                     // }, function(error){
-                    //     iOS.debug("file.moveFile: " + imageFile)
+                    //     luna.debug("file.moveFile: " + imageFile)
                     // })
 
                     imageFile.getFullResolutionDOM().then( function( DOM ){
-                      iOS.debug( "imageFile.getBase64Binary: YAY" );
+                      luna.debug( "imageFile.getBase64Binary: YAY" );
 
                       document.body.appendChild( DOM );
 
                     }, function(error){
-                      iOS.debug( "imageFile.getBase64Binary: " + error );
+                      luna.debug( "imageFile.getBase64Binary: " + error );
                     });
 
                     // imageFile.getEXIFInfo().then( function(value){
-                    //   iOS.debug( value );
+                    //   luna.debug( value );
                     // }, function(error){
-                    //   iOS.debug( "imageFile.getEXIFInfo: " + error );
+                    //   luna.debug( "imageFile.getEXIFInfo: " + error );
                     // });
 
                 }, function(error){
-                    iOS.debug( "iOS.takePhoto: " + error );
+                    luna.debug( "luna.takePhoto: " + error );
                 });
               });
 
               utility.getElement( "getPhoto", "id" ).addEventListener( "click", function() {
-                  iOS.takePhoto({from:"PHOTO_LIBRARY"}).then( function(imageFile){
+                  luna.takePhoto({from:"PHOTO_LIBRARY"}).then( function(imageFile){
 
-                    iOS.debug( "webview.takePhoto: " + imageFile.getFilename() + " " + imageFile.getFileExtension());
+                    luna.debug( "webview.takePhoto: " + imageFile.getFilename() + " " + imageFile.getFileExtension());
 
 
                     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      luna.debug( "imageFile.getResizedDOM: YAY" );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     imageFile.getResizedDOM({quality:50}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      luna.debug( "imageFile.getResizedDOM: YAY" );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     imageFile.getResizedDOM({quality:10}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: YAY" );
+                      luna.debug( "imageFile.getResizedDOM: YAY" );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     imageFile.getFullResolutionDOM().then( function( DOM ){
-                      iOS.debug( "imageFile.getBase64Binary: YAY" );
+                      luna.debug( "imageFile.getBase64Binary: YAY" );
 
                       document.body.appendChild( DOM );
 
                     }, function(error){
-                      iOS.debug( "imageFile.getBase64Binary: " + error );
+                      luna.debug( "imageFile.getBase64Binary: " + error );
                     });
 
                     imageFile.getEXIFInfo().then( function(value){
-                      iOS.debug( value );
+                      luna.debug( value );
                     }, function(error){
-                      iOS.debug( "imageFile.getEXIFInfo: " + error );
+                      luna.debug( "imageFile.getEXIFInfo: " + error );
                     });
 
 
 
                   }, function(error){
-                    iOS.debug( "webview.takePhoto: " + error );
+                    luna.debug( "webview.takePhoto: " + error );
                   })
               });
 
@@ -287,52 +285,52 @@
                       },
                       opacity:0
                     }, { duration:1.0, delay:0 } ).then(function(result){
-                      iOS.debug( "webview.setProperty: " + result );
-                      iOS.closeWebview( webview ).then(function(result){
-                        iOS.debug( "webview.closeWebview: " + result );
+                      luna.debug( "webview.setProperty: " + result );
+                      luna.closeWebview( webview ).then(function(result){
+                        luna.debug( "webview.closeWebview: " + result );
                       });
                   });
               });
 
               utility.getElement( "move", "id" ).addEventListener( "click", function() {
 
-                  iOS.getVideoFile({
+                  luna.getVideoFile({
                     filename:   "sample.mp4",
                     path_type:  "document"
                   }).then(function( video_file ){
-                    iOS.debug( "iOS.getVideoFile:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
+                    luna.debug( "luna.getVideoFile:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
 
                     video_file.move({
                       to:  "movefolder",
                       isOverwrite: true
                     }).then(function(url){
-                      iOS.debug("file.moveFile: " + video_file.getFilePath())
+                      luna.debug("file.moveFile: " + video_file.getFilePath())
                     }, function(error){
-                      iOS.debug("file.moveFile: " + error)
+                      luna.debug("file.moveFile: " + error)
                     })
 
 
                   },function(error){
 
-                    iOS.getVideoFile({
+                    luna.getVideoFile({
                       filename:   "sample.mp4",
                       path:       "movefolder", 
                       path_type:  "document"
                     }).then(function( video_file ){
-                      iOS.debug( "iOS.getVideoFile: " +  video_file.getFilename() + " " + video_file.getFileExtension() );
+                      luna.debug( "luna.getVideoFile: " +  video_file.getFilename() + " " + video_file.getFileExtension() );
 
                       video_file.move({
                         to:  "",
                         isOverwrite: true
                       }).then(function(url){
-                        iOS.debug("file.moveFile: " + video_file.getFilePath())
+                        luna.debug("file.moveFile: " + video_file.getFilePath())
                       }, function(error){
-                        iOS.debug("file.moveFile: " + error)
+                        luna.debug("file.moveFile: " + error)
                       })
 
 
                     },function(error){
-                      iOS.debug( error );
+                      luna.debug( error );
                     });
 
                   });
@@ -340,37 +338,37 @@
 
               utility.getElement( "rename", "id" ).addEventListener( "click", function() {
 
-                  iOS.getFile({
+                  luna.getFile({
                     filename:   "rename.mp4",
                     path_type:  "document"
                   }).then(function( file ){
-                    iOS.debug( "iOS.getFile: (old filename) " +  file.getFilename());
+                    luna.debug( "luna.getFile: (old filename) " +  file.getFilename());
 
                     file.rename({
                       filename:  "newname.mp4"
                     }).then(function(url){
-                      iOS.debug( "iOS.getFile: (new filename) " +  file.getFilename());
+                      luna.debug( "luna.getFile: (new filename) " +  file.getFilename());
                     }, function(error){
-                      iOS.debug("file.renameFile: " + error)
+                      luna.debug("file.renameFile: " + error)
                     })
                   },function(error){
-                    //iOS.debug( error );
+                    //luna.debug( error );
 
-                    iOS.getFile({
+                    luna.getFile({
                       filename:   "newname.mp4",
                       path_type:  "document"
                     }).then(function( file ){
-                      iOS.debug( "iOS.getFile: (old filename) " +  file.getFilename());
+                      luna.debug( "luna.getFile: (old filename) " +  file.getFilename());
 
                       file.rename({
                         filename:  "rename.mp4"
                       }).then(function(url){
-                        iOS.debug( "iOS.getFile: (new filename) " +  file.getFilename());
+                        luna.debug( "luna.getFile: (new filename) " +  file.getFilename());
                       }, function(error){
-                        iOS.debug("file.renameFile: " + error)
+                        luna.debug("file.renameFile: " + error)
                       })
                     },function(error){
-                      iOS.debug( error );
+                      luna.debug( error );
                     });
 
                   });
@@ -379,42 +377,42 @@
 
               utility.getElement( "copy", "id" ).addEventListener( "click", function() {
 
-                  iOS.getFile({
+                  luna.getFile({
                     filename:   "video 1.mp4",
                     path_type:  "document"
                   }).then(function( file ){
-                    iOS.debug( "iOS.getFile: " +  file.getFilename());
+                    luna.debug( "luna.getFile: " +  file.getFilename());
 
                     file.copy({
                       to:  "copyfolder"
                     }).then(function(url){
-                      iOS.debug("file.copyFile: " + url)
+                      luna.debug("file.copyFile: " + url)
                     }, function(error){
-                      iOS.debug("file.copyFile: " + error)
+                      luna.debug("file.copyFile: " + error)
                     })
 
                   },function(error){
-                    iOS.debug( error );
+                    luna.debug( error );
                   });
               });
 
               utility.getElement( "delete", "id" ).addEventListener( "click", function() {
 
-                  iOS.getFile({
+                  luna.getFile({
                     filename:   "video 1.mp4",
                     path: "copyfolder",
                     path_type:  "document"
                   }).then(function( file ){
-                    iOS.debug( "iOS.getFile: " +  file.getFilename());
+                    luna.debug( "luna.getFile: " +  file.getFilename());
 
                     file.delete().then(function(result){
-                      iOS.debug("file.delete: " + result)
+                      luna.debug("file.delete: " + result)
                     }, function(error){
-                      iOS.debug("file.delete: " + error)
+                      luna.debug("file.delete: " + error)
                     })
 
                   },function(error){
-                    iOS.debug( error );
+                    luna.debug( error );
                   });
 
                   
@@ -422,108 +420,108 @@
 
               utility.getElement( "download", "id" ).addEventListener( "click", function() {
 
-                // iOS.getFile({
+                // luna.getFile({
                 //   path    : "http://all-free-download.com/free-photos/download/english_love_picture_burning_165644_download.html"
                 // }).then( function(file){
 
-                //   iOS.debug("iOS.getFile: " + file.getFilePath())
+                //   luna.debug("luna.getFile: " + file.getFilePath())
 
                 //   file.onDownload().then( function(result){
-                //     iOS.debug("file.onDownload: " + result)
+                //     luna.debug("file.onDownload: " + result)
                 //   }, function(error){
-                //     iOS.debug("file.onDownload: " + error)
+                //     luna.debug("file.onDownload: " + error)
                 //   });
 
                 //   file.onDownloading(function(progress){
-                //     iOS.debug( "onDownloading: " + progress + "%" );
+                //     luna.debug( "onDownloading: " + progress + "%" );
                 //   }).then(function(result){
-                //     iOS.debug( "file.onDownloading: " + result );
+                //     luna.debug( "file.onDownloading: " + result );
                 //   }, function(error){
-                //     iOS.debug( "file.onDownloading: " + error );
+                //     luna.debug( "file.onDownloading: " + error );
                 //   });
 
                 //   file.onDownloaded().then( function(result){
-                //     iOS.debug("file.onDownloaded: " + result)
+                //     luna.debug("file.onDownloaded: " + result)
                 //   }, function(error){
-                //     iOS.debug("file.onDownloaded: " + error)
+                //     luna.debug("file.onDownloaded: " + error)
                 //   });
 
                 //   file.download({
                 //     isOverwrite   : true
                 //   }).then(function(result){
-                //     iOS.debug("file.download: ok" + result)
+                //     luna.debug("file.download: ok" + result)
                 //   },function(error){
-                //     iOS.debug("file.download: error" + error)
+                //     luna.debug("file.download: error" + error)
                 //   });
 
                 // }, function(error){
-                //   iOS.debug("iOS.getFile: " + error)
+                //   luna.debug("luna.getFile: " + error)
                 // })
 
 
 
-                iOS.getImageFile({
+                luna.getImageFile({
                   path    : "https://goo.gl/cl7FKy"
                 }).then( function(file){
 
-                  iOS.debug("iOS.getFile1: " )
-                  iOS.debug(file)
+                  luna.debug("luna.getFile1: " )
+                  luna.debug(file)
 
                   file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload1: " + result)
+                    luna.debug("file.onDownload1: " + result)
                   }, function(error){
-                    iOS.debug("file.onDownload1: " + error)
+                    luna.debug("file.onDownload1: " + error)
                   });
 
                   file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading1: " + progress + "%" );
+                    luna.debug( "onDownloading1: " + progress + "%" );
                   }).then(function(result){
-                    iOS.debug( "file.onDownloading1: " + result );
+                    luna.debug( "file.onDownloading1: " + result );
                   }, function(error){
-                    iOS.debug( "file.onDownloading1: " + error );
+                    luna.debug( "file.onDownloading1: " + error );
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded1: ")
-                    iOS.debug(result)
+                    luna.debug("file.onDownloaded1: ")
+                    luna.debug(result)
 
                     // file.copy({
                     //   to:  "copyfolder"
                     // }).then(function(url){
-                    //   iOS.debug("file.copyFile: " + url)
+                    //   luna.debug("file.copyFile: " + url)
                     // }, function(error){
-                    //   iOS.debug("file.copyFile: " + error)
+                    //   luna.debug("file.copyFile: " + error)
                     // })
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM1: " );
+                      luna.debug( "imageFile.getResizedDOM1: " );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM1: " + error );
+                      luna.debug( "imageFile.getResizedDOM1: " + error );
                     });
 
                     file.share().then(function(resut){
-                      iOS.debug("file.share: " + resut)
+                      luna.debug("file.share: " + resut)
                     },function(error){
-                      iOS.debug("file.share: " + error)
+                      luna.debug("file.share: " + error)
                     });
 
 
                   }, function(error){
-                    iOS.debug("file.onDownloaded1: " + error)
+                    luna.debug("file.onDownloaded1: " + error)
                   });
 
                   file.download({
                     isOverwrite   : true,
                   }).then(function(resut){
-                    iOS.debug("file.download1: " + resut)
+                    luna.debug("file.download1: " + resut)
                   },function(error){
-                    iOS.debug("file.download1: " + error)
+                    luna.debug("file.download1: " + error)
                   });
 
 
                 }, function(error){
-                  iOS.debug("iOS.getFile1: " + error)
+                  luna.debug("luna.getFile1: " + error)
                 })
 
 
@@ -531,51 +529,51 @@
 
 
 
-                iOS.getImageFile({
+                luna.getImageFile({
                   path    : "https://lumiere-a.akamaihd.net/v1/images/image_ccc4b657.jpeg"
                 }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " + file.getFilePath())
+                  luna.debug("luna.getFile: " + file.getFilePath())
 
                   file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload: " + result)
+                    luna.debug("file.onDownload: " + result)
                   }, function(error){
-                    iOS.debug("file.onDownload: " + error)
+                    luna.debug("file.onDownload: " + error)
                   });
 
                   file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
+                    luna.debug( "onDownloading: " + progress + "%" );
                   }).then(function(result){
-                    iOS.debug( "file.onDownloading: " + result );
+                    luna.debug( "file.onDownloading: " + result );
                   }, function(error){
-                    iOS.debug( "file.onDownloading: " + error );
+                    luna.debug( "file.onDownloading: " + error );
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: ")
-                    iOS.debug(result)
+                    luna.debug("file.onDownloaded: ")
+                    luna.debug(result)
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
-                      iOS.debug( "imageFile.getResizedDOM: " );
+                      luna.debug( "imageFile.getResizedDOM: " );
                       document.body.appendChild( DOM );
                     }, function(error){
-                      iOS.debug( "imageFile.getResizedDOM: " + error );
+                      luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                   }, function(error){
-                    iOS.debug("file.onDownloaded: " + error)
+                    luna.debug("file.onDownloaded: " + error)
                   });
 
                   file.download({
                     isOverwrite   : true
                   }).then(function(resut){
-                    iOS.debug("file.download: " + resut)
+                    luna.debug("file.download: " + resut)
                   },function(error){
-                    iOS.debug("file.download: " + error)
+                    luna.debug("file.download: " + error)
                   });
 
                 }, function(error){
-                  iOS.debug("iOS.getFile: " + error)
+                  luna.debug("luna.getFile: " + error)
                 })
 
 
@@ -588,15 +586,15 @@
 
               utility.getElement( "show", "id" ).addEventListener( "click", function() {
 
-                iOS.getHtmlFile({
+                luna.getHtmlFile({
                     filename:   "subindex.html",
                     path:       "resource",
                     path_type:  "bundle"
                 }).then( function( html_file ){
-                    iOS.debug( "iOS.getHtmlFile: " );
-                    iOS.debug( html_file )
+                    luna.debug( "luna.getHtmlFile: " );
+                    luna.debug( html_file )
 
-                    iOS.getNewWebview({
+                    luna.getNewWebview({
                       html_file: html_file,
                       property: {
                         frame: {
@@ -609,24 +607,24 @@
 
                       webview = result;
 
-                      iOS.debug( "iOS.getNewWebview: " + webview.getID() );
+                      luna.debug( "luna.getNewWebview: " + webview.getID() );
 
                       webview.load().then(function(result){
-                        iOS.debug( "webview.load: " + result );
+                        luna.debug( "webview.load: " + result );
                       });
 
                       webview.onLoad().then(function(result){
-                        iOS.debug( "webview.onLoad: " + result );
+                        luna.debug( "webview.onLoad: " + result );
                       });
 
                       webview.onLoading(function(progress){
-                        iOS.debug( "Loading: " + progress + "%" );
+                        luna.debug( "Loading: " + progress + "%" );
                       }).then(function(result){
-                        iOS.debug( "webview.onLoading: " + result );
+                        luna.debug( "webview.onLoading: " + result );
                       });
 
                       webview.onLoaded().then(function(result){
-                        iOS.debug( "webview.onLoaded: " + result );
+                        luna.debug( "webview.onLoaded: " + result );
 
                         webview.setProperty( {frame: {
                             height:   320,
@@ -634,18 +632,18 @@
                           },
                           opacity:1.0
                         }, { duration:1.0, delay:0 } ).then(function(result){
-                          iOS.debug( "webview.setProperty: " + result );
+                          luna.debug( "webview.setProperty: " + result );
                         });
 
                       });
 
                     },function( error ){
-                      iOS.debug( error )
+                      luna.debug( error )
                     });
 
 
                 }, function(error){
-                    iOS.debug( error )
+                    luna.debug( error )
                 })
 
               });
@@ -653,145 +651,145 @@
 
               utility.getElement( "unzip", "id" ).addEventListener( "click", function() {
 
-                iOS.getZipFile({
+                luna.getZipFile({
                   path    : "https://s3.amazonaws.com/data.openaddresses.io/runs/176076/br/am/statewide.zip"
                 }).then( function(file){
 
-                  iOS.debug("iOS.getFile: " )
-                  iOS.debug(file)
+                  luna.debug("luna.getFile: " )
+                  luna.debug(file)
 
                   file.onDownload().then( function(result){
-                    iOS.debug("file.onDownload: " + result)
+                    luna.debug("file.onDownload: " + result)
                   }, function(error){
-                    iOS.debug("file.onDownload: " + error)
+                    luna.debug("file.onDownload: " + error)
                   });
 
                   file.onDownloading(function(progress){
-                    iOS.debug( "onDownloading: " + progress + "%" );
+                    luna.debug( "onDownloading: " + progress + "%" );
                   }).then(function(result){
-                    iOS.debug( "file.onDownloading: " + result );
+                    luna.debug( "file.onDownloading: " + result );
                   }, function(error){
-                    iOS.debug( "file.onDownloading: " + error );
+                    luna.debug( "file.onDownloading: " + error );
                   });
 
                   file.onDownloaded().then( function(result){
-                    iOS.debug("file.onDownloaded: ")
-                    iOS.debug(file)
+                    luna.debug("file.onDownloaded: ")
+                    luna.debug(file)
 
                     file.onUnzip().then(function(result){
-                      iOS.debug("file.onUnzip: " + result)
+                      luna.debug("file.onUnzip: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzip: " + error)
+                      luna.debug("file.onUnzip: " + error)
                     })
                     file.onUnzipped().then(function(result){
-                      iOS.debug("file.onUnzipped: " + result)
+                      luna.debug("file.onUnzipped: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipped: " + error)
+                      luna.debug("file.onUnzipped: " + error)
                     })
                     file.onUnzipping(function(progress){
-                      iOS.debug("file.onUnzipping: " + progress)
+                      luna.debug("file.onUnzipping: " + progress)
                     }).then(function(result){
-                      iOS.debug("file.onUnzipping: " + result)
+                      luna.debug("file.onUnzipping: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipping: " + error)
+                      luna.debug("file.onUnzipping: " + error)
                     })
 
                     file.unzip({
                       to: "unzipfolder"
                     }).then(function(result){
-                      iOS.debug("file.unzip: " + result)
+                      luna.debug("file.unzip: " + result)
                     }, function(error){
-                      iOS.debug("file.unzip: " + error)
+                      luna.debug("file.unzip: " + error)
                     })
 
                   }, function(error){
-                    iOS.debug("file.onDownloaded: " + error)
+                    luna.debug("file.onDownloaded: " + error)
                   });
 
                   file.download({
                     isOverwrite   : true,
                   }).then(function(resut){
-                    iOS.debug("file.download: " + resut)
+                    luna.debug("file.download: " + resut)
                   },function(error){
-                    iOS.debug("file.download: " + error)
+                    luna.debug("file.download: " + error)
                   });
 
                 }, function(error){
-                  iOS.debug("iOS.getFile: " + error)
+                  luna.debug("luna.getFile: " + error)
                 })
 
 
-                iOS.getZipFile({
+                luna.getZipFile({
                     filename:   "imagefiles.zip" //myfolder.zip imagefiles.zip
                 }).then( function( file ){
-                    iOS.debug( "iOS.getZipFile: ");
-                    iOS.debug(file)
+                    luna.debug( "luna.getZipFile: ");
+                    luna.debug(file)
 
                     file.onUnzip().then(function(result){
-                      iOS.debug("file.onUnzip: " + result)
+                      luna.debug("file.onUnzip: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzip: " + error)
+                      luna.debug("file.onUnzip: " + error)
                     })
                     file.onUnzipped().then(function(result){
-                      iOS.debug("file.onUnzipped: " + result)
+                      luna.debug("file.onUnzipped: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipped: " + error)
+                      luna.debug("file.onUnzipped: " + error)
                     })
                     file.onUnzipping(function(progress){
-                      iOS.debug("file.onUnzipping: " + progress)
+                      luna.debug("file.onUnzipping: " + progress)
                     }).then(function(result){
-                      iOS.debug("file.onUnzipping: " + result)
+                      luna.debug("file.onUnzipping: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipping: " + error)
+                      luna.debug("file.onUnzipping: " + error)
                     })
 
                     file.unzip({
                       to: "unzipfolder"
                     }).then(function(result){
-                      iOS.debug("file.unzip: " + result)
+                      luna.debug("file.unzip: " + result)
                     }, function(error){
-                      iOS.debug("file.unzip: " + error)
+                      luna.debug("file.unzip: " + error)
                     })
 
                 });
 
-                iOS.getZipFile({
+                luna.getZipFile({
                     filename:   "myfolder.zip" //myfolder.zip imagefiles.zip
                 }).then( function( file ){
-                    iOS.debug( "iOS.getZipFile: ");
-                    iOS.debug(file)
+                    luna.debug( "luna.getZipFile: ");
+                    luna.debug(file)
 
                     file.onUnzip().then(function(result){
-                      iOS.debug("file.onUnzip: " + result)
+                      luna.debug("file.onUnzip: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzip: " + error)
+                      luna.debug("file.onUnzip: " + error)
                     })
                     file.onUnzipped().then(function(result){
-                      iOS.debug("file.onUnzipped: " + result)
+                      luna.debug("file.onUnzipped: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipped: " + error)
+                      luna.debug("file.onUnzipped: " + error)
                     })
                     file.onUnzipping(function(progress){
-                      iOS.debug("file.onUnzipping: " + progress)
+                      luna.debug("file.onUnzipping: " + progress)
                     }).then(function(result){
-                      iOS.debug("file.onUnzipping: " + result)
+                      luna.debug("file.onUnzipping: " + result)
                     }, function(error){
-                      iOS.debug("file.onUnzipping: " + error)
+                      luna.debug("file.onUnzipping: " + error)
                     })
 
                     file.unzip({
                       to: "unzipfolder"
                     }).then(function(result){
-                      iOS.debug("file.unzip: " + result)
+                      luna.debug("file.unzip: " + result)
                     }, function(error){
-                      iOS.debug("file.unzip: " + error)
+                      luna.debug("file.unzip: " + error)
                     })
 
                 });
               });
 
               utility.getElement( "zip", "id" ).addEventListener( "click", function() {
-                iOS.getImageFile({
+                luna.getImageFile({
                   filename: "spiderman.jpg",
                   path_type: "document"
                 }).then(function(file){
@@ -800,32 +798,32 @@
                     filename    : "spiderman.zip",
                     isOverwrite : true
                   }).then(function(result){
-                    iOS.debug("file.zip: " + result)
+                    luna.debug("file.zip: " + result)
                   }, function(error){
-                    iOS.debug("file.zip: " + error)
+                    luna.debug("file.zip: " + error)
                   })
 
                   file.onZip().then(function(result){
-                    iOS.debug("file.onZip: " + result)
+                    luna.debug("file.onZip: " + result)
                   }, function(error){
-                    iOS.debug("file.onZip: " + error)
+                    luna.debug("file.onZip: " + error)
                   })
                   file.onZipped().then(function(zipFile){
-                    iOS.debug("file.onZipped: ")
-                    iOS.debug( zipFile.toJSON() )
+                    luna.debug("file.onZipped: ")
+                    luna.debug( zipFile.toJSON() )
                   }, function(error){
-                    iOS.debug("file.onZipped: " + error)
+                    luna.debug("file.onZipped: " + error)
                   })
                   file.onZipping(function(progress){
-                    iOS.debug("file.onZipping: " + progress)
+                    luna.debug("file.onZipping: " + progress)
                   }).then(function(result){
-                    iOS.debug("file.onZipping: " + result)
+                    luna.debug("file.onZipping: " + result)
                   }, function(error){
-                    iOS.debug("file.onZipping: " + error)
+                    luna.debug("file.onZipping: " + error)
                   });
 
                 },function(error){
-                  iOS.debug("iOS.getImageFile: " + error)
+                  luna.debug("luna.getImageFile: " + error)
                 });
               });
 
@@ -834,31 +832,31 @@
               utility.getElement( "filecol", "id" ).addEventListener( "click", function() {
 
                 var listFiles = function( path ) {
-                  iOS.getFileCollection({
+                  luna.getFileCollection({
                     path: path,
                     path_type: "document"
                   }).then(function( fileCollection ){
-                    iOS.debug("iOS.getFileCollection: ")
-                    iOS.debug( "No of Files: " + fileCollection.getFiles().length )
+                    luna.debug("luna.getFileCollection: ")
+                    luna.debug( "No of Files: " + fileCollection.getFiles().length )
 
                     utility.forEvery( fileCollection.getFiles(), function(file){
                       
                       if(file.objectType() === "ImageFile") {
                         file.getResizedDOM({quality:100, height: 150}).then( function( DOM ){
-                          iOS.debug( "imageFile.getResizedDOM: " );
+                          luna.debug( "imageFile.getResizedDOM: " );
                           document.body.appendChild( DOM );
                         }, function(error){
-                          iOS.debug( "imageFile.getResizedDOM: " + error );
+                          luna.debug( "imageFile.getResizedDOM: " + error );
                         });
                       }
 
                       if(file.objectType() === "File") {
-                        iOS.debug( file.toJSON() )
+                        luna.debug( file.toJSON() )
                         if( file.getFilename() === ".DS_Store" ) {
                           file.delete().then(function(result){
-                            iOS.debug("deleted" + file.getFilename())
+                            luna.debug("deleted" + file.getFilename())
                           }, function(error){
-                            iOS.debug(error)
+                            luna.debug(error)
                           })
                         }
                       }
@@ -867,35 +865,35 @@
                         file.unzip({
                           to: "unzipfolder"
                         }).then(function(result){
-                          iOS.debug("file.unzip: " + result)
+                          luna.debug("file.unzip: " + result)
                         }, function(error){
-                          iOS.debug("file.unzip: " + error)
+                          luna.debug("file.unzip: " + error)
                         })
 
                         file.onUnzip().then(function(result){
-                          iOS.debug("file.onUnzip: " + result)
+                          luna.debug("file.onUnzip: " + result)
                         }, function(error){
-                          iOS.debug("file.onUnzip: " + error)
+                          luna.debug("file.onUnzip: " + error)
                         })
                         file.onUnzipped().then(function(result){
-                          iOS.debug("file.onUnzipped: " + result)
+                          luna.debug("file.onUnzipped: " + result)
                         }, function(error){
-                          iOS.debug("file.onUnzipped: " + error)
+                          luna.debug("file.onUnzipped: " + error)
                         })
                         file.onUnzipping(function(progress){
-                          iOS.debug("file.onUnzipping: " + progress)
+                          luna.debug("file.onUnzipping: " + progress)
                         }).then(function(result){
-                          iOS.debug("file.onUnzipping: " + result)
+                          luna.debug("file.onUnzipping: " + result)
                         }, function(error){
-                          iOS.debug("file.onUnzipping: " + error)
+                          luna.debug("file.onUnzipping: " + error)
                         })
                       }
                     });
 
                     fileCollection.share({includeSubdirectoryFiles:true}).then(function(resut){
-                      iOS.debug("fileCollection.share: " + resut)
+                      luna.debug("fileCollection.share: " + resut)
                     },function(error){
-                      iOS.debug("fileCollection.share: " + error)
+                      luna.debug("fileCollection.share: " + error)
                     });
 
                     utility.forEvery( fileCollection.getDirectories(), function(directory){
@@ -903,7 +901,7 @@
                     });
 
                   }, function(error){
-                    iOS.debug("iOS.getFileCollection: " + error)
+                    luna.debug("luna.getFileCollection: " + error)
                   });
                 };
 
