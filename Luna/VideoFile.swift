@@ -8,10 +8,12 @@
 
 import Foundation
 import AVFoundation
+import Photos
 
 class VideoFile: File {
 
     private var player:AVPlayer?
+    private var asset:PHAsset?
     
     override init(){
         super.init()
@@ -111,16 +113,45 @@ class VideoFile: File {
             self.setFilePath(filePath: filePath)
             self.setPathType(pathType: FilePathType.URL_TYPE)
             return
+        case FilePathType.ASSET_TYPE:
+            let fileName:String = videoFile.value(forKeyPath: "filename") as! String
+            super.init( fileId:fileId, asset:fileName, filePath:filePath )
+            if let asset = Photos.getVideoAsset(fileURL: filePath) {
+                self.asset = asset
+            }
+            return
         default:
             break
         }
         super.init()
     }
     
+    public init( fileId:Int, assetURL:URL ) throws {
+        super.init()
+        if let asset = Photos.getVideoAsset(fileURL: assetURL) {
+            self.asset = asset
+            
+            self.setID(fileId: fileId)
+            self.setFileName(fileName: asset.value(forKey: "filename") as! String)
+            self.setPathType(pathType: FilePathType.ASSET_TYPE)
+            self.setFilePath(filePath: assetURL )
+        } else {
+            throw FileError.INEXISTENT
+        }
+    }
+    
     public func getBase64Value( onSplit:@escaping ((Data)->()), onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
         switch self.getPathType()! {
         case .ASSET_TYPE:
-            onFail( "PLEASE SUPPORT THIS" )
+            Photos.getBinaryVideo(asset: self.asset!, onSuccess: { (file) in
+                Utility.shared.splitDataToChunks(file: file, onSplit: { (chunk) in
+                    onSplit(chunk)
+                }, onSuccess: { (result) in
+                    onSuccess(result)
+                })
+            }, onFail: { (message) in
+                onFail( message )
+            })
             break
         case .BUNDLE_TYPE, .DOCUMENT_TYPE:
             if let file = self.getFile() {

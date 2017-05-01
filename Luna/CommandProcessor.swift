@@ -392,16 +392,19 @@ class CommandProcessor {
                             }
                             break
                         case PickerType.VIDEO_LIBRARY:
-                            if let videoURL = media![UIImagePickerControllerReferenceURL] as? URL {
-                                command.resolve(value: true)
-                                print( videoURL )
+                            do {
+                                if let videoURL = media![UIImagePickerControllerMediaURL] as? URL {
+                                    print( videoURL )
+                                    let videoFile = try VideoFile(fileId: File.generateID(), assetURL: videoURL)
+                                    command.resolve(value: videoFile.toDictionary(), raw: videoFile)
+                                }
+                            } catch let error as NSError {
+                                print(error)
+                                command.reject(errorMessage: error.localizedDescription)
                             }
                             break
                         case PickerType.CAMCORDER:
-                            if let videoURL = media![UIImagePickerControllerMediaURL] as? URL {
-                                command.resolve(value: true)
-                                print( videoURL )
-                            }
+                            command.reject(errorMessage: "IMPLEMENT THIS")
                             break
                         }
                     }
@@ -766,6 +769,7 @@ class CommandProcessor {
             videoFile = parameter as? VideoFile
             break
         case is NSObject:
+            print( parameter )
             videoFile = VideoFile( videoFile: parameter as! NSDictionary )
             break
         default:

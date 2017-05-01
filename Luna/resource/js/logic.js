@@ -148,7 +148,6 @@
                 luna.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
                   luna.debug( "luna.takeVideo:" );
 
-
                     videoFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "videoFile.getBase64Binary: YAY" );
 

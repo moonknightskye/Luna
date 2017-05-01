@@ -78,6 +78,11 @@ class Photos {
         return result.firstObject
     }
     
+    public class func getVideoAsset( fileURL: URL ) -> PHAsset? {
+        let result = PHAsset.fetchAssets(with: .video, options: nil)
+        return result.firstObject
+    }
+    
     public class func goToSettings() {
         let url = NSURL(string: UIApplicationOpenSettingsURLString)
         UIApplication.shared.open(url! as URL) { (result) in
@@ -123,6 +128,22 @@ class Photos {
             return assets[ index ]
         }
         return nil
+    }
+    
+    public class func getBinaryVideo( asset: PHAsset, onSuccess:@escaping ((Data)->()), onFail: @escaping((String)->())  ) {
+        let manager: PHImageManager = PHImageManager()
+        manager.requestAVAsset(forVideo: asset, options: nil) { (videoAsset, avaudio, _: [AnyHashable : Any]?) in
+            
+            if videoAsset != nil {
+                if let vasset = videoAsset as? AVURLAsset {
+                    if let binaryData = NSData(contentsOf: vasset.url) {
+                        onSuccess( binaryData as Data )
+                        return
+                    }
+                }
+            }
+            onFail( FileError.INEXISTENT.localizedDescription )
+        }
     }
     
     public class func getBinaryImage( asset: PHAsset, onSuccess:@escaping ((Data)->()), onFail: @escaping((String)->())  ) {

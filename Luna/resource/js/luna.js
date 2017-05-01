@@ -373,8 +373,8 @@
                 };
             }
             var command = new Command({
-                command_code:       COMMAND.MEDIA_PICKER,
-                parameter:          option
+                command_code        : COMMAND.MEDIA_PICKER,
+                parameter           : option
             });
             command.onResolve( function( result ) {
                 return new VideoFile( result );
@@ -714,8 +714,6 @@
                 };
                 return apollo11.JSONtoDOM( DOM );
             };
-
-
 
             file = apollo11.mergeJSON( file, new File(param), true );
             init();
