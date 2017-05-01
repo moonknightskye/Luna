@@ -35,9 +35,9 @@
                     return loc.getElementsByTagName( param );
                     break;
                 case "DATA":
-                    if( param.constructor === String ) {
+                    if( Object.prototype.toString.call( param ) === "[object String]" ) {
                         return loc.querySelectorAll( "[data-" + param + "]" );
-                    } else if ( param.constructor === Object ) {
+                    } else if ( Object.prototype.toString.call( param ) === "[object Object]" ) {
                         var _str = "";
                         forEveryKey( param, function( value, key ){
                             _str += "[data-" + key + "='"+ value +"']";
@@ -60,15 +60,15 @@
             if ( isUndefined( param ) || isUndefined( fn ) ) {
                 return;
             }
-            if ( param.constructor === Object ) {
+            if ( Object.prototype.toString.call( param ) === "[object Object]" ) {
                 param = [ param ];
-            }  else if ( param.constructor === Number ) {
+            }  else if ( Object.prototype.toString.call( param ) === "[object Number]" ) {
                 var _param = [];
                 for( var j = 1; j <= param; j++ ) {
                     _param.push( j );
                 }
                 param = _param;
-            } else if ( param.constructor !== Array ) {
+            } else if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
                 param = Array.prototype.slice.call( param, 0 );
             }
             var _return;
@@ -137,7 +137,7 @@
                     case "namespace":
                         break;
                     case "class":
-                        if ( value.constructor === String ) {
+                        if ( Object.prototype.toString.call( value ) === "[object String]"  ) {
                             value = value.split(" ");
                         }
                         forEvery( value, function( _class ) {
@@ -150,7 +150,7 @@
                     case "data":
                         forEvery( value, function( data ) {
                             forEveryKey( data, function( value2, key2 ) {
-                                dom.dataset[key2] = ( value2.constructor === Object ) ? JSON.stringify( value2 ) : value2;
+                                dom.dataset[key2] = ( Object.prototype.toString.call( value2 ) === "[object Object]"  ) ? JSON.stringify( value2 ) : value2;
                             });
                         });
                         break;
@@ -200,10 +200,6 @@
         function appendDOM( child, parent, fn ) {
             parent = parent || getParent( child );
             //addOneTimeEventListener( parent, "DOMNodeInserted", fn );
-            
-            /*
-             * http://salesforce.stackexchange.com/questions/146370/cannot-use-select2-jquery-library-in-lightning-components-with-lorckerservice-ac/146380
-             */
             var observer = new MutationObserver( function( mutations ) {
               mutations.forEach( function( mutation ) {
                 if ( mutation.type === "childList" ) {
@@ -214,9 +210,6 @@
               });    
             });
             observer.observe( parent, { attributes: true, childList: true, characterData: true } );
-           
-            //log( "problem with MutationObserver... this wont work in firefox: TO BE SUPPORTED THIS 11-11-2017" );
-            //log( "http://salesforce.stackexchange.com/questions/146370/cannot-use-select2-jquery-library-in-lightning-components-with-lorckerservice-ac/146380" )
             parent.appendChild( child );
         };
         
@@ -312,6 +305,42 @@
             }
         };
 
+        // description = {class:"classname"} {id:"idname"}
+        function waitUntilDOMReady( description, parent, timeoutseconds) {
+            return new Promise( function ( resolve, reject ) {
+                parent = parent || $document.body;
+                var timeout = new Date().getTime() + ( ( timeoutseconds || 0.3 ) * 1000 );
+                var DOM;
+                function checkDOMReady(){
+                    if( (new Date().getTime()) > timeout ) {
+                        reject("[WARNING] Timeout. DOM may not exists here.");
+                        console.log(description, parent);
+                        return;
+                    }
+                    forEveryKey( description, function(value, key) {
+                        if( key === "id" ) {
+                            parent = $document;
+                        }
+                        DOM = getElement( value, key, parent );
+                    });
+                    if( DOM ) {
+                        if( Object.prototype.toString.call( DOM ) === "[object HTMLElement]" ||
+                            Object.prototype.toString.call( DOM ) === "[object HTMLDivElement]") {
+                            resolve( DOM );
+                            return;
+                        } else if ( Object.prototype.toString.call( DOM ) === "[object HTMLCollection]" ) {
+                            if( DOM.length > 0 ) {
+                                resolve( DOM );
+                                return;
+                            }
+                        }
+                    }
+                    $window.requestAnimationFrame( checkDOMReady );
+                };
+                $window.requestAnimationFrame( checkDOMReady );
+            });
+        };
+
 
         /**
             * BELOW ARE INTERNAL FUNCTIONS USED INSIDE THE LIBRARY
@@ -357,7 +386,8 @@
         	prependJSONDOM			: prependJSONDOM,
         	prependDOM				: prependDOM,
         	splice					: splice,
-			removeDOM				: removeDOM
+			removeDOM				: removeDOM,
+            waitUntilDOMReady       : waitUntilDOMReady
         };
 
 	})();

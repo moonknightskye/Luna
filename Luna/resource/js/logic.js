@@ -5,9 +5,10 @@
 
             function init(){};
 
-            function activatePage( ){
+            function activatePage( luna ) {
 
               var app_content = utility.getElement("app_content", "id");
+              var debug = utility.getElement(".debug", "SELECT");
               var webview;
               var avplayer;
 
@@ -151,7 +152,7 @@
                     videoFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "videoFile.getBase64Binary: YAY" );
 
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
 
                     }, function(error){
                       luna.debug( "videoFile.getBase64Binary: " + error );
@@ -172,7 +173,7 @@
                 //     videoFile.getFullResolutionDOM().then( function( DOM ){
                 //       luna.debug( "videoFile.getBase64Binary: YAY" );
 
-                //       document.body.appendChild( DOM );
+                //       debug.appendChild( DOM );
 
                 //     }, function(error){
                 //       luna.debug( "videoFile.getBase64Binary: " + error );
@@ -193,7 +194,7 @@
 
                     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM: YAY" );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM: " + error );
                     });
@@ -210,7 +211,7 @@
                     imageFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "imageFile.getBase64Binary: YAY" );
 
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
 
                     }, function(error){
                       luna.debug( "imageFile.getBase64Binary: " + error );
@@ -235,21 +236,21 @@
 
                     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM: YAY" );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     imageFile.getResizedDOM({quality:50}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM: YAY" );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM: " + error );
                     });
 
                     imageFile.getResizedDOM({quality:10}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM: YAY" );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM: " + error );
                     });
@@ -257,7 +258,7 @@
                     imageFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "imageFile.getBase64Binary: YAY" );
 
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
 
                     }, function(error){
                       luna.debug( "imageFile.getBase64Binary: " + error );
@@ -495,7 +496,7 @@
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM1: " );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM1: " + error );
                     });
@@ -555,7 +556,7 @@
 
                     file.getResizedDOM({quality:10}).then( function( DOM ){
                       luna.debug( "imageFile.getResizedDOM: " );
-                      document.body.appendChild( DOM );
+                      debug.appendChild( DOM );
                     }, function(error){
                       luna.debug( "imageFile.getResizedDOM: " + error );
                     });
@@ -844,7 +845,7 @@
                       if(file.objectType() === "ImageFile") {
                         file.getResizedDOM({quality:100, height: 150}).then( function( DOM ){
                           luna.debug( "imageFile.getResizedDOM: " );
-                          document.body.appendChild( DOM );
+                          debug.appendChild( DOM );
                         }, function(error){
                           luna.debug( "imageFile.getResizedDOM: " + error );
                         });
@@ -951,3 +952,4 @@
 
  
  })( typeof window !== "undefined" ? window : this, document );
+

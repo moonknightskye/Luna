@@ -73,6 +73,7 @@ class Command {
     private static var command_id_counter = 0
 
     private var commandID:Int = -1
+    private var sourceGlobalID:String = ""
     private var commandCode:CommandCode = CommandCode.UNDEFINED
     private var priority:CommandPriority = .NORMAL
     private var sourceWebViewID:Int = -1
@@ -87,6 +88,7 @@ class Command {
         print( command )
         
         setCommandID( commandID: command.value(forKey: "command_id") as! Int )
+        setSourceGlobalID(sourceGlobalID: command.value(forKey: "source_global_id") as! String)
         setCommandCode( commandCode: command.value(forKey: "command_code") as! Int )
         setPriority( priority: CommandPriority(rawValue: command.value(forKey: "priority") as! Int)! )
         setSourceWebViewID( sourceWebViewID: command.value(forKey: "source_webview_id") as! Int )
@@ -109,6 +111,7 @@ class Command {
             setParameter( parameter:parameter! )
         }
     }
+    
     
     func setPriority( priority: CommandPriority ) {
         self.priority = priority
@@ -148,6 +151,7 @@ class Command {
         if let sourceWebView = getSourceWebView() {
             let params = NSMutableDictionary();
             params.setValue(getCommandID(), forKey: "command_id")
+            params.setValue(getSourceGlobalID(), forKey: "source_global_id")
             params.setValue(getCommandCode().rawValue, forKey: "command_code")
             
             let result = NSMutableDictionary();
@@ -176,6 +180,13 @@ class Command {
         return self.commandID
     }
     
+    private func setSourceWebViewID( sourceWebViewID: Int ) {
+        self.sourceWebViewID = sourceWebViewID
+    }
+    func getSourceWebViewID() -> Int {
+        return self.sourceWebViewID
+    }
+    
     private func setCommandCode( commandCode: CommandCode ) {
         self.commandCode = commandCode
     }
@@ -192,11 +203,11 @@ class Command {
         return WebViewManager.getManager( webview_id: getSourceWebViewID() )
     }
     
-    private func setSourceWebViewID( sourceWebViewID: Int ) {
-        self.sourceWebViewID = sourceWebViewID
+    private func setSourceGlobalID( sourceGlobalID: String ) {
+        self.sourceGlobalID = sourceGlobalID
     }
-    func getSourceWebViewID() -> Int {
-        return self.sourceWebViewID
+    func getSourceGlobalID() -> String {
+        return self.sourceGlobalID
     }
     
     private func setTargetWebViewID( targetWebViewID: Int ) {

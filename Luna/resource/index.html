@@ -10,7 +10,12 @@
         <script type="text/javascript" src="js/logic.js" ></script>
     <style>
             body {
+                background-color: transparent;
+                margin: 0px;
+            /*  position: fixed !important;*/
+                width: 100%;
                 min-height: 1000px;
+                color: gray;
             }
             .image {
                 background-size: contain;
@@ -31,13 +36,23 @@
                 background-repeat: no-repeat;
                 margin: auto;
             }
+        
+            .debug {
+                background-color: #FAFAFA;
+                overflow: scroll;
+                -webkit-overflow-scrolling: touch;
+                max-height: 500px;
+            } 
         </style>
         <script>
+            var luna = new Luna();
+        
             (function(){
                 luna.onReady(function(){
                     luna.debug( "iOS initialized" )
-                    App.activatePage( );
+                    App.activatePage( luna );
                 });
+
              })();
         </script>
     </head>
@@ -119,6 +134,9 @@
             </ul>
             <div id="filecol" class="custom-button">GET FILE COLLECTION</div>
             
+            <div class="debug">
+            
+            </div>
             
 <!--             
  http://stackoverflow.com/questions/25098021/securityerror-blocked-a-frame-with-origin-from-accessing-a-cross-origin-frame

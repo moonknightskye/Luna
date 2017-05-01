@@ -18,21 +18,22 @@ extension WKWebView {
             name: "webcommand"
         )
         
-        
         var jsScript = ""
         do {
             var jsFile = try File(fileId: File.generateID(), bundle: "apollo11.js", path: "")
             jsScript.append(try jsFile.getStringContent() ?? "")
-			jsFile = try File(fileId: File.generateID(), bundle: "sputnik1.js", path: "")
+			jsFile = try File(fileId: File.generateID(), bundle: "Sputnik1.js", path: "")
 			jsScript.append(try jsFile.getStringContent() ?? "")
-        } catch _ as NSError {
-			print("FILE NOT FOUND>>>>")
+            jsScript.append("(function(){ window.sputnik1 = new window.Sputnik1(); })();")
+        } catch let error as NSError {
+			print( error.localizedDescription )
 		}
-        jsScript.append( WKWebView.generateJavaScript(commandName: "init", params: webview_id) )
-        
-        
+		let params:NSMutableDictionary = NSMutableDictionary()
+		params.setValue( webview_id, forKey: "webview_id" );
+		params.setValue( "all", forKey: "source_global_id" );
+        jsScript.append( WKWebView.generateJavaScript(commandName: "init", params: params) )
+
         WKWebView.appendJavascript( script: jsScript, contentController: contentController )
-        
         
         let config = WKWebViewConfiguration()
         config.userContentController = contentController
@@ -80,7 +81,7 @@ extension WKWebView {
         if( params != nil ) {
             command.setValue(params, forKey: "params")
         }
-        return "(function(){ sputnik1.beamMessage('\(Utility.shared.dictionaryToJSON(dictonary: command))'); })();"
+        return "(function(){ sputnik1.beamMessage(JSON.parse('\(Utility.shared.dictionaryToJSON(dictonary: command))')); })();"
     }
     
     func runJSCommand( commandName:String, params: NSDictionary, onComplete:((Any?, Error?)->Void)?=nil ) {

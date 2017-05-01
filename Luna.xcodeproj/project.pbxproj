@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4722343C1EAA7C9D00ACE441 /* apollo11.js in Resources */ = {isa = PBXBuildFile; fileRef = 4722343A1EAA7C9D00ACE441 /* apollo11.js */; };
-		4722343D1EAA7C9D00ACE441 /* sputnik1.js in Resources */ = {isa = PBXBuildFile; fileRef = 4722343B1EAA7C9D00ACE441 /* sputnik1.js */; };
+		4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */ = {isa = PBXBuildFile; fileRef = 4722343B1EAA7C9D00ACE441 /* Sputnik1.js */; };
 		47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F1F1E988A9C0087F8AC /* ZipFile.swift */; };
 		47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F211E9A874B0087F8AC /* DownloadManager.swift */; };
 		6F7BD0935E789F7AFF725A66 /* Pods_Luna.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */; };
@@ -53,7 +53,7 @@
 /* Begin PBXFileReference section */
 		3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Luna.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4722343A1EAA7C9D00ACE441 /* apollo11.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = apollo11.js; sourceTree = "<group>"; };
-		4722343B1EAA7C9D00ACE441 /* sputnik1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = sputnik1.js; sourceTree = "<group>"; };
+		4722343B1EAA7C9D00ACE441 /* Sputnik1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sputnik1.js; sourceTree = "<group>"; };
 		47E78F1F1E988A9C0087F8AC /* ZipFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFile.swift; sourceTree = "<group>"; };
 		47E78F211E9A874B0087F8AC /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		700064B11E5BD573003CF38D /* WKWebView+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKWebView+extension.swift"; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				4722343A1EAA7C9D00ACE441 /* apollo11.js */,
-				4722343B1EAA7C9D00ACE441 /* sputnik1.js */,
+				4722343B1EAA7C9D00ACE441 /* Sputnik1.js */,
 			);
 			name = "Javascript Injection";
 			sourceTree = "<group>";
@@ -328,7 +328,7 @@
 				70D76E751E2F73940089B903 /* resource in Resources */,
 				7093487D1E9F44400007779D /* ic_de@2x.png in Resources */,
 				7093487E1E9F44400007779D /* ic_de@3x.png in Resources */,
-				4722343D1EAA7C9D00ACE441 /* sputnik1.js in Resources */,
+				4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */,
 				709348761E9F43F40007779D /* bluemoon@2x.png in Resources */,
 				70D76E5C1E2F6A4F0089B903 /* LaunchScreen.storyboard in Resources */,
 				70D76E591E2F6A4F0089B903 /* Assets.xcassets in Resources */,

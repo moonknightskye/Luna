@@ -108,9 +108,9 @@
                     return loc.getElementsByTagName( param );
                     break;
                 case "DATA":
-                    if( param.constructor === String ) {
+                    if( Object.prototype.toString.call( param ) === "[object String]" ) {
                         return loc.querySelectorAll( "[data-" + param + "]" );
-                    } else if ( param.constructor === Object ) {
+                    } else if ( Object.prototype.toString.call( param ) === "[object Object]" ) {
                         var _str = "";
                         forEveryKey( param, function( value, key ){
                             _str += "[data-" + key + "='"+ value +"']";
@@ -150,15 +150,15 @@
             if ( isUndefined( param ) || isUndefined( fn ) ) {
                 return;
             }
-            if ( param.constructor === Object ) {
+            if ( Object.prototype.toString.call( param ) === "[object Object]" ) {
                 param = [ param ];
-            }  else if ( param.constructor === Number ) {
+            }  else if ( Object.prototype.toString.call( param ) === "[object Number]" ) {
                 var _param = [];
                 for( var j = 1; j <= param; j++ ) {
                     _param.push( j );
                 }
                 param = _param;
-            } else if ( param.constructor !== Array ) {
+            } else if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
                 param = Array.prototype.slice.call( param, 0 );
             }
             var _return;

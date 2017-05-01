@@ -22,13 +22,16 @@
             }
         </style>
         <script>
+            var luna = new Luna();
+            
             (function(){
                 luna.onReady(function(){
                 
                     var webview = luna.getMainWebview();
                     var yahoowb;
 
-                    luna.debug( webview.getID() )
+                    luna.debug( "webview id: " + webview.getID() );
+
                     var lunawin = apollo11.getElement( "luna","id" );
 
                     lunawin.addEventListener( "click", function() {
@@ -58,7 +61,6 @@
                     });
 
                     apollo11.getElement( "show", "id" ).addEventListener( "click", function(){
-
                         luna.getHtmlFile({
                             path:       "https://www.yahoo.com",
                             path_type:  "url"
@@ -112,6 +114,7 @@
                                 luna.debug( "something went wrong" )
                             }
                         );
+                        luna.debug( "showtime" );
                     });
 
 
