@@ -50,7 +50,7 @@ class Utility: NSObject {
     
     func splitDataToChunks( file:Data, onSplit:((Data)->()), onSuccess:((Bool)->()) ) {
         let length = file.count
-        let chunkSize = 3 * 1024 * 1024
+        let chunkSize = (1024 * 1024) * 3
         var offset = 0
         var count = 0
         repeat {

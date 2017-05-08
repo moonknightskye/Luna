@@ -58,6 +58,7 @@ enum CommandCode:Int {
     case ON_ZIP                     = 41
     case ON_ZIPPING                 = 42
     case ON_ZIPPED                  = 43
+	case CODE_READER				= 44
     
 }
 enum CommandPriority:Int {

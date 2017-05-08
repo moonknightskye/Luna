@@ -137,6 +137,8 @@ class CommandProcessor {
              .ON_ZIPPED:
             checkZipEvent( command: command )
             break
+		case .CODE_READER:
+			checkCodeReader(command: command)
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -404,7 +406,12 @@ class CommandProcessor {
                             }
                             break
                         case PickerType.CAMCORDER:
-                            command.reject(errorMessage: "IMPLEMENT THIS")
+                            if let videoURL = media![UIImagePickerControllerMediaURL] as? URL {
+                                let videoFile = VideoFile(fileId: File.generateID(), document:"TEMP_VIDEO.MOV",filePath: videoURL)
+                                command.resolve(value: videoFile.toDictionary(), raw: videoFile)
+                            } else {
+                                command.reject(errorMessage: FileError.INEXISTENT.localizedDescription)
+                            }
                             break
                         }
                     }
@@ -776,6 +783,7 @@ class CommandProcessor {
             break;
         }
         if videoFile != nil {
+            //onSuccess( Utility.shared.DataToBase64(data: videoFile!.getFile()!) )
             videoFile!.getBase64Value(onSplit: { (chunk) in
                 command.update(value: chunk.base64EncodedString())
             }, onSuccess: { (result) in
@@ -926,6 +934,7 @@ class CommandProcessor {
         })
     }
     private class func checkChangeIcon( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
+
         if Shared.shared.UIApplication.supportsAlternateIcons {
             if let name = (command.getParameter() as AnyObject).value(forKeyPath: "name") as? String {
                 var iconName:String?
@@ -1350,11 +1359,30 @@ class CommandProcessor {
         }
     }
 
+	private class func checkCodeReader( command: Command ) {
+		processCodeReader( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+
+	}
+
+	private class func processCodeReader( command: Command, onSuccess:@escaping ((String)->()), onFail: ((String)->()) ) {
+
+		if let wkmanager =  CommandProcessor.getWebViewManager(command: command) {
+			if let instance = CodeReader.getInstance() {
+				instance.embed(webview: wkmanager.getWebview(), onFound: onSuccess)
+				instance.start(onSuccess: { (_) in}, onFail: { (errorMessage) in
+					onFail(errorMessage)
+				})
+			} else {
+				
+			}
+		}
+	}
 
 }
-
-
-
 
 
 

@@ -78,6 +78,8 @@ class WebViewManager {
         } else {
             self.getWebview().scrollView.layer.addSublayer( avmanager.getAVPlayer() )
         }
+        
+        
         if avmanager.isAutoplay(), let player = avmanager.getAVPlayer().player {
             player.play()
         }

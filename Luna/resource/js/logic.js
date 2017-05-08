@@ -14,6 +14,29 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
+              utility.getElement( "qrcode", "id" ).addEventListener( "click", function() {
+                luna.codeReader( {type:"QRCODE", isFixed:false} ).then(function(result){
+                  luna.debug( result )
+                }, function(error){
+                  luna.debug(error)
+                });
+              });
+
+              utility.getElement( "closeme", "id" ).addEventListener( "click", function() {
+                var selfwebview = luna.getMainWebview();
+                  selfwebview.setProperty( {frame: {
+                        height:   320,
+                        y:        300
+                      },
+                      opacity:0
+                    }, { duration:1.0, delay:0 } ).then(function(result){
+                      luna.debug( "webview.setProperty: " + result );
+                      luna.closeWebview( selfwebview ).then(function(result){
+                        luna.debug( "webview.closeWebview: " + result );
+                      });
+                  });
+              });
+
               utility.getElement( "icon0", "id" ).addEventListener( "click", function() {
                 luna.changeIcon({name:"de"}).then(function(result){
                   luna.debug( "luna.changeIcon: " + result );
@@ -80,41 +103,69 @@
 
               utility.getElement( "getvideo1", "id" ).addEventListener( "click", function() {
                   
-                  luna.getVideoFile({
-                    filename:   "video 7_4k_60fps.mp4",
-                    path_type:  "document"
-                  }).then(function( video_file ){
-                    luna.debug( "luna.takeVideo:" +  video_file.getFilename() + " " + video_file.getFileExtension() );
+                luna.getHtmlFile({
+                    filename:   "videoplayer.html",
+                    path:       "resource",
+                    path_type:  "bundle"
+                }).then( function( html_file ){
+                    luna.debug( "luna.getHtmlFile: " );
+                    luna.debug( html_file )
 
-                    luna.getNewAVPlayer({
-                      video_file: video_file,
+                    luna.getNewWebview({
+                      html_file: html_file,
                       property: {
-                        opacity:    1,
-                        autoPlay:   true,
-                        mute:       false
+                        frame: {
+                          height:   100,
+                          width:    150,
+                          y:        560,
+                          x:        300
+                        },
+                        opacity:    0
                       }
-                    }).then(function( _avplayer ){
-                      
-                      avplayer = _avplayer;
+                    }).then( function( result ){
 
-                      luna.getMainWebview().appendAVPlayer({
-                        avplayer: avplayer,
-                        isFixed: true
-                      }).then( function(result){
-                        luna.debug( "appendAVPlayer: " + result )
+                      webview = result;
+
+                      luna.debug( "luna.getNewWebview: " + webview.getID() );
+
+                      webview.load().then(function(result){
+                        luna.debug( "webview.load: " + result );
                       });
 
+                      webview.onLoad().then(function(result){
+                        luna.debug( "webview.onLoad: " + result );
+                      });
 
-                      luna.debug( "luna.getNewAVPlayer: " +  avplayer.getID());
-                    }, function(error){
-                      luna.debug( error );
-                    })
+                      webview.onLoading(function(progress){
+                        luna.debug( "Loading: " + progress + "%" );
+                      }).then(function(result){
+                        luna.debug( "webview.onLoading: " + result );
+                      });
+
+                      webview.onLoaded().then(function(result){
+                        luna.debug( "webview.onLoaded: " + result );
+
+                        webview.setProperty( {frame: {
+                            height:   100,
+                            width:    150,
+                            y:        560,
+                            x:        218
+                          },
+                          opacity:1.0
+                        }, { duration:1.0, delay:0 } ).then(function(result){
+                          luna.debug( "webview.setProperty: " + result );
+                        });
+
+                      });
+
+                    },function( error ){
+                      luna.debug( error )
+                    });
 
 
-
-                  },function(error){
-                    luna.debug( error );
-                  });
+                }, function(error){
+                    luna.debug( error )
+                })
 
 
               });
@@ -144,43 +195,95 @@
               });
 
 
+              utility.getElement( "takeVideo", "id" ).addEventListener( "click", function() {
+                luna.takeVideo({from:"CAMCORDER"}).then( function(videoFile){
+                  luna.debug( "luna.takeVideo:" );
+
+                  // videoFile.getFullResolutionDOM().then( function( DOM ){
+                  //   luna.debug( "videoFile.getBase64Binary: YAY" );
+
+                  //   debug.appendChild( DOM );
+
+                  // }, function(error){
+                  //   luna.debug( "videoFile.getBase64Binary: " + error );
+                  // });
+                  luna.getNewAVPlayer({
+                    video_file: videoFile,
+                    property: {
+                      frame: {
+                        height:   320,
+                        y:        300
+                      },
+                      opacity:    1,
+                      autoPlay:   true,
+                      mute:       false
+                    }
+                  }).then(function( avplayer2 ){
+
+                    luna.getMainWebview().appendAVPlayer({
+                      avplayer: avplayer2,
+                      isFixed: false
+                    }).then( function(result){
+                      luna.debug( "appendAVPlayer: " + result )
+                    });
+
+
+                    luna.debug( "luna.getNewAVPlayer: " +  avplayer2.getID());
+                  }, function(error){
+                    luna.debug( error );
+                  })
+
+
+                }, function(error){
+                  luna.debug( "luna.takeVideo: " + error );
+                });
+                
+              });
+
+
               utility.getElement( "getVideo", "id" ).addEventListener( "click", function() {
                 luna.takeVideo({from:"VIDEO_LIBRARY"}).then( function(videoFile){
                   luna.debug( "luna.takeVideo:" );
 
-                    videoFile.getFullResolutionDOM().then( function( DOM ){
-                      luna.debug( "videoFile.getBase64Binary: YAY" );
+                  // videoFile.getFullResolutionDOM().then( function( DOM ){
+                  //   luna.debug( "videoFile.getBase64Binary: YAY" );
 
-                      debug.appendChild( DOM );
+                  //   debug.appendChild( DOM );
 
-                    }, function(error){
-                      luna.debug( "videoFile.getBase64Binary: " + error );
+                  // }, function(error){
+                  //   luna.debug( "videoFile.getBase64Binary: " + error );
+                  // });
+                  luna.getNewAVPlayer({
+                    video_file: videoFile,
+                    property: {
+                      frame: {
+                        height:   320,
+                        y:        300
+                      },
+                      opacity:    1,
+                      autoPlay:   true,
+                      mute:       false
+                    }
+                  }).then(function( avplayer2 ){
+
+                    luna.getMainWebview().appendAVPlayer({
+                      avplayer: avplayer2,
+                      isFixed: false
+                    }).then( function(result){
+                      luna.debug( "appendAVPlayer: " + result )
                     });
+
+
+                    luna.debug( "luna.getNewAVPlayer: " +  avplayer2.getID());
+                  }, function(error){
+                    luna.debug( error );
+                  })
+
 
                 }, function(error){
                   luna.debug( "luna.takeVideo: " + error );
                 });
 
-                // luna.getVideoFile({
-                //     filename:   "video 1.mp4", //1,2,3,6
-                //     path_type:  "document"
-                //   }).then(function( videoFile ){
-                //     luna.debug( "luna.takeVideo:" +  videoFile.getFilename());
-
-                //     // console.log( videoFile )
-
-                //     videoFile.getFullResolutionDOM().then( function( DOM ){
-                //       luna.debug( "videoFile.getBase64Binary: YAY" );
-
-                //       debug.appendChild( DOM );
-
-                //     }, function(error){
-                //       luna.debug( "videoFile.getBase64Binary: " + error );
-                //     });
-
-                //   },function(error){
-                //     luna.debug( error );
-                //   });
               });
 
 
@@ -210,6 +313,7 @@
                     imageFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "imageFile.getBase64Binary: YAY" );
 
+                      DOM.classList.add("scale");
                       debug.appendChild( DOM );
 
                     }, function(error){
@@ -256,6 +360,8 @@
 
                     imageFile.getFullResolutionDOM().then( function( DOM ){
                       luna.debug( "imageFile.getBase64Binary: YAY" );
+
+                      DOM.classList.add("scale");
 
                       debug.appendChild( DOM );
 

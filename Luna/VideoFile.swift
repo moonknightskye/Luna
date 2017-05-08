@@ -143,15 +143,20 @@ class VideoFile: File {
     public func getBase64Value( onSplit:@escaping ((Data)->()), onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
         switch self.getPathType()! {
         case .ASSET_TYPE:
-            Photos.getBinaryVideo(asset: self.asset!, onSuccess: { (file) in
-                Utility.shared.splitDataToChunks(file: file, onSplit: { (chunk) in
-                    onSplit(chunk)
-                }, onSuccess: { (result) in
-                    onSuccess(result)
-                })
-            }, onFail: { (message) in
-                onFail( message )
+            Utility.shared.splitDataToChunks(file: self.getFile()!, onSplit: { (chunk) in
+                onSplit(chunk)
+            }, onSuccess: { (result) in
+                onSuccess(result)
             })
+//            Photos.getBinaryVideo(asset: self.asset!, onSuccess: { (file) in
+//                Utility.shared.splitDataToChunks(file: file, onSplit: { (chunk) in
+//                    onSplit(chunk)
+//                }, onSuccess: { (result) in
+//                    onSuccess(result)
+//                })
+//            }, onFail: { (message) in
+//                onFail( message )
+//            })
             break
         case .BUNDLE_TYPE, .DOCUMENT_TYPE:
             if let file = self.getFile() {

@@ -125,8 +125,11 @@ class AVPlayerManager {
     public func setToBack() {
         self.playerLayer.zPosition = -1
     }
-    public func setToFront() {
+    public func setToMiddle() {
         self.playerLayer.zPosition = 0
+    }
+    public func setToFront() {
+        self.playerLayer.zPosition = 1
     }
     
     public func getAVPlayer() -> AVPlayerLayer {

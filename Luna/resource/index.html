@@ -38,11 +38,17 @@
             }
         
             .debug {
-                background-color: #FAFAFA;
+                background-color: transparent;
                 overflow: scroll;
                 -webkit-overflow-scrolling: touch;
                 max-height: 500px;
+                color: gray;
             } 
+
+            img.scale,
+            video {
+                width: 100%;
+            }
         </style>
         <script>
             var luna = new Luna();
@@ -58,6 +64,8 @@
     </head>
     <body>
         <article id="app_content" class="matostyle">
+            <div id="closeme" class="custom-button">CLOSE WINDOW</div> 
+            <div id="qrcode" class="custom-button">QR SCANNER</div> 
             <ul class="flex-box">
                 <li class="flex-one">
                     <div id="show" class="custom-button">NEW WEBVIEW</div>
@@ -75,9 +83,17 @@
                 </li>
             </ul>
           
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="takeVideo" class="custom-button">CAMCORDER</div>
+                </li>
+                <li class="flex-one">
+                    <div id="getVideo" class="custom-button">LIBRARY</div>
+                </li>
+            </ul>
             
             
-            <div id="getVideo" class="custom-button">CAMCORDER</div>
+
             <ul class="flex-box">
                 <li class="flex-one">
                     <div id="icon0" class="custom-button">DEFAULT ICON</div>

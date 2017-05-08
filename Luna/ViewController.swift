@@ -23,9 +23,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         parameter.setValue( "bundle", forKey: "path_type")
 
         //parameter.setValue( "https://matodemo-06-com-developer-edition.ap2.force.com/luna/s/", forKey: "path")
-        //parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
+        parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
         //parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
-        //parameter.setValue( "url", forKey: "path_type")
+        parameter.setValue( "url", forKey: "path_type")
         let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
         
         commandGetFile.onResolve { ( htmlFile ) in

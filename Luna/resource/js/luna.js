@@ -95,7 +95,8 @@
         ZIP                         : 40,
         ON_ZIP                      : 41,
         ON_ZIPPING                  : 42,
-        ON_ZIPPED                   : 43
+        ON_ZIPPED                   : 43,
+        CODE_READER                 : 44
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -274,9 +275,9 @@
         luna.getVideoFile = function(parameter) {
             _setPathType( parameter );
             var command = new Command({
-                command_code:   COMMAND.GET_VIDEO_FILE,
+                command_code    : COMMAND.GET_VIDEO_FILE,
                 priority        : CommandPriority.LOW,
-                parameter:      parameter
+                parameter       : parameter
             });
             command.onResolve( function( result ) {
                 parameter = apollo11.mergeJSON( result, parameter );
@@ -374,6 +375,7 @@
             }
             var command = new Command({
                 command_code        : COMMAND.MEDIA_PICKER,
+                priority            : CommandPriority.CRITICAL,
                 parameter           : option
             });
             command.onResolve( function( result ) {
@@ -389,7 +391,6 @@
             }
             var command = new Command({
                 command_code:   COMMAND.NEW_AV_PLAYER,
-                priority            : CommandPriority.CRITICAL,
                 parameter:      param
             });
             command.onResolve( function( avplayer_id ) {
@@ -406,6 +407,16 @@
             });
             return CommandProcessor.queue( command );
         };
+
+        luna.codeReader = function( parameter ) {
+            var command = new Command({
+                command_code    : COMMAND.CODE_READER,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : parameter
+            });
+            return CommandProcessor.queue( command );
+        };
+
 
         luna.debug = function( param ) {
             if( param.constructor === Object ) {
@@ -702,7 +713,7 @@
                     chunks.push( apollo11.base64ToBlob( base64_chunk, "application/octet-binary" ) );
                 });
                 command.onResolve( function( result ) {
-                    return generateDOM( chunks, file.getFileExtension() );
+                    return generateDOM( chunks, file.getFileExtension()  );
                 });
                 return CommandProcessor.queue( command );
             };
@@ -710,10 +721,40 @@
             var generateDOM = function( chunks, fileExtension ) {
                 var DOM = {
                     tag: "VIDEO",
-                    src: $window.URL.createObjectURL( new Blob( chunks, { type: "video/" + fileExtension } ) )
+                    src: $window.URL.createObjectURL( new Blob( chunks, { type: "video/" + _getVideoContentType( fileExtension ) } ) )
                 };
                 return apollo11.JSONtoDOM( DOM );
             };
+            // file.getFullResolutionDOM2 = function() {
+            //     var command = new Command({
+            //         command_code    : COMMAND.GET_VIDEO_BASE64_BINARY,
+            //         priority        : CommandPriority.LOW,   
+            //         parameter       : this.toJSON()
+            //     });
+            //     command.onResolve( function( base64_value ) {
+            //         console.log( base64_value.length, file.getFileExtension() )
+            //         return generateDOM2( base64_value, file.getFileExtension() );
+            //     });
+            //     return CommandProcessor.queue( command );
+            // };
+            // var generateDOM2 = function( base64, fileExtension ) {
+            //     var DOM = {
+            //         tag: "VIDEO",
+            //         src: apollo11.base64ToObjectURL( base64, "video/" + _getVideoContentType( fileExtension ) )
+            //     };
+            //     return apollo11.JSONtoDOM( DOM );
+            // };
+
+
+
+            function _getVideoContentType( ext ) {
+                switch( ext ) {
+                    case "mov":
+                        return "quicktime";
+                    default:
+                        return ext;
+                };
+            }
 
             file = apollo11.mergeJSON( file, new File(param), true );
             init();
