@@ -51,14 +51,12 @@
             }
         </style>
         <script>
-            var luna = new Luna();
-        
             (function(){
-                luna.onReady(function(){
+                var luna = new Luna();
+                luna.addEventListener( "ready", function(){
                     luna.debug( "iOS initialized" )
                     App.activatePage( luna );
                 });
-
              })();
         </script>
     </head>

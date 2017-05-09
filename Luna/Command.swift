@@ -59,7 +59,11 @@ enum CommandCode:Int {
     case ON_ZIPPING                 = 42
     case ON_ZIPPED                  = 43
 	case CODE_READER				= 44
-    
+    case GET_AV_CAPTURE             = 45
+    case APPEND_AV_CAPTURE          = 46
+    case SHAKE_BEGIN                = 50
+    case SHAKE_END                  = 51
+    case REMOVE_EVENT_LISTENER      = 52
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

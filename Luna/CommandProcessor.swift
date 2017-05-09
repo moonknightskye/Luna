@@ -139,6 +139,22 @@ class CommandProcessor {
             break
 		case .CODE_READER:
 			checkCodeReader(command: command)
+            break
+        case .SHAKE_BEGIN:
+            //checkShakeBegin(command: command)
+            break
+        case .SHAKE_END:
+            //checkShakeEnd(command: command)
+            break
+        case .REMOVE_EVENT_LISTENER:
+            checkRemoveEventListener(command: command)
+            break
+        case .GET_AV_CAPTURE:
+            checkGetAVCapture( command: command )
+            break
+        case .APPEND_AV_CAPTURE:
+            checkAppendAVCapture( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -182,6 +198,19 @@ class CommandProcessor {
         return nil
     }
     
+    public class func getAVCaptureManager( command: Command ) -> AVCaptureManager? {
+        if let avcaptureID = (command.getParameter() as AnyObject).value(forKeyPath: "avcapture_id") as? Int {
+            if let avmanager = AVCaptureManager.getManager(avcapture_id: avcaptureID) {
+                return avmanager
+            } else {
+                command.reject( errorMessage: "[ERROR] No avcapture with ID of \(avcaptureID) found." )
+                return nil
+            }
+        }
+        command.reject( errorMessage: "[ERROR] avcapture_id is not existent" )
+        return nil
+    }
+    
     public class func getDownloadManager( command: Command ) -> DownloadManager? {
         if let id = (command.getParameter() as AnyObject).value(forKeyPath: "id") as? Int {
             if let manager = DownloadManager.getManager( download_id: id ) {
@@ -208,6 +237,13 @@ class CommandProcessor {
     public class func getCommand( commandCode:CommandCode, ifFound:((Command)->()) ) {
         for (_, command) in CommandProcessor.getQueue().enumerated() {
             if command.getCommandCode() == commandCode {
+                ifFound( command )
+            }
+        }
+    }
+    public class func getCommand( commandID:Int, ifFound:((Command)->()) ) {
+        for (_, command) in CommandProcessor.getQueue().enumerated() {
+            if command.getCommandID() == commandID {
                 ifFound( command )
             }
         }
@@ -1365,7 +1401,6 @@ class CommandProcessor {
 		}, onFail: { errorMessage in
 			command.reject( errorMessage: errorMessage )
 		})
-
 	}
 
 	private class func processCodeReader( command: Command, onSuccess:@escaping ((String)->()), onFail: ((String)->()) ) {
@@ -1381,7 +1416,126 @@ class CommandProcessor {
 			}
 		}
 	}
+    
+    public class func processShakeBegin( ) {
+        getCommand(commandCode: .SHAKE_BEGIN) { (command) in
+            //command.resolve(value: true, raw: true)
+            command.update(value: true)
+        }
+    }
+    
+    public class func processShakeEnd( ) {
+        getCommand(commandCode: .SHAKE_END) { (command) in
+            //command.resolve(value: true, raw: true)
+            command.update(value: true)
+        }
+    }
+    
+    public class func processShakeCancelled( ) {
+//        getCommand(commandCode: .SHAKE_END) { (command) in
+//            command.reject(errorMessage: "Shake timeout")
+//        }
+    }
+    
+    private class func checkRemoveEventListener( command: Command ) {
+        processRemoveEventListener( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func processRemoveEventListener( command: Command, onSuccess: ((Int)->()), onFail: ((String)->()) ) {
+        var commandCode:CommandCode?
+        if let commandCodeVal = (command.getParameter() as! NSDictionary).value(forKey: "evt_command_code") as? Int {
+            if let evtCommandCode = CommandCode(rawValue: commandCodeVal) {
+                switch evtCommandCode {
+                case .SHAKE_BEGIN:
+                    commandCode = CommandCode.SHAKE_BEGIN
+                    break
+                case .SHAKE_END:
+                    commandCode = CommandCode.SHAKE_END
+                    break
+                default:
+                    break
+                }
+            }
+            
+        }
+        if commandCode == nil {
+            onFail( "No Event Available" )
+            return
+        }
+        
+        var count = 0
+        if let commandID = (command.getParameter() as! NSDictionary).value(forKey: "event_id") as? Int {
+            getCommand(commandID: commandID) { (evtcommand) in
+                if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
+                    evtcommand.resolve(value: true, raw: true)
+                    count+=1
+                }
+            }
+        } else {
+            getCommand(commandCode: commandCode!) { (evtcommand) in
+                if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
+                    evtcommand.resolve(value: true, raw: true)
+                    count+=1
+                }
+            }
+        }
+        
+        if count > 0 {
+            onSuccess( count )
+        } else {
+            onFail( "No Event Available" )
+        }
+    }
 
+    private class func checkGetAVCapture( command: Command ) {
+        processGetAVCapture( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func processGetAVCapture( command: Command, onSuccess: ((NSDictionary)->()), onFail: ((String)->()) ) {
+        if let captureMode = (command.getParameter() as! NSDictionary).value(forKey: "mode") as? [String] {
+            var captureTypes = [AVCaptureType]()
+            for mode in captureMode {
+                if let cMode = AVCaptureType(rawValue: mode ) {
+                    captureTypes.append( cMode )
+                }
+            }
+            do {
+                let avCapture = try AVCaptureManager(mode: captureTypes)
+                onSuccess( avCapture.toDictionary() )
+            } catch let error as NSError {
+                onFail( error.localizedDescription )
+            }
+        } else {
+            onFail( AVCaptureError.INVALID_MODE.localizedDescription )
+        }
+    }
+    
+    private class func checkAppendAVCapture( command: Command ) {
+        processAppendAVCapture( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func processAppendAVCapture( command: Command, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
+        if let wkmanager =  CommandProcessor.getWebViewManager(command: command) {
+            if let avmanager = CommandProcessor.getAVCaptureManager(command: command) {
+                let isFixed = (command.getParameter() as AnyObject).value(forKeyPath: "isFixed") as? Bool
+                wkmanager.appendAVCapture(avCapture: avmanager, isFixed: isFixed)
+                onSuccess( true )
+                
+                avmanager.start()
+                return
+            }
+        }
+    }
+    
 }
 
 

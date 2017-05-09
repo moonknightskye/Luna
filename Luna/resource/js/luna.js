@@ -96,7 +96,12 @@
         ON_ZIP                      : 41,
         ON_ZIPPING                  : 42,
         ON_ZIPPED                   : 43,
-        CODE_READER                 : 44
+        CODE_READER                 : 44,
+        GET_AV_CAPTURE              : 45,
+        APPEND_AV_CAPTURE           : 46,
+        SHAKE_BEGIN                 : 50,
+        SHAKE_END                   : 51,
+        REMOVE_EVENT_LISTENER       : 52,
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -217,6 +222,60 @@
 
         luna.fallback = function( value ) {
             console.log("This is a fallback method", value);
+        };
+
+        luna.removeEventListener = function( event_name, event_id ) {
+            var evt_command_code;
+            switch( event_name ) {
+                case "shakestart":
+                    evt_command_code = COMMAND.SHAKE_BEGIN;
+                    break;
+                case "shakeend":
+                    evt_command_code = COMMAND.SHAKE_END;
+                    break;
+                case "ready":
+                    return true;
+                default:
+                    return new Promise.reject("Invalid eventname: " + event_name);
+            }
+            var command = new Command({
+                command_code            : COMMAND.REMOVE_EVENT_LISTENER,
+                parameter               : {
+                    evt_command_code    : evt_command_code,
+                    event_id            : event_id
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.addEventListener = function( event_name, callback ) {
+            if (!callback) {
+                return new Promise.reject("No callback method");
+            }
+            var command_code;
+            switch( event_name ) {
+                case "shakestart":
+                    command_code = COMMAND.SHAKE_BEGIN;
+                    break;
+                case "shakeend":
+                    command_code = COMMAND.SHAKE_END;
+                    break;
+                case "ready":
+                    if( _INTERNAL_DATA.status ===  STATUS.IOS_READY ) {
+                        $window.setTimeout( callback );
+                    } else {
+                        _INTERNAL_DATA.initFns.push( callback );
+                    }
+                    return true;
+                default:
+                    return new Promise.reject("Invalid eventname: " + event_name);
+            }
+            var command = new Command({
+                command_code:   command_code
+            });
+            command.onUpdate( callback );
+            CommandProcessor.queue( command );
+            return Promise.resolve( command.getID() );
         };
 
         luna.getFileCollection = function( parameter ) {
@@ -390,12 +449,26 @@
                 param.property = parameter.property
             }
             var command = new Command({
-                command_code:   COMMAND.NEW_AV_PLAYER,
-                parameter:      param
+                command_code    : COMMAND.NEW_AV_PLAYER,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : param
             });
             command.onResolve( function( avplayer_id ) {
                 parameter.avplayer_id = avplayer_id;
                 return new AVPlayer( parameter );
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.getNewAVCapture = function( parameter ) {
+            var command = new Command({
+                command_code    : COMMAND.GET_AV_CAPTURE,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : parameter
+            });
+            command.onResolve( function( result ) {
+                parameter = apollo11.mergeJSON( result, parameter );
+                return new AVCapture( parameter );
             });
             return CommandProcessor.queue( command );
         };
@@ -407,6 +480,17 @@
             });
             return CommandProcessor.queue( command );
         };
+
+        // luna.getCodeReader = function( parameter ) {
+        //     var command = new Command({
+        //         command_code    : COMMAND.GET_CODE_READER,
+        //         parameter       : parameter
+        //     });
+        //     command.onResolve( function() {
+        //         return new CodeReader( parameter );
+        //     });
+        //     return CommandProcessor.queue( command );
+        // };
 
         luna.codeReader = function( parameter ) {
             var command = new Command({
@@ -465,6 +549,28 @@
         /************************
             PRIVATE FUNCTIONS
         ************************/
+
+        function AVCapture( param ) {
+            var avCapture = {};
+
+            var _INTERNAL_DATA = {
+                id              : param.avcapture_id,
+                mode            : param.mode || [],
+                status          : STATUS.INIT
+            };
+
+            function init() {};
+
+            avCapture.getID = function() {
+                return _INTERNAL_DATA.id;
+            };
+            avCapture.setID = function( avcapture_id ) {
+                _INTERNAL_DATA.id = avcapture_id;
+            };
+
+            init();
+            return avCapture;
+        };
 
         function AVPlayer( param ) {
             var avplayer = {};
@@ -542,12 +648,13 @@
         function Webview( param ) {
             var webview = {};
             var _INTERNAL_DATA = {
-                status:             STATUS.WEBVIEW_INIT,
-                id:                 param.webview_id,
-                parentWebviewID:    param.parent_webview_id || STATUS.SYSTEM,
-                html_file:          undefined,
-                property:           param.property || { isOpaque: false },
-                av_player:          []
+                status              : STATUS.WEBVIEW_INIT,
+                id                  : param.webview_id,
+                parentWebviewID     : param.parent_webview_id || STATUS.SYSTEM,
+                html_file           : undefined,
+                property            : param.property || { isOpaque: false },
+                av_player           : [],
+                av_capture          : []
             };
 
             function init() {
@@ -561,12 +668,12 @@
 
             webview.appendAVPlayer = function( param ) {
                 var command = new Command({
-                    command_code:       COMMAND.APPEND_AV_PLAYER,
+                    command_code        : COMMAND.APPEND_AV_PLAYER,
                     priority            : CommandPriority.CRITICAL,
-                    target_webview_id:  this.getID(),
+                    target_webview_id   : this.getID(),
                     parameter: {
                         avplayer_id: (!apollo11.isUndefined(param.avplayer)) ? param.avplayer.getID() : -1,
-                        isFixed:        param.isFixed || false
+                        isFixed         : param.isFixed || false
                     }
                 });
                 command.onResolve( function(result){
@@ -574,7 +681,40 @@
                     return result;
                 });
                 return CommandProcessor.queue( command );
-            };  
+            };
+
+            webview.appendAVCapture = function( param ) {
+                var command = new Command({
+                    command_code        : COMMAND.APPEND_AV_CAPTURE,
+                    priority            : CommandPriority.CRITICAL,
+                    target_webview_id   : this.getID(),
+                    parameter: {
+                        avcapture_id    : (!apollo11.isUndefined(param.avcapture)) ? param.avcapture.getID() : -1,
+                        isFixed         : param.isFixed || false
+                    }
+                });
+                command.onResolve( function(result){
+                    _INTERNAL_DATA.av_capture.push( param.avcapture );
+                    return result;
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            // webview.appendCodeReader = function( param ) {
+            //     var command = new Command({
+            //         command_code        : COMMAND.APPEND_CODE_READER,
+            //         priority            : CommandPriority.CRITICAL,
+            //         target_webview_id   : this.getID(),
+            //         parameter: {
+            //             isFixed         : param.isFixed || false
+            //         }
+            //     });
+            //     command.onResolve( function(result){
+            //         _INTERNAL_DATA.codeReader = param.codeReader
+            //         return result;
+            //     });
+            //     return CommandProcessor.queue( command );
+            // };
 
             webview.load = function() {
                 var command = new Command({

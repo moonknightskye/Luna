@@ -15,11 +15,54 @@
               $window.URL = $window.URL || $window.webkitURL;
 
               utility.getElement( "qrcode", "id" ).addEventListener( "click", function() {
-                luna.codeReader( {type:"QRCODE", isFixed:false} ).then(function(result){
-                  luna.debug( result )
+                luna.getNewAVCapture( {mode:["CODEREADER"]} ).then(function( avcapture ){
+                  luna.debug( "luna.getNewAVCapture" )
+
+                  var selfwebview = luna.getMainWebview();
+                  selfwebview.appendAVCapture({avcapture:avcapture}).then( function(result){
+                    luna.debug( "webview.appendAVCapture: " + result );
+                  }, function(error){
+                    luna.debug( "webview.appendAVCapture: " + error );
+                  });
+
+
                 }, function(error){
                   luna.debug(error)
                 });
+              });
+
+              var counter = 1;
+              var evtid_1, evtid_2, evtid_3;
+              luna.addEventListener( "shakestart", function(){
+                luna.debug( "SHAKE IT BABY GIRL" );
+              }).then(function( id ) {
+                luna.debug( "luna.addEventListener: shakestart " + id);
+                evtid_1 = id;
+              });
+              luna.addEventListener( "shakestart", function(){
+                luna.debug( "SHAKE IT BABY BOY" );
+              }).then(function( id ) {
+                luna.debug( "luna.addEventListener: shakestart " + id);
+                evtid_2 = id;
+              });
+              luna.addEventListener( "shakeend", function(){
+                luna.debug( "SHE SHOOKED IT: " + counter);
+                counter++;
+                if( counter > 3 ) {
+                  luna.removeEventListener( "shakestart" ).then(function(result){
+                    luna.debug( "luna.removeEventListener: shakestart " + result );
+                  },function(error){
+                    luna.debug( "luna.removeEventListener: shakestart " + error );
+                  });
+                  luna.removeEventListener( "shakeend", evtid_3 ).then(function(result){
+                    luna.debug( "luna.removeEventListener: shakeend " + result );
+                  },function(error){
+                    luna.debug( "luna.removeEventListener: shakeend " + error );
+                  });
+                }
+              }).then(function( id ) {
+                luna.debug( "luna.addEventListener: shakeend " + id);
+                evtid_3 = id;
               });
 
               utility.getElement( "closeme", "id" ).addEventListener( "click", function() {
@@ -212,7 +255,7 @@
                     property: {
                       frame: {
                         height:   320,
-                        y:        300
+                        y:        600
                       },
                       opacity:    1,
                       autoPlay:   true,

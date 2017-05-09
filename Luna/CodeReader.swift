@@ -14,24 +14,32 @@ import WebKit
 class CodeReader {
 
 	private static var SINGLETON:CodeReader?
-	var captureSession: AVCaptureSession!
-	var previewLayer: AVCaptureVideoPreviewLayer!
+	private var captureSession: AVCaptureSession!
+	private var previewLayer: AVCaptureVideoPreviewLayer!
+    private let stillImageOutput: AVCapturePhotoOutput!
+    private let stillVideoOutput: AVCaptureVideoDataOutput!
+    private var didTookPhoto = false
+    private var didTakeSilentPhoto = false
+    
 	var onFound:((String)->Void)?
 
-	let supportedCodeTypes = [AVMetadataObjectTypeUPCECode,
-	                          AVMetadataObjectTypeCode39Code,
-	                          AVMetadataObjectTypeCode39Mod43Code,
-	                          AVMetadataObjectTypeCode93Code,
-	                          AVMetadataObjectTypeCode128Code,
-	                          AVMetadataObjectTypeEAN8Code,
-	                          AVMetadataObjectTypeEAN13Code,
-	                          AVMetadataObjectTypeAztecCode,
-	                          AVMetadataObjectTypePDF417Code,
-	                          AVMetadataObjectTypeQRCode]
+	let supportedCodeTypes = [
+        AVMetadataObjectTypeUPCECode,
+        AVMetadataObjectTypeCode39Code,
+        AVMetadataObjectTypeCode39Mod43Code,
+        AVMetadataObjectTypeCode93Code,
+        AVMetadataObjectTypeCode128Code,
+        AVMetadataObjectTypeEAN8Code,
+        AVMetadataObjectTypeEAN13Code,
+        AVMetadataObjectTypeAztecCode,
+        AVMetadataObjectTypePDF417Code,
+        AVMetadataObjectTypeQRCode]
 
 
 	init() throws{
 		captureSession = AVCaptureSession()
+        captureSession.sessionPreset = AVCaptureSessionPreset1920x1080
+        
 		let videoCaptureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
 		let videoInput: AVCaptureDeviceInput
 		do {
@@ -55,12 +63,33 @@ class CodeReader {
 		} else {
 			throw FileError.UNKNOWN_ERROR
 		}
+        
+        stillImageOutput = AVCapturePhotoOutput()
+        if( captureSession.canAddOutput(stillImageOutput) ) {
+            captureSession.addOutput(stillImageOutput)
+        } else {
+            print("FAILED!!! stillImageOutput")
+            throw FileError.UNKNOWN_ERROR
+        }
+        
+        stillVideoOutput = AVCaptureVideoDataOutput()
+        if( captureSession.canAddOutput(stillVideoOutput) ) {
+            captureSession.addOutput(stillVideoOutput)
+            
+            stillVideoOutput.alwaysDiscardsLateVideoFrames = true
+            stillVideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable : Int(kCVPixelFormatType_32BGRA)]
+            stillVideoOutput.setSampleBufferDelegate(Shared.shared.ViewController, queue: DispatchQueue.main)
+            
+        } else {
+            print("FAILED!!! stillVideoOutput")
+            throw FileError.UNKNOWN_ERROR
+        }
+        
 
 		previewLayer = AVCaptureVideoPreviewLayer(session: captureSession);
 		previewLayer.frame = Shared.shared.ViewController.view.layer.bounds
 
 		previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-
 		previewLayer.frame.size.width = 200
 		previewLayer.frame.size.height = 200
 		previewLayer.frame.origin.y = 200
@@ -88,12 +117,9 @@ class CodeReader {
 		if onFound != nil {
 			self.onFound = { value in
 				onFound!(value)
-				self.previewLayer?.removeFromSuperlayer()
+				//self.previewLayer?.removeFromSuperlayer()
 			}
 		}
-		//previewLayer?.zPosition = -1
-
-
 	}
 
 	func start(onSuccess:((Bool)->()), onFail:((String)->())) {
@@ -130,4 +156,43 @@ class CodeReader {
 			onFound!( value )
 		}
 	}
+    
+    func getResultThenTakePhoto( value: String ) {
+        print( value )
+        takePhoto()
+    }
+    
+    func takePhoto() {
+        if !didTookPhoto {
+            didTookPhoto = true
+            let settingsForMonitoring = AVCapturePhotoSettings()
+            settingsForMonitoring.flashMode = .auto
+            settingsForMonitoring.isAutoStillImageStabilizationEnabled = true
+            settingsForMonitoring.isHighResolutionPhotoEnabled = false
+            stillImageOutput.capturePhoto(with: settingsForMonitoring, delegate: Shared.shared.ViewController)
+        }
+
+    }
+    
+    func takeSilentPhoto() {
+        if var _:AVCaptureConnection? = stillVideoOutput.connection( withMediaType: AVMediaTypeVideo ) {
+            didTakeSilentPhoto = true
+        }
+    }
+    
+    func isShutterPressed() -> Bool {
+        return didTakeSilentPhoto
+    }
+    func imageTaken( image:UIImage ) {
+        didTakeSilentPhoto = false
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+    func getPreviewLayer() -> AVCaptureVideoPreviewLayer {
+        return self.previewLayer
+    }
+    
+    func getCaptureSession() -> AVCaptureSession {
+        return self.captureSession
+    }
 }

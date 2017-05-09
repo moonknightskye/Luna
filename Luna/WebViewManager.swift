@@ -85,6 +85,22 @@ class WebViewManager {
         }
     }
     
+    public func appendAVCapture( avCapture: AVCaptureManager, isFixed:Bool?=false) {
+        if isFixed! {
+            self.getWebview().layer.addSublayer( avCapture.getPreviewLayer() )
+        } else {
+            self.getWebview().scrollView.layer.addSublayer( avCapture.getPreviewLayer() )
+        }
+    }
+    
+//    public func appendCodeReader( codeReader: CodeReader, isFixed:Bool?=false) {
+//        if isFixed! {
+//            self.getWebview().layer.addSublayer( codeReader.getPreviewLayer() )
+//        } else {
+//            self.getWebview().scrollView.layer.addSublayer( codeReader.getPreviewLayer() )
+//        }
+//    }
+    
     public class func getManager( webview_id:Int?=nil, webview:WKWebView?=nil ) -> WebViewManager? {
         for (_, manager) in WebViewManager.LIST.enumerated() {
             if webview_id != nil && manager.getID() == webview_id {
