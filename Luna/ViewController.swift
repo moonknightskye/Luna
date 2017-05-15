@@ -53,7 +53,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
         CommandProcessor.queue(command: commandGetFile)
         
-
 //        do {
 //            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
 //            filecol.zip(toFileName: "matozip.zip", onProgress: { (progress) in

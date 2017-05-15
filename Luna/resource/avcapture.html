@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
+        <link href="css/style.css" rel="newer stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/luna.js" ></script>
+        <script type="text/javascript" src="js/strict_utility.js" ></script>
+        <script type="text/javascript" src="js/logic.js" ></script>
+    <style>
+            body {
+                background-color: transparent;
+                margin: 0px;
+                color: gray;
+            }
+
+            .point {
+                position: absolute !important;
+                width   : 4px;
+                height  : 4px;
+                border-radius: 4px;
+                background-color: red;
+            }
+
+            #app_content {
+                height: 100%;
+                width: 100%;
+            }
+
+            .button-holder {
+                width: 100%;
+                position: absolute !important;
+                bottom: 10px;
+            }
+
+            .camera-button {
+                height: 60px;
+                width: 60px;
+                margin: auto;
+                border-radius: 60px;
+                color: #FAFAFA;
+            }
+            .camera-button.start {
+                background-color:#4caf50;
+            }
+            .camera-button.stop {
+                background-color:#f44336;
+            }
+            .camera-button .fa{
+                line-height: 60px;
+                font-size: xx-large;
+                left: 0px;
+            }
+            .camera-button .fa-play {
+                left: 4px;
+            }
+        </style>
+        <script>
+            (function(){
+
+                var luna = new Luna();
+                luna.addEventListener( "ready", function() {
+
+                    luna.getNewAVCapture( { mode: [ "CODEREADER" ]} ).then( function( avcapture ) {
+
+                        luna.getMainWebview().appendAVCapture({
+                            avcapture   : avcapture,
+                            isFixed     : true
+                        }).then( function(result) {
+                            avcapture.start();
+
+                            document.getElementById( "start" ).addEventListener("click", function(){
+                                avcapture.start();
+                            });
+                            document.getElementById( "stop" ).addEventListener("click", function(){
+                                avcapture.stop();
+                            });
+                        });
+
+                        avcapture.addEventListener( "scancode", function( result ){
+                            value.innerText     = result[0].value;
+                            rotation.innerText  = rotate( result[0].corners[0], result[0].corners[1] );
+                            point_1.style.top   = result[0].corners[0].Y;
+                            point_1.style.left  = result[0].corners[0].X;
+                            point_2.style.top   = result[0].corners[1].Y;
+                            point_2.style.left  = result[0].corners[1].X;
+                            point_3.style.top   = result[0].corners[2].Y;
+                            point_3.style.left  = result[0].corners[2].X;
+                            point_4.style.top   = result[0].corners[3].Y;
+                            point_4.style.left  = result[0].corners[3].X;
+                        });
+
+
+                    });
+
+                });
+
+                function rotate( p1, p2) {
+                    return Math.atan2(p2.Y - p1.Y, p2.X - p1.X) * 180 / Math.PI
+                };
+
+             })();
+        </script>
+    </head>
+    <body>
+        <article id="app_content" class="matostyle">
+            <div id="value">QR CODE READER</div>
+            <div id="rotation">0.0</div>
+            <div id="point_1" class="point"></div>
+            <div id="point_2" class="point"></div>
+            <div id="point_3" class="point"></div>
+            <div id="point_4" class="point"></div>
+
+            <div class="button-holder text-center">
+                <ul class="flex-box">
+                    <li class="flex-one">
+                        <div class="camera-button stop" id="stop">
+                            <i class="fa fa-stop" aria-hidden="true"></i>
+                        </div>
+                    </li>
+                    <li class="flex-one">
+                        <div class="camera-button start" id="start">
+                            <i class="fa fa-play" aria-hidden="true"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </article>
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

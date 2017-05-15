@@ -14,22 +14,151 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
-              utility.getElement( "qrcode", "id" ).addEventListener( "click", function() {
-                luna.getNewAVCapture( {mode:["CODEREADER"]} ).then(function( avcapture ){
-                  luna.debug( "luna.getNewAVCapture" )
+              utility.getElement( "silentcamera", "id" ).addEventListener( "click", function() {
+                luna.getHtmlFile({
+                    filename:   "avcapture_camera.html",
+                    path:       "resource",
+                    path_type:  "bundle"
+                }).then( function( html_file ){
+                    luna.debug( "luna.getHtmlFile: " );
+                    luna.debug( html_file )
+                    var camerascreen = {
+                        Width : 375/1.5,
+                        Height  : 667/2.6
+                    };
+                    luna.getNewWebview({
+                      html_file: html_file,
+                      property: {
+                        frame: {
+                          height:   camerascreen.Height,
+                          width:    camerascreen.Width,
+                          y:        100,
+                          x:        70
+                        },
+                        opacity:    0,
+                        isOpaque:   false
+                      }
+                    }).then( function( result ){
 
-                  var selfwebview = luna.getMainWebview();
-                  selfwebview.appendAVCapture({avcapture:avcapture}).then( function(result){
-                    luna.debug( "webview.appendAVCapture: " + result );
-                  }, function(error){
-                    luna.debug( "webview.appendAVCapture: " + error );
-                  });
+                      webview = result;
+
+                      luna.debug( "luna.getNewWebview: " + webview.getID() );
+
+                      webview.load().then(function(result){
+                        luna.debug( "webview.load: " + result );
+                      });
+
+                      webview.onLoad().then(function(result){
+                        luna.debug( "webview.onLoad: " + result );
+                      });
+
+                      webview.onLoading(function(progress){
+                        luna.debug( "Loading: " + progress + "%" );
+                      }).then(function(result){
+                        luna.debug( "webview.onLoading: " + result );
+                      });
+
+                      webview.onLoaded().then(function(result){
+                        luna.debug( "webview.onLoaded: " + result );
+
+                        webview.setProperty( {frame: {
+                            height:   camerascreen.Height,
+                            width:    camerascreen.Width,
+                            y:        120,
+                            x:        70
+                          },
+                          opacity:1.0
+                        }, { duration:1.0, delay:0 } ).then(function(result){
+                          luna.debug( "webview.setProperty: " + result );
+                        });
+
+                      });
+
+                    },function( error ){
+                      luna.debug( error )
+                    });
 
 
                 }, function(error){
-                  luna.debug(error)
+                    luna.debug( error )
                 });
               });
+              utility.getElement( "silentcamera", "id" ).click();
+
+
+
+
+              utility.getElement( "qrcode", "id" ).addEventListener( "click", function() {
+                luna.getHtmlFile({
+                    filename:   "avcapture.html",
+                    path:       "resource",
+                    path_type:  "bundle"
+                }).then( function( html_file ){
+                    luna.debug( "luna.getHtmlFile: " );
+                    luna.debug( html_file )
+                    var camerascreen = {
+                        Width : 375/1.5,
+                        Height  : 667/2.6
+                    };
+                    luna.getNewWebview({
+                      html_file: html_file,
+                      property: {
+                        frame: {
+                          height:   camerascreen.Height,
+                          width:    camerascreen.Width,
+                          y:        100,
+                          x:        70
+                        },
+                        opacity:    0,
+                        isOpaque:   false
+                      }
+                    }).then( function( result ){
+
+                      webview = result;
+
+                      luna.debug( "luna.getNewWebview: " + webview.getID() );
+
+                      webview.load().then(function(result){
+                        luna.debug( "webview.load: " + result );
+                      });
+
+                      webview.onLoad().then(function(result){
+                        luna.debug( "webview.onLoad: " + result );
+                      });
+
+                      webview.onLoading(function(progress){
+                        luna.debug( "Loading: " + progress + "%" );
+                      }).then(function(result){
+                        luna.debug( "webview.onLoading: " + result );
+                      });
+
+                      webview.onLoaded().then(function(result){
+                        luna.debug( "webview.onLoaded: " + result );
+
+                        webview.setProperty( {frame: {
+                            height:   camerascreen.Height,
+                            width:    camerascreen.Width,
+                            y:        120,
+                            x:        70
+                          },
+                          opacity:1.0
+                        }, { duration:1.0, delay:0 } ).then(function(result){
+                          luna.debug( "webview.setProperty: " + result );
+                        });
+
+                      });
+
+                    },function( error ){
+                      luna.debug( error )
+                    });
+
+
+                }, function(error){
+                    luna.debug( error )
+                });
+              });
+
+              //utility.getElement( "qrcode", "id" ).click()
 
               var counter = 1;
               var evtid_1, evtid_2, evtid_3;
@@ -48,6 +177,7 @@
               luna.addEventListener( "shakeend", function(){
                 luna.debug( "SHE SHOOKED IT: " + counter);
                 counter++;
+
                 if( counter > 3 ) {
                   luna.removeEventListener( "shakestart" ).then(function(result){
                     luna.debug( "luna.removeEventListener: shakestart " + result );

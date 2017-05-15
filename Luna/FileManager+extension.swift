@@ -204,12 +204,14 @@ extension FileManager {
         }
         
         let dataURL = getDocumentsDirectoryPath(relative:relative)!.appendingPathComponent( filename );
+        print( dataURL )
         do {
             try data.write(to: dataURL)
             if onSuccess != nil {
                 onSuccess!( dataURL )
             }
         } catch let error {
+            print("ARF ARF")
             if onFail != nil {
                 onFail!( error.localizedDescription )
             }

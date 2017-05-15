@@ -61,6 +61,9 @@ enum CommandCode:Int {
 	case CODE_READER				= 44
     case GET_AV_CAPTURE             = 45
     case APPEND_AV_CAPTURE          = 46
+    case AV_CAPTURE_CONTROL         = 47
+    case AV_CAPTURE_SCANCODE        = 48
+    case AV_CAPTURE_SHOOT_IMAGE     = 49
     case SHAKE_BEGIN                = 50
     case SHAKE_END                  = 51
     case REMOVE_EVENT_LISTENER      = 52

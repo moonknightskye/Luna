@@ -100,5 +100,21 @@ class Utility: NSObject {
             print( dictonary[ key ]! )
         }
     }
+
+	func getDimentionScaleValue( originalDimention:CGRect, resizedDimention:CGRect ) -> CGFloat {
+		let width = 1 - ((originalDimention.width - resizedDimention.width) / originalDimention.width)
+		let height = 1 - ((originalDimention.height - resizedDimention.height) / originalDimention.height)
+		return CGFloat(max(width, height))
+	}
+
+	func getScaledDimention( dimention:CGRect, scale:CGFloat ) -> CGRect {
+		return CGRect(x: dimention.origin.x, y: dimention.origin.y, width: dimention.width * scale, height: dimention.height * scale)
+	}
+
+	func getAspectRatioCoordinates( origin:CGPoint, originalDimention:CGRect, resizedDimention:CGRect ) -> CGPoint {
+		let x = ((1-origin.y) * originalDimention.width) - ((originalDimention.width - resizedDimention.width) / 2)
+		let y = (origin.x * originalDimention.height) - ((originalDimention.height - resizedDimention.height) / 2)
+		return CGPoint(x: x, y: y)
+	}
     
 }

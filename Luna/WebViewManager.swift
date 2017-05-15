@@ -91,6 +91,7 @@ class WebViewManager {
         } else {
             self.getWebview().scrollView.layer.addSublayer( avCapture.getPreviewLayer() )
         }
+        avCapture.inheritParentFrame(isFixed: isFixed!)
     }
     
 //    public func appendCodeReader( codeReader: CodeReader, isFixed:Bool?=false) {

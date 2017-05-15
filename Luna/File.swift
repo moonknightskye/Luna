@@ -174,6 +174,34 @@ class File {
         }
     }
     
+    public init( fileId:Int, file:Data, document:String, path:String?=nil ) throws {
+        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: path) {
+            if !FileManager.isExists(url: relativeURL) {
+                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
+                    throw FileError.CANNOT_CREATE
+                }
+            }
+            var isSuccess = false
+            FileManager.saveDocument(file: file, filename: document, relative: path, onSuccess: { (filePath) in
+                self.setID(fileId: fileId)
+                self.setFileName(fileName: document)
+                self.setPath(path: path)
+                self.setFilePath(filePath: filePath)
+                isSuccess = true
+            }, onFail: { (errorMessage) in
+                print( errorMessage )
+                isSuccess = false
+            })
+            if !isSuccess {
+                print("some problems")
+                throw FileError.UNKNOWN_ERROR
+            }
+            
+        } else {
+            throw FileError.UNKNOWN_ERROR
+        }
+    }
+    
     public init( fileId:Int, url:String ) throws {
 		if url.isValidURL() {
             if let filePath = URL(string: url) {

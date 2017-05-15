@@ -99,6 +99,9 @@
         CODE_READER                 : 44,
         GET_AV_CAPTURE              : 45,
         APPEND_AV_CAPTURE           : 46,
+        AV_CAPTURE_CONTROL          : 47,
+        AV_CAPTURE_SCANCODE         : 48,
+        AV_CAPTURE_SHOOT_IMAGE      : 49,
         SHAKE_BEGIN                 : 50,
         SHAKE_END                   : 51,
         REMOVE_EVENT_LISTENER       : 52,
@@ -238,20 +241,10 @@
                 default:
                     return new Promise.reject("Invalid eventname: " + event_name);
             }
-            var command = new Command({
-                command_code            : COMMAND.REMOVE_EVENT_LISTENER,
-                parameter               : {
-                    evt_command_code    : evt_command_code,
-                    event_id            : event_id
-                }
-            });
-            return CommandProcessor.queue( command );
+            return _removeEventListener( evt_command_code, event_id )
         };
 
         luna.addEventListener = function( event_name, callback ) {
-            if (!callback) {
-                return new Promise.reject("No callback method");
-            }
             var command_code;
             switch( event_name ) {
                 case "shakestart":
@@ -270,12 +263,7 @@
                 default:
                     return new Promise.reject("Invalid eventname: " + event_name);
             }
-            var command = new Command({
-                command_code:   command_code
-            });
-            command.onUpdate( callback );
-            CommandProcessor.queue( command );
-            return Promise.resolve( command.getID() );
+            return _addEventListener( command_code, event_name, callback );
         };
 
         luna.getFileCollection = function( parameter ) {
@@ -545,6 +533,32 @@
             param.path_type = type;
         };
 
+        var _addEventListener = function( command_code, event_name, callback, parameter ) {
+            if (!callback) {
+                return new Promise.reject("No callback method");
+            }
+            var command = new Command({
+                command_code    : command_code,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : parameter
+            });
+            command.onUpdate( callback );
+            CommandProcessor.queue( command );
+            return Promise.resolve( command.getID() );
+        };
+
+        var _removeEventListener = function( evt_command_code, event_id ) {
+            var command = new Command({
+                command_code            : COMMAND.REMOVE_EVENT_LISTENER,
+                priority                : CommandPriority.CRITICAL,
+                parameter               : {
+                    evt_command_code    : evt_command_code,
+                    event_id            : event_id
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
 
         /************************
             PRIVATE FUNCTIONS
@@ -560,6 +574,69 @@
             };
 
             function init() {};
+
+            
+            avCapture.start = function() {
+                return _avCaptureControl( true );
+            };
+            avCapture.stop = function() {
+                return _avCaptureControl( false );
+            };
+
+            var _avCaptureControl = function( isRun ) {
+                var command = new Command({
+                    command_code    : COMMAND.AV_CAPTURE_CONTROL,
+                    priority        : CommandPriority.CRITICAL,
+                    parameter       : {
+                        avcapture_id: avCapture.getID(),
+                        isRun       : isRun
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            //avCapture.record = 
+            avCapture.capture = function() {
+                var command = new Command({
+                    command_code    : COMMAND.AV_CAPTURE_SHOOT_IMAGE,
+                    priority        : CommandPriority.CRITICAL,
+                    parameter       : {
+                        avcapture_id: avCapture.getID()
+                    }
+                });
+                command.onResolve( function( result ) {
+                    return new ImageFile( result );
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            avCapture.addEventListener = function( event_name, callback ) {
+                var parameter;
+                var command_code;
+                switch( event_name ) {
+                    case "scancode":
+                        command_code = COMMAND.AV_CAPTURE_SCANCODE;
+                        parameter = {
+                            avcapture_id    : avCapture.getID(),
+                        };
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback, parameter );
+            };
+
+            avCapture.removeEventListener = function( event_name, event_id ) {
+                var evt_command_code;
+                switch( event_name ) {
+                    case "scancode":
+                        evt_command_code = COMMAND.AV_CAPTURE_SCANCODE;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( evt_command_code, event_id )
+            };
 
             avCapture.getID = function() {
                 return _INTERNAL_DATA.id;

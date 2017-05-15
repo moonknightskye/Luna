@@ -41,6 +41,9 @@ class AVCaptureManager {
     private var previewLayer: AVCaptureVideoPreviewLayer!
     private var captureMode:[AVCaptureType]!
     public var isActive:Bool = false
+    private var hasDefaultFrameProperty:Bool = false
+	private var avScaledDimention:CGRect!
+    private var shootingPhoto:Bool = false
     
     public init( mode:[AVCaptureType] ) throws {
         captureMode = mode
@@ -108,13 +111,8 @@ class AVCaptureManager {
             }
         }
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        
-        previewLayer.frame = Shared.shared.ViewController.view.layer.bounds
         previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-        previewLayer.frame.size.width = 200
-        previewLayer.frame.size.height = 200
-        previewLayer.frame.origin.y = 200
-        previewLayer.frame.origin.x = 100
+        setToBack()
         
         AVCaptureManager.LIST.append( self )
     }
@@ -124,6 +122,11 @@ class AVCaptureManager {
         dict.setValue(self.getID(), forKey: "avcapture_id")
         return dict
     }
+
+	private func updateAVDimention() {
+		let scaleValue = Utility.shared.getDimentionScaleValue(originalDimention: UIScreen.main.bounds, resizedDimention: self.previewLayer.bounds)
+		self.avScaledDimention = Utility.shared.getScaledDimention(dimention: UIScreen.main.bounds, scale: scaleValue)
+	}
     
     func setProperty( property: NSDictionary, animation: NSDictionary?=nil, onSuccess:((Bool)->())?=nil ) {
         if animation != nil {
@@ -153,12 +156,20 @@ class AVCaptureManager {
     
     private func setProperty( property: NSDictionary ) {
         if let frame = property.value(forKeyPath: "frame") as? NSDictionary {
+			var isDimentionChanged = false
+            hasDefaultFrameProperty = true
             if let width = frame.value(forKeyPath: "width") as? CGFloat {
                 self.previewLayer.frame.size.width = width
+				isDimentionChanged = true
             }
             if let height = frame.value(forKeyPath: "height") as? CGFloat {
                 self.previewLayer.frame.size.height = height
+				isDimentionChanged = true
             }
+			if isDimentionChanged {
+				self.updateAVDimention()
+			}
+
             if let x = frame.value(forKeyPath: "x") as? CGFloat {
                 self.previewLayer.frame.origin.x = x
             }
@@ -277,5 +288,40 @@ class AVCaptureManager {
     
     func getCaptureSession() -> AVCaptureSession {
         return self.captureSession
+    }
+    
+    public func setToBack() {
+        self.previewLayer.zPosition = -1
+    }
+    public func setToMiddle() {
+        self.previewLayer.zPosition = 0
+    }
+    public func setToFront() {
+        self.previewLayer.zPosition = 1
+    }
+    
+    func inheritParentFrame(isFixed:Bool) {
+        if !self.hasDefaultFrameProperty && self.previewLayer.superlayer != nil {
+            self.previewLayer.frame.size.width = self.previewLayer.superlayer!.frame.size.width
+            self.previewLayer.frame.size.height = self.previewLayer.superlayer!.frame.size.height
+			updateAVDimention()
+        }
+    }
+
+	func processPoints( points: [Any] ) -> [CFDictionary] {
+		var pPoints = [CFDictionary]()
+		for point in points {
+			if let ppoint = point as? NSDictionary {
+				pPoints.append(Utility.shared.getAspectRatioCoordinates(origin: CGPoint(dictionaryRepresentation: ppoint)!, originalDimention: self.avScaledDimention, resizedDimention: self.previewLayer.bounds).dictionaryRepresentation)
+			}
+		}
+		return pPoints
+	}
+    
+    func setShootingPhoto( isShooting: Bool ) {
+        self.shootingPhoto = isShooting
+    }
+    func isShootingPhoto() -> Bool {
+        return self.shootingPhoto
     }
 }

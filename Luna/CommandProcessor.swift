@@ -155,6 +155,14 @@ class CommandProcessor {
         case .APPEND_AV_CAPTURE:
             checkAppendAVCapture( command: command )
             break
+        case .AV_CAPTURE_CONTROL:
+            checkAVCaptureControl( command: command )
+            break
+        case .AV_CAPTURE_SCANCODE:
+            checkAVCaptureScancode( command: command )
+            break
+        case .AV_CAPTURE_SHOOT_IMAGE:
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1445,49 +1453,49 @@ class CommandProcessor {
         })
     }
     private class func processRemoveEventListener( command: Command, onSuccess: ((Int)->()), onFail: ((String)->()) ) {
-        var commandCode:CommandCode?
         if let commandCodeVal = (command.getParameter() as! NSDictionary).value(forKey: "evt_command_code") as? Int {
             if let evtCommandCode = CommandCode(rawValue: commandCodeVal) {
-                switch evtCommandCode {
-                case .SHAKE_BEGIN:
-                    commandCode = CommandCode.SHAKE_BEGIN
-                    break
-                case .SHAKE_END:
-                    commandCode = CommandCode.SHAKE_END
-                    break
-                default:
-                    break
+//                switch evtCommandCode {
+//                case .SHAKE_BEGIN:
+//                    commandCode = CommandCode.SHAKE_BEGIN
+//                    break
+//                case .SHAKE_END:
+//                    commandCode = CommandCode.SHAKE_END
+//                    break
+//                default:
+//                    break
+//                }
+                var count = 0
+                if let commandID = (command.getParameter() as! NSDictionary).value(forKey: "event_id") as? Int {
+                    getCommand(commandID: commandID) { (evtcommand) in
+                        if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
+                            evtcommand.resolve(value: true, raw: true)
+                            count+=1
+                        }
+                    }
+                } else {
+                    getCommand(commandCode: evtCommandCode) { (evtcommand) in
+                        if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
+                            evtcommand.resolve(value: true, raw: true)
+                            count+=1
+                        }
+                    }
                 }
+                
+                if count > 0 {
+                    onSuccess( count )
+                } else {
+                    onFail( "No Event Available" )
+                }
+            } else {
+                onFail( "No Event Available" )
+                return
             }
             
         }
-        if commandCode == nil {
-            onFail( "No Event Available" )
-            return
-        }
+
         
-        var count = 0
-        if let commandID = (command.getParameter() as! NSDictionary).value(forKey: "event_id") as? Int {
-            getCommand(commandID: commandID) { (evtcommand) in
-                if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
-                    evtcommand.resolve(value: true, raw: true)
-                    count+=1
-                }
-            }
-        } else {
-            getCommand(commandCode: commandCode!) { (evtcommand) in
-                if evtcommand.getSourceWebViewID() == command.getSourceWebViewID() {
-                    evtcommand.resolve(value: true, raw: true)
-                    count+=1
-                }
-            }
-        }
-        
-        if count > 0 {
-            onSuccess( count )
-        } else {
-            onFail( "No Event Available" )
-        }
+
     }
 
     private class func checkGetAVCapture( command: Command ) {
@@ -1507,6 +1515,9 @@ class CommandProcessor {
             }
             do {
                 let avCapture = try AVCaptureManager(mode: captureTypes)
+                if let properties = (command.getParameter() as AnyObject).value(forKeyPath: "property") as? NSDictionary {
+                    avCapture.setProperty(property: properties)
+                }
                 onSuccess( avCapture.toDictionary() )
             } catch let error as NSError {
                 onFail( error.localizedDescription )
@@ -1529,13 +1540,35 @@ class CommandProcessor {
                 let isFixed = (command.getParameter() as AnyObject).value(forKeyPath: "isFixed") as? Bool
                 wkmanager.appendAVCapture(avCapture: avmanager, isFixed: isFixed)
                 onSuccess( true )
-                
-                avmanager.start()
                 return
             }
         }
     }
     
+    private class func checkAVCaptureControl( command: Command ) {
+        processAVCaptureControl( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    private class func processAVCaptureControl( command: Command, onSuccess: @escaping ((Bool)->()), onFail: @escaping ((String)->()) ) {
+        if let avmanager = CommandProcessor.getAVCaptureManager(command: command) {
+            if let isRun = (command.getParameter() as AnyObject).value(forKeyPath: "isRun") as? Bool {
+                if isRun {
+                    avmanager.start(onSuccess: onSuccess, onFail: onFail)
+                } else {
+                    avmanager.stop(onSuccess: onSuccess, onFail: onFail)
+                }
+            } else {
+                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+            }
+        }
+    }
+    
+    private class func checkAVCaptureScancode( command: Command) {
+        let _ = CommandProcessor.getAVCaptureManager(command: command)
+    }
 }
 
 

@@ -14,36 +14,27 @@ import UIKit
 extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     
 	func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
-
-		if let instance = CodeReader.getInstance() {
-            if let metadataObj = metadataObjects.first {
-                if instance.supportedCodeTypes.contains((metadataObj as AnyObject).type) {
-                    let readableObject = metadataObj as! AVMetadataMachineReadableCodeObject
-                        AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-                        instance.found(value: readableObject.stringValue)
-                        instance.takeSilentPhoto()
+        if let avCaptureManager = AVCaptureManager.getActiveManager() {
+            CommandProcessor.getCommand(commandCode: CommandCode.AV_CAPTURE_SCANCODE, ifFound: { (command) in
+                if let avmgr = CommandProcessor.getAVCaptureManager(command: command) {
+                    if avCaptureManager === avmgr {
+                        var metadatas = [NSMutableDictionary]()
+                        for metadataObject in metadataObjects {
+                            if let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject {
+                                let metadata = NSMutableDictionary()
+                                metadata.setValue(readableObject.stringValue, forKey: "value")
+                                metadata.setValue(readableObject.bounds.dictionaryRepresentation, forKey: "bounds")
+                                metadata.setValue(avmgr.processPoints(points: readableObject.corners), forKey: "corners")
+                                metadatas.append(metadata)
+                            }
+                        }
+                        if !metadatas.isEmpty {
+                            command.update(value: metadatas)
+                        }
                     }
-            }
-            
-            
-            
-            
-//            instance.takePhoto()
-//			instance.stop(onSuccess: { (isStopped) in
-//				if isStopped {
-//					if let metadataObj = metadataObjects.first {
-//						if instance.supportedCodeTypes.contains((metadataObj as AnyObject).type) {
-//							let readableObject = metadataObj as! AVMetadataMachineReadableCodeObject
-//							AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-//							instance.found(value: readableObject.stringValue)
-//						}
-//					}
-//				}
-//				dismiss(animated: true)
-//			}, onFail: { (errorMessage) in
-//				print( errorMessage )
-//			})
-		}
+                }
+            })
+        }
 	}
     
     func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
@@ -57,21 +48,35 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
     
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
         
-        if let instance = CodeReader.getInstance() {
-            if instance.isShutterPressed() {
-                DispatchQueue.global(qos: .userInteractive).async(execute: {
-                    DispatchQueue.main.async {
-                        instance.imageTaken(image: self.captureImage(sampleBuffer: sampleBuffer))
-                        instance.stop(onSuccess: { (isStopped) in }, onFail: {(message)in})
+        if let avCaptureManager = AVCaptureManager.getActiveManager() {
+            CommandProcessor.getCommand(commandCode: CommandCode.AV_CAPTURE_SHOOT_IMAGE, ifFound: { (command) in
+                if let avmgr = CommandProcessor.getAVCaptureManager(command: command) {
+                    if avCaptureManager === avmgr {
+                        if !avCaptureManager.isShootingPhoto() {
+                            avCaptureManager.setShootingPhoto(isShooting: true)
+                            DispatchQueue.global(qos: .userInteractive).async(execute: {
+                                DispatchQueue.main.async {
+                                    if let dataImage = UIImagePNGRepresentation(self.captureImage(sampleBuffer: sampleBuffer)) {
+                                        do {
+                                            let file = try File(fileId: File.generateID(), file: dataImage, document: "TEMP_IMAGE.PNG", path: SystemFilePath.CACHE.rawValue)
+                                            command.resolve(value: file.toDictionary(), raw: file)
+                                        } catch let error as NSError {
+                                            command.reject(errorMessage: error.localizedDescription)
+                                        }
+                                        avCaptureManager.setShootingPhoto(isShooting: false)
+                                    }
+                                }
+                            })
+                        }
                     }
-                })
-            }
+                } else {
+                    command.reject(errorMessage: "AVManager is not active")
+                }
+            })
         }
-        
-        
     }
     
-    func captureImage( sampleBuffer:CMSampleBuffer ) -> UIImage{
+    private func captureImage( sampleBuffer:CMSampleBuffer ) -> UIImage{
         let imageBuffer:CVImageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
         CVPixelBufferLockBaseAddress(imageBuffer, CVPixelBufferLockFlags(rawValue: 0))
         let baseAddress:UnsafeMutableRawPointer = CVPixelBufferGetBaseAddressOfPlane(imageBuffer, 0)!
@@ -87,17 +92,5 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
 
         return resultImage
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 }
