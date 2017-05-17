@@ -163,6 +163,9 @@ class CommandProcessor {
             break
         case .AV_CAPTURE_SHOOT_IMAGE:
             break
+        case .OPEN_WITH_SAFARI:
+            checkOpenWithSafari( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1568,6 +1571,34 @@ class CommandProcessor {
     
     private class func checkAVCaptureScancode( command: Command) {
         let _ = CommandProcessor.getAVCaptureManager(command: command)
+    }
+    
+    private class func checkOpenWithSafari( command: Command ) {
+        processOpenWithSafari( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    
+    private class func processOpenWithSafari( command: Command, onSuccess: @escaping ((Bool)->()), onFail: @escaping ((String)->()) ) {
+        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
+        var htmlFile:HtmlFile?
+        switch( parameter ) {
+        case is HtmlFile:
+            htmlFile = parameter as? HtmlFile
+            break
+        case is NSObject:
+            htmlFile = HtmlFile( htmlFile: parameter as! NSDictionary )
+            break
+        default:
+            break;
+        }
+        if htmlFile != nil {
+            htmlFile!.openWithSafari(onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail( "Please set HTML File" )
+        }
     }
 }
 

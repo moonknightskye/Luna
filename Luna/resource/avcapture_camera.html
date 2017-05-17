@@ -32,6 +32,7 @@
                 margin: auto;
                 border-radius: 60px;
                 color: #FAFAFA;
+                z-index: 100;
             }
             .camera-button.shoot {
                 background-color:gray;
@@ -44,12 +45,20 @@
         </style>
         <script>
 
+            var filecounter = 1;
             (function(){
                 var luna = new Luna();
                 luna.addEventListener( "ready", function() {
                     var debug = utility.getElement(".debug", "SELECT");
 
-                    luna.getNewAVCapture( { mode: [ "CAMERA" ]} ).then( function( avcapture ) {
+                    luna.getNewAVCapture( { mode: [ "CAMERA" ], property:{opacity:0.1} } ).then( function( avcapture ) {
+
+                        closeme.addEventListener("click", function(){
+                            avcapture.stop();
+                            luna.closeWebview( luna.getMainWebview() ).then(function(result){
+                                luna.debug( "webview.closeWebview: " + result );
+                            });
+                        });
 
                         luna.getMainWebview().appendAVCapture({
                             avcapture   : avcapture,
@@ -61,11 +70,55 @@
                         document.getElementById("shoot").addEventListener("click", function(){
                             avcapture.capture().then(function( imageFile ){
                                 
+                                filecounter = new Date().getTime();
+
                                 imageFile.getResizedDOM({quality:100}).then( function( DOM ){
                                     debug.appendChild( DOM );
+
+                                    imageFile.move({
+                                      to:  "stealthcam",
+                                      isOverwrite: true
+                                    }).then(function(url){
+                                      luna.debug("file.copyFile: " + url)
+                                      imageFile.rename({
+                                        filename:  "image_" + filecounter + ".PNG"
+                                      }).then(function(url){
+                                        luna.debug( "luna.getFile: (new filename) " +  imageFile.getFilename());
+                                      }, function(error){
+                                        luna.debug("file.renameFile: " + error)
+                                      })
+                                    }, function(error){
+                                      luna.debug("file.copyFile: " + error)
+                                    });
+
                                 }, function(error){
                                   luna.debug( "imageFile.getResizedDOM: " + error );
                                 });
+
+                                //THIS WONT WORK
+                                // imageFile.move({
+                                //   to:  "stealthcam",
+                                //   isOverwrite: true
+                                // }).then(function(url){
+                                //   luna.debug("file.copyFile: " + url)
+                                //   imageFile.rename({
+                                //     filename:  "image_" + filecounter + ".PNG"
+                                //   }).then(function(url){
+                                //     luna.debug( "luna.getFile: (new filename) " +  imageFile.getFilename());
+                                    
+                                //     imageFile.getResizedDOM({quality:100}).then( function( DOM ){
+                                //         debug.appendChild( DOM );
+                                //     }, function(error){
+                                //       luna.debug( "imageFile.getResizedDOM: " + error );
+                                //     });
+
+                                //   }, function(error){
+                                //     luna.debug("file.renameFile: " + error)
+                                //   })
+                                // }, function(error){
+                                //   luna.debug("file.copyFile: " + error)
+                                // });
+
 
                             }, function(error){
                                 luna.debug(error)
@@ -81,6 +134,7 @@
     </head>
     <body>
         <article id="app_content" class="matostyle">
+            <div id="closeme">CLOSE</div>
             <div class="button-holder text-center">
                 <div class="camera-button shoot" id="shoot">
                     <i class="fa fa-camera" aria-hidden="true"></i>

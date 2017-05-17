@@ -115,4 +115,14 @@ class HtmlFile: File {
         super.init()
     }
     
+    func openWithSafari( onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
+        if self.getPathType() == FilePathType.URL_TYPE {
+            Shared.shared.UIApplication.open(self.getFilePath()!, options: [:]) { (result) in
+                onSuccess(result)
+            }
+        } else {
+            onFail( FileError.ONLY_URL_TYPE.localizedDescription )
+        }
+    }
+    
 }

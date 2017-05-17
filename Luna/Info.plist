@@ -12,6 +12,13 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
+			<key>bluemoon</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>bluemoon</string>
+				</array>
+			</dict>
 			<key>de</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -21,19 +28,21 @@
 				<key>UIPrerenderedIcon</key>
 				<false/>
 			</dict>
-			<key>bluemoon</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>bluemoon</string>
-				</array>
-			</dict>
 			<key>redmoon</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>redmoon</string>
 				</array>
+			</dict>
+			<key>shirokuma</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>shirokuma</string>
+				</array>
+				<key>UIPrerenderedIcon</key>
+				<false/>
 			</dict>
 		</dict>
 		<key>CFBundlePrimaryIcon</key>

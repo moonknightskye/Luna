@@ -34,6 +34,9 @@
 		709348791E9F43F40007779D /* redmoon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709348751E9F43F40007779D /* redmoon@3x.png */; };
 		7093487D1E9F44400007779D /* ic_de@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7093487A1E9F44400007779D /* ic_de@2x.png */; };
 		7093487E1E9F44400007779D /* ic_de@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7093487B1E9F44400007779D /* ic_de@3x.png */; };
+		70A587BB1ECAB08C009D541D /* shirokuma@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A587BA1ECAB08C009D541D /* shirokuma@3x.png */; };
+		70A587BD1ECAB093009D541D /* shirokuma@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A587BC1ECAB093009D541D /* shirokuma@2x.png */; };
+		70A587BF1ECAE67A009D541D /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A587BE1ECAE67A009D541D /* UserSettings.swift */; };
 		70B3A6711E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */; };
 		70B3A6731E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */; };
 		70B3A6751E66A41B006F4E4D /* CommandProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */; };
@@ -83,6 +86,9 @@
 		709348751E9F43F40007779D /* redmoon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "redmoon@3x.png"; sourceTree = "<group>"; };
 		7093487A1E9F44400007779D /* ic_de@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_de@2x.png"; sourceTree = "<group>"; };
 		7093487B1E9F44400007779D /* ic_de@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_de@3x.png"; sourceTree = "<group>"; };
+		70A587BA1ECAB08C009D541D /* shirokuma@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shirokuma@3x.png"; sourceTree = "<group>"; };
+		70A587BC1ECAB093009D541D /* shirokuma@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shirokuma@2x.png"; sourceTree = "<group>"; };
+		70A587BE1ECAE67A009D541D /* UserSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+UIImagePickerControllerDelegate.swift"; sourceTree = "<group>"; };
 		70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+WKScriptMessageHandler.swift"; sourceTree = "<group>"; };
 		70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandProcessor.swift; sourceTree = "<group>"; };
@@ -128,6 +134,8 @@
 				709348731E9F43F40007779D /* bluemoon@3x.png */,
 				709348741E9F43F40007779D /* redmoon@2x.png */,
 				709348751E9F43F40007779D /* redmoon@3x.png */,
+				70A587BC1ECAB093009D541D /* shirokuma@2x.png */,
+				70A587BA1ECAB08C009D541D /* shirokuma@3x.png */,
 			);
 			name = "Custom Icons";
 			sourceTree = "<group>";
@@ -184,6 +192,7 @@
 				70F7903D1E80C27A0080F51E /* VideoFile.swift */,
 				70642E071E77ADB400C50DD7 /* Photos.swift */,
 				47875EB01EBCC0B200B739C7 /* CodeReader.swift */,
+				70A587BE1ECAE67A009D541D /* UserSettings.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -342,9 +351,11 @@
 				4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */,
 				709348761E9F43F40007779D /* bluemoon@2x.png in Resources */,
 				70D76E5C1E2F6A4F0089B903 /* LaunchScreen.storyboard in Resources */,
+				70A587BB1ECAB08C009D541D /* shirokuma@3x.png in Resources */,
 				70D76E591E2F6A4F0089B903 /* Assets.xcassets in Resources */,
 				709348771E9F43F40007779D /* bluemoon@3x.png in Resources */,
 				7042D46F1EA0B464001B959E /* Contents.json in Resources */,
+				70A587BD1ECAB093009D541D /* shirokuma@2x.png in Resources */,
 				70D76E541E2F6A4F0089B903 /* Main.storyboard in Resources */,
 				709348791E9F43F40007779D /* redmoon@3x.png in Resources */,
 				701B722E1E9E20F600BABECE /* Settings.bundle in Resources */,
@@ -421,6 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				70A587BF1ECAE67A009D541D /* UserSettings.swift in Sources */,
 				70D76E6A1E2F6B760089B903 /* Utility.swift in Sources */,
 				7015B2C11EC1A91F00AE1A99 /* AVCaptureManager.swift in Sources */,
 				70F7903E1E80C27A0080F51E /* VideoFile.swift in Sources */,

@@ -29,12 +29,12 @@
                     luna.getNewWebview({
                       html_file: html_file,
                       property: {
-                        frame: {
-                          height:   camerascreen.Height,
-                          width:    camerascreen.Width,
-                          y:        100,
-                          x:        70
-                        },
+                        // frame: {
+                        //   height:   camerascreen.Height,
+                        //   width:    camerascreen.Width,
+                        //   y:        100,
+                        //   x:        70
+                        // },
                         opacity:    0,
                         isOpaque:   false
                       }
@@ -61,12 +61,13 @@
                       webview.onLoaded().then(function(result){
                         luna.debug( "webview.onLoaded: " + result );
 
-                        webview.setProperty( {frame: {
-                            height:   camerascreen.Height,
-                            width:    camerascreen.Width,
-                            y:        120,
-                            x:        70
-                          },
+                        webview.setProperty( {
+                          // frame: {
+                          //   height:   camerascreen.Height,
+                          //   width:    camerascreen.Width,
+                          //   y:        120,
+                          //   x:        70
+                          // },
                           opacity:1.0
                         }, { duration:1.0, delay:0 } ).then(function(result){
                           luna.debug( "webview.setProperty: " + result );
@@ -83,7 +84,7 @@
                     luna.debug( error )
                 });
               });
-              utility.getElement( "silentcamera", "id" ).click();
+              //utility.getElement( "silentcamera", "id" ).click();
 
 
 

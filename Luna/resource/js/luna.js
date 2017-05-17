@@ -105,6 +105,7 @@
         SHAKE_BEGIN                 : 50,
         SHAKE_END                   : 51,
         REMOVE_EVENT_LISTENER       : 52,
+        OPEN_WITH_SAFARI            : 53
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -989,6 +990,16 @@
             file.greet = function(){
                 this.greet__super();
             };
+            
+            file.openWithSafari = function(){
+                var command = new Command({
+                    command_code    : COMMAND.OPEN_WITH_SAFARI,
+                    parameter       : {
+                        file        : this.toJSON()
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
 
             file = apollo11.mergeJSON( file, new File(param), true );
             init();
@@ -1093,7 +1104,7 @@
 
             file.getFullResolutionDOM = function() {
                 var command = new Command({
-                    command_code:   COMMAND.GET_BASE64_BINARY,
+                    command_code    : COMMAND.GET_BASE64_BINARY,
                     priority        : CommandPriority.LOW,
                     parameter:      this.toJSON()
                 });
@@ -1109,7 +1120,7 @@
                 option.width        = option.width || option.height || 100;
                 option.height       = option.height || option.width || 100;
                 var command = new Command({
-                    command_code:   COMMAND.GET_BASE64_RESIZED,
+                    command_code    : COMMAND.GET_BASE64_RESIZED,
                     priority        : CommandPriority.LOW,
                     parameter:      {
                         image_file: this.toJSON(),

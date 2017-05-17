@@ -16,42 +16,28 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewDidLoad()
         Shared.shared.ViewController = self
         
-        
-        var parameter = NSMutableDictionary()
-        parameter.setValue( "index.html", forKey: "filename")
-        parameter.setValue( "resource", forKey: "path")
-        parameter.setValue( "bundle", forKey: "path_type")
-
-        //parameter.setValue( "https://matodemo-06-com-developer-edition.ap2.force.com/luna/s/", forKey: "path")
-        //parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
-        //parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
-        //parameter.setValue( "url", forKey: "path_type")
-        let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
-        
-        commandGetFile.onResolve { ( htmlFile ) in
-            parameter = NSMutableDictionary()
-            parameter.setValue( htmlFile, forKey: "html_file")
+        if UserSettings.instance.isEnabled(), let htmlFile = UserSettings.instance.getStartupHtmlFile() {
+            self.loadStartupPage(htmlFile: htmlFile)
+            print("loaded settings")
+        } else {
+            let parameter = NSMutableDictionary()
+            parameter.setValue( "index.html", forKey: "filename")
+            parameter.setValue( "resource", forKey: "path")
+            parameter.setValue( "bundle", forKey: "path_type")
             
-            let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
-            command.onResolve { (webview_id) in
-                let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
-                commandOnLoading.onUpdate(fn: { (progress) in
-                    print( "Loading... \(progress)%" )
-                })
-                CommandProcessor.queue(command: commandOnLoading)
-                
-                CommandProcessor.queue(command:
-                    Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int )
-                )
-                
+            //parameter.setValue( "https://login.salesforce.com/?un=dem%40sfcloud.com&pw=salesforce1", forKey: "path")
+            //parameter.setValue( "https://matodemo-06-com-developer-edition.ap2.force.com/luna/s/", forKey: "path")
+            //parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
+            //parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
+            //parameter.setValue( "url", forKey: "path_type")
+            let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
+            commandGetFile.onResolve { ( htmlFile ) in
+                self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
             }
-            command.onReject { (message) in
-                print( message )
-            }
-            CommandProcessor.queue(command: command)
-            
+            CommandProcessor.queue(command: commandGetFile)
+            print("loaded default")
         }
-        CommandProcessor.queue(command: commandGetFile)
+
         
 //        do {
 //            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
@@ -135,6 +121,28 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 //            print("iCloud is not Working")
 //        }
 
+    }
+    
+    private func loadStartupPage( htmlFile: HtmlFile ) {
+        let parameter = NSMutableDictionary()
+        parameter.setValue( htmlFile, forKey: "html_file")
+        
+        let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
+        command.onResolve { (webview_id) in
+            let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
+            commandOnLoading.onUpdate(fn: { (progress) in
+                print( "Loading... \(progress)%" )
+            })
+            CommandProcessor.queue(command: commandOnLoading)
+            
+            CommandProcessor.queue(command:
+                Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int )
+            )
+        }
+        command.onReject { (message) in
+            print( message )
+        }
+        CommandProcessor.queue(command: command)
     }
 
 

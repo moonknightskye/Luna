@@ -52,8 +52,8 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
             CommandProcessor.getCommand(commandCode: CommandCode.AV_CAPTURE_SHOOT_IMAGE, ifFound: { (command) in
                 if let avmgr = CommandProcessor.getAVCaptureManager(command: command) {
                     if avCaptureManager === avmgr {
-                        if !avCaptureManager.isShootingPhoto() {
-                            avCaptureManager.setShootingPhoto(isShooting: true)
+                        if !avCaptureManager.isLocked() {
+                            avCaptureManager.lock()
                             DispatchQueue.global(qos: .userInteractive).async(execute: {
                                 DispatchQueue.main.async {
                                     if let dataImage = UIImagePNGRepresentation(self.captureImage(sampleBuffer: sampleBuffer)) {
@@ -63,7 +63,7 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
                                         } catch let error as NSError {
                                             command.reject(errorMessage: error.localizedDescription)
                                         }
-                                        avCaptureManager.setShootingPhoto(isShooting: false)
+                                        avCaptureManager.unlock()
                                     }
                                 }
                             })
@@ -89,7 +89,7 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
         
         let imageRef:CGImage = newContext.makeImage()!
         let resultImage = UIImage(cgImage: imageRef, scale: 1.0, orientation: .right)
-
+        CVPixelBufferUnlockBaseAddress(imageBuffer, CVPixelBufferLockFlags(rawValue: 0))
         return resultImage
     }
     

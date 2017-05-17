@@ -70,16 +70,32 @@
                         }).then( function(result) {
                             avcapture.start();
 
-                            document.getElementById( "start" ).addEventListener("click", function(){
+                            startbtn.addEventListener("click", function(){
                                 avcapture.start();
                             });
-                            document.getElementById( "stop" ).addEventListener("click", function(){
+
+                            stopbtn.addEventListener("click", function(){
                                 avcapture.stop();
+                            });
+
+                            value.addEventListener("click", function(){
+                                luna.getMainWebview().setProperty( {frame: {
+                                    y:        100,
+                                    x:        70
+                                  },
+                                  opacity:0.0
+                                }, { duration:1.0, delay:0 } ).then(function(result){
+                                    avcapture.stop();
+                                    luna.closeWebview( luna.getMainWebview() ).then(function(result){
+                                        luna.debug( "webview.closeWebview: " + result );
+                                    });
+
+                                });
+
                             });
                         });
 
-                        avcapture.addEventListener( "scancode", function( result ){
-                            value.innerText     = result[0].value;
+                        avcapture.addEventListener( "scancode", function( result ){                            value.innerText     = result[0].value;
                             rotation.innerText  = rotate( result[0].corners[0], result[0].corners[1] );
                             point_1.style.top   = result[0].corners[0].Y;
                             point_1.style.left  = result[0].corners[0].X;
@@ -115,12 +131,12 @@
             <div class="button-holder text-center">
                 <ul class="flex-box">
                     <li class="flex-one">
-                        <div class="camera-button stop" id="stop">
+                        <div class="camera-button stop" id="stopbtn">
                             <i class="fa fa-stop" aria-hidden="true"></i>
                         </div>
                     </li>
                     <li class="flex-one">
-                        <div class="camera-button start" id="start">
+                        <div class="camera-button start" id="startbtn">
                             <i class="fa fa-play" aria-hidden="true"></i>
                         </div>
                     </li>

@@ -318,10 +318,14 @@ class AVCaptureManager {
 		return pPoints
 	}
     
-    func setShootingPhoto( isShooting: Bool ) {
-        self.shootingPhoto = isShooting
+    func lock() {
+        self.shootingPhoto = true
     }
-    func isShootingPhoto() -> Bool {
+    func unlock() {
+        self.shootingPhoto = false
+    }
+    
+    func isLocked() -> Bool {
         return self.shootingPhoto
     }
 }
