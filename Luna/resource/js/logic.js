@@ -14,6 +14,11 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
+
+              setting.addEventListener( "click", function() {
+                luna.settings();
+              });
+
               utility.getElement( "silentcamera", "id" ).addEventListener( "click", function() {
                 luna.getHtmlFile({
                     filename:   "avcapture_camera.html",

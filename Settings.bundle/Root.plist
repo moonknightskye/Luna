@@ -38,11 +38,11 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Page</string>
+			<string>HTML File or URL</string>
 			<key>Key</key>
 			<string>user_startup_page</string>
 			<key>DefaultValue</key>
-			<string>https://moon.nasa.gov/home.cfm</string>
+			<string>https://www.your_site_here.com</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
@@ -51,14 +51,6 @@
 			<string>None</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Directory</string>
-			<key>Key</key>
-			<string>user_startup_path</string>
 		</dict>
 		<dict>
 			<key>Type</key>

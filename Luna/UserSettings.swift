@@ -5,21 +5,29 @@
 //  Created by Mart Civil on 2017/05/16.
 //  Copyright © 2017年 salesforce.com. All rights reserved.
 //
+// https://www.hackingwithswift.com/read/12/2/reading-and-writing-basics-userdefaults
 
 import Foundation
 
 class UserSettings {
     
     static let instance:UserSettings = UserSettings()
+    let defaults = UserDefaults.standard
     
     public init(){
-        UserDefaults.standard.register(defaults: [String : Any]())
-        UserDefaults.standard.synchronize()
-    
-        print( UserDefaults.standard.string(forKey: "user_startup_enabled") ?? "user_startup_enabled")
-        print( UserDefaults.standard.string(forKey: "user_startup_page") ?? "user_startup_page")
-        print( UserDefaults.standard.string(forKey: "user_startup_type") ?? "user_startup_type")
-        print( UserDefaults.standard.string(forKey: "user_startup_path") ?? "user_startup_path")
+        defaults.register(defaults: [String : Any]())
+        defaults.synchronize()
+        
+        //set default values from here
+        if self.defaults.string(forKey: "user_startup_type") == nil {
+            self.defaults.set("URL", forKey: "user_startup_type")
+        }
+        if self.defaults.string(forKey: "user_startup_page") == nil {
+            self.defaults.set("https://www.your_site_here.com", forKey: "user_startup_page")
+        }
+        if self.defaults.string(forKey: "user_startup_enabled") == nil {
+            self.defaults.set(false, forKey: "user_startup_enabled")
+        }
     }
     
     func isEnabled() -> Bool {
@@ -36,15 +44,7 @@ class UserSettings {
         return UserSettings.instance.get(key: "user_startup_page")
     }
     
-    func getPath() -> String? {
-        return UserSettings.instance.get(key: "user_startup_path")
-    }
-    func setPath( path:String ) {
-        UserSettings.instance.set(key: "user_startup_path", value: path)
-    }
-    
     func getPathType() -> FilePathType {
-        print( get(key:"user_startup_type") ?? "none")
         return FilePathType(rawValue: get(key:"user_startup_type")!.lowercased())!
     }
     func setPathType( pathType:String ) {
@@ -56,22 +56,18 @@ class UserSettings {
     func getStartupHtmlFile() -> HtmlFile? {
         switch UserSettings.instance.getPathType() {
         case .DOCUMENT_TYPE:
-            if let fileName = UserSettings.instance.getFileName() {
+            if var fileName = UserSettings.instance.getFileName() {
+                var path = ""
+                if let slashIndex = fileName.lastIndexOf(target: "/") {
+                    path = fileName.substring(to: slashIndex)
+                    fileName = fileName.substring(from: slashIndex + 1)
+                }
+                
                 do {
                     return try HtmlFile(
                         fileId: File.generateID(),
                         document: fileName,
-                        path: UserSettings.instance.getPath())
-                } catch {}
-            }
-            break
-        case .BUNDLE_TYPE:
-            if let fileName = UserSettings.instance.getFileName() {
-                do {
-                    return try HtmlFile(
-                        fileId: File.generateID(),
-                        bundle: fileName,
-                        path: UserSettings.instance.getPath())
+                        path: path)
                 } catch {}
             }
             break
@@ -89,10 +85,10 @@ class UserSettings {
     }
     
     public func get( key:String ) -> Bool {
-        return UserDefaults.standard.bool(forKey:key)
+        return defaults.bool(forKey:key)
     }
     public func get( key:String ) -> String? {
-        return UserDefaults.standard.string(forKey: key)
+        return defaults.string(forKey: key)
     }
     public func set( key:String, value:Any ) {
         return UserDefaults.standard.set(value, forKey: key)

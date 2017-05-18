@@ -16,116 +16,33 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewDidLoad()
         Shared.shared.ViewController = self
         
+        
+        print( UserSettings.instance.getPathType() )
+        print( UserSettings.instance.getFileName() ?? "xxxx" )
+        print( UserSettings.instance.isEnabled() )
+        
         if UserSettings.instance.isEnabled(), let htmlFile = UserSettings.instance.getStartupHtmlFile() {
             self.loadStartupPage(htmlFile: htmlFile)
-            print("loaded settings")
         } else {
             let parameter = NSMutableDictionary()
             parameter.setValue( "index.html", forKey: "filename")
             parameter.setValue( "resource", forKey: "path")
             parameter.setValue( "bundle", forKey: "path_type")
-            
-            //parameter.setValue( "https://login.salesforce.com/?un=dem%40sfcloud.com&pw=salesforce1", forKey: "path")
-            //parameter.setValue( "https://matodemo-06-com-developer-edition.ap2.force.com/luna/s/", forKey: "path")
-            //parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
-            //parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
-            //parameter.setValue( "url", forKey: "path_type")
+
             let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
             commandGetFile.onResolve { ( htmlFile ) in
                 self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
             }
             CommandProcessor.queue(command: commandGetFile)
-            print("loaded default")
         }
-
-        
-//        do {
-//            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
-//            filecol.zip(toFileName: "matozip.zip", onProgress: { (progress) in
-//                print( progress )
-//            }, onSuccess: { (zipFile) in
-//                print(zipFile.toDictionary())
-//            }, onFail: { (errorMessage) in
-//                print(errorMessage)
-//            })
-//        } catch let error as NSError {
-//            print(error.localizedDescription)
-//        }
-        //print(UserDefaults.standard.value(forKeyPath: "name_preference"))
-        
-        
-        
-//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/
-//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/.spiderman.jpg.icloud
-//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/.test.txt.icloud
-//        read error
-//        read error
-//        ERROR: File does not exists.
-        
-        
-        //README!!!!
-        //https://developer.apple.com/reference/foundation/filemanager/1413989-setubiquitous
-        //Sets whether the item at the specified URL should be stored in the cloud.
-        //func setUbiquitous(_ flag: Bool, itemAt url: URL, destinationURL: URL) throws
-        //Specify true to move the item to iCloud or false to remove it from iCloud (if it is there currently).
-        
-//        if let iCloudDocumentURL = FileManager.getDocumentsDirectoryPath(pathType: .ICLOUD_TYPE, relative: "Luna") {
-//            print(iCloudDocumentURL)
-//            do {
-//                
-//                if let fileCollection = FileManager.getDocumentsFileList( path: iCloudDocumentURL ) {
-//                    for (_, file) in fileCollection.enumerated() {
-//                        print(file)
-//                    }
-//                }
-//                
-//                let image = iCloudDocumentURL.appendingPathComponent("spiderman.jpg")
-//                do {
-//                    let imagefile = try UIImage(data: Data(contentsOf: image))
-//                    //DispatchQueue.main.async(execute: {
-//                    print( imagefile ?? "none" )
-//
-//                } catch let error as NSError{
-//                    print("[ERROR] \(error.localizedDescription)")
-//
-//                }
-//                
-//                //DispatchQueue.global().async(execute: {
-//                    let filePath = iCloudDocumentURL.appendingPathComponent("test.txt")
-//                    do {
-//                        let readText = try String(contentsOf: filePath)
-//                        //DispatchQueue.main.async(execute: {
-//                            print(readText)
-//                            print(filePath)
-//                        //})
-//                    } catch {
-//                        print("read error")
-//                    }
-//
-//                //})
-//                
-//                let file = try File(document:"spiderman.jpg")
-//                
-//                //DispatchQueue.global().async(execute: {
-//                let fileURL = iCloudDocumentURL.appendingPathComponent( file.getFileName()! )
-//                let result = FileManager.default.createFile(atPath: fileURL.path, contents: file.getFile()!, attributes: nil)
-//                print("RESULT: \(result)")
-//                //})
-//                
-//            } catch let error as NSError {
-//                print("ERROR: \(error.localizedDescription)")
-//            }
-//            
-//            
-//        } else {
-//            print("iCloud is not Working")
-//        }
-
     }
     
     private func loadStartupPage( htmlFile: HtmlFile ) {
         let parameter = NSMutableDictionary()
         parameter.setValue( htmlFile, forKey: "html_file")
+//        let property = NSMutableDictionary()
+//        property.setValue( false, forKey: "isOpaque")
+//        parameter.setValue( property, forKey: "property")
         
         let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
         command.onResolve { (webview_id) in
@@ -169,4 +86,96 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
     }
 }
+
+
+
+
+//parameter.setValue( "https://login.salesforce.com/?un=dem%40sfcloud.com&pw=salesforce1", forKey: "path")
+//parameter.setValue( "https://matodemo-06-com-developer-edition.ap2.force.com/luna/s/", forKey: "path")
+//parameter.setValue( "https://login.salesforce.com/?un=mato@demo06.jp&pw=mattaku85", forKey: "path")
+//parameter.setValue( "https://matodemo-06-developer-edition.ap2.force.com/", forKey: "path")
+//parameter.setValue( "url", forKey: "path_type")
+
+
+//        do {
+//            let filecol = try FileCollection( relative:"zip3folders", pathType: FilePathType.DOCUMENT_TYPE);
+//            filecol.zip(toFileName: "matozip.zip", onProgress: { (progress) in
+//                print( progress )
+//            }, onSuccess: { (zipFile) in
+//                print(zipFile.toDictionary())
+//            }, onFail: { (errorMessage) in
+//                print(errorMessage)
+//            })
+//        } catch let error as NSError {
+//            print(error.localizedDescription)
+//        }
+//print(UserDefaults.standard.value(forKeyPath: "name_preference"))
+
+
+
+//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/
+//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/.spiderman.jpg.icloud
+//        file:///private/var/mobile/Library/Mobile%20Documents/iCloud~com~salesforce~Luna/Luna/.test.txt.icloud
+//        read error
+//        read error
+//        ERROR: File does not exists.
+
+
+//README!!!!
+//https://developer.apple.com/reference/foundation/filemanager/1413989-setubiquitous
+//Sets whether the item at the specified URL should be stored in the cloud.
+//func setUbiquitous(_ flag: Bool, itemAt url: URL, destinationURL: URL) throws
+//Specify true to move the item to iCloud or false to remove it from iCloud (if it is there currently).
+
+//        if let iCloudDocumentURL = FileManager.getDocumentsDirectoryPath(pathType: .ICLOUD_TYPE, relative: "Luna") {
+//            print(iCloudDocumentURL)
+//            do {
+//
+//                if let fileCollection = FileManager.getDocumentsFileList( path: iCloudDocumentURL ) {
+//                    for (_, file) in fileCollection.enumerated() {
+//                        print(file)
+//                    }
+//                }
+//
+//                let image = iCloudDocumentURL.appendingPathComponent("spiderman.jpg")
+//                do {
+//                    let imagefile = try UIImage(data: Data(contentsOf: image))
+//                    //DispatchQueue.main.async(execute: {
+//                    print( imagefile ?? "none" )
+//
+//                } catch let error as NSError{
+//                    print("[ERROR] \(error.localizedDescription)")
+//
+//                }
+//
+//                //DispatchQueue.global().async(execute: {
+//                    let filePath = iCloudDocumentURL.appendingPathComponent("test.txt")
+//                    do {
+//                        let readText = try String(contentsOf: filePath)
+//                        //DispatchQueue.main.async(execute: {
+//                            print(readText)
+//                            print(filePath)
+//                        //})
+//                    } catch {
+//                        print("read error")
+//                    }
+//
+//                //})
+//
+//                let file = try File(document:"spiderman.jpg")
+//
+//                //DispatchQueue.global().async(execute: {
+//                let fileURL = iCloudDocumentURL.appendingPathComponent( file.getFileName()! )
+//                let result = FileManager.default.createFile(atPath: fileURL.path, contents: file.getFile()!, attributes: nil)
+//                print("RESULT: \(result)")
+//                //})
+//
+//            } catch let error as NSError {
+//                print("ERROR: \(error.localizedDescription)")
+//            }
+//
+//
+//        } else {
+//            print("iCloud is not Working")
+//        }
 

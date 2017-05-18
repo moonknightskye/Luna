@@ -105,7 +105,8 @@
         SHAKE_BEGIN                 : 50,
         SHAKE_END                   : 51,
         REMOVE_EVENT_LISTENER       : 52,
-        OPEN_WITH_SAFARI            : 53
+        OPEN_WITH_SAFARI            : 53,
+        USER_SETTINGS               : 54
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -486,6 +487,13 @@
                 command_code    : COMMAND.CODE_READER,
                 priority        : CommandPriority.CRITICAL,
                 parameter       : parameter
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.settings = function() {
+            var command = new Command({
+                command_code    : COMMAND.USER_SETTINGS
             });
             return CommandProcessor.queue( command );
         };

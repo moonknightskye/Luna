@@ -68,6 +68,7 @@ enum CommandCode:Int {
     case SHAKE_END                  = 51
     case REMOVE_EVENT_LISTENER      = 52
     case OPEN_WITH_SAFARI           = 53
+    case USER_SETTINGS              = 54
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

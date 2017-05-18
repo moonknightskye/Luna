@@ -458,7 +458,7 @@ class File {
     private func generateFilePath() -> URL? {
         switch self.pathType {
         case FilePathType.BUNDLE_TYPE:
-            if self.getFileName() == nil {
+            if self.getFileName() == nil || (self.fileName?.isEmpty)! {
                 return nil
             }
             let filename = self.getFileName()!.substring(from: 0, to: self.getFileName()!.indexOf(target: "."));
@@ -469,7 +469,7 @@ class File {
             }
             break
         case FilePathType.DOCUMENT_TYPE:
-            if self.fileName == nil {
+            if self.fileName == nil || (self.fileName?.isEmpty)! {
                 return nil
             }
             return FileManager.generateDocumentFilePath(fileName: self.getFileName()!, relativePath: self.getPath())

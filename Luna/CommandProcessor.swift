@@ -166,6 +166,9 @@ class CommandProcessor {
         case .OPEN_WITH_SAFARI:
             checkOpenWithSafari( command: command )
             break
+        case .USER_SETTINGS:
+            checkUserSettings( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1599,6 +1602,10 @@ class CommandProcessor {
         } else {
             onFail( "Please set HTML File" )
         }
+    }
+    
+    private class func checkUserSettings( command: Command ) {
+        print( UserSettings.instance.isEnabled() )
     }
 }
 
