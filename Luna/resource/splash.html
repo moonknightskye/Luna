@@ -1,0 +1,278 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
+        <link href="css/style.css" rel="newer stylesheet" type="text/css" />
+        <script type="text/javascript" src="js/luna.js" ></script>
+        <style>
+            @font-face {
+              font-family: 'Euphoria Script';
+              font-style: normal;
+              font-weight: 400;
+              src: local('Euphoria Script'), local('EuphoriaScript-Regular'), url(fonts/euphoria.woff) format('woff');
+            }
+
+            body {
+                background-color: black;
+                margin: 0px;
+                position: fixed !important;
+                width: 100%;
+                height: 100%;
+                color: gray;
+            }
+
+            .moon {
+                background-image: url(img/luna.jpg);
+                background-repeat: no-repeat;
+                width: 75%;
+                height: 310px;
+                background-size: contain;
+                background-position: center;
+                margin: auto;
+            }
+
+            .moon-center {
+                position: absolute !important;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-75%);
+            }
+            .label-center {
+                position: absolute !important;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,30%);
+            }
+
+            .cloud-one {
+                background-image: url(img/cloud-one.png);
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                width: 1600px;
+                height: 1122px;
+                transform: scale(0.5) translate(-50%,-56%);
+            }
+            .cloud-one.move {
+                -webkit-transition: all 20.0s ease-in-out;
+                transform: scale(0.5) translate(-100%,-56%);
+            }
+
+            .cloud-two {
+                background-image: url(img/cloud-three.png);
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                width: 3033px;
+                height: 1640px;
+                opacity: 0.8;
+                transform: translate(-38%,-90%) scale(0.4); //89
+            }
+            .cloud-two.move {
+                -webkit-transition: all 15.0s ease-in-out;
+                transform: translate(-25%,-90%) scale(0.4);
+            }
+            .loading {
+                position: absolute !important;
+                bottom: 25px;
+                right: 25px;
+            }
+            .loading:after {
+                border-width: 0 1px 0 0;
+                border-style: solid;
+                border-color: #e0e0e0;
+                border-radius: 50%;
+                display: block;
+                height: 30px;
+                left: 50%;
+                margin: -25px 0 0 -25px;
+                position: absolute;
+                top: 50%;
+                width: 30px;
+                content: "";
+                animation: spin 1s infinite linear;
+                -webkit-animation: spin 1s infinite linear;
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            @-webkit-keyframes spin {
+                from { -webkit-transform: rotate(0deg); }
+                to { -webkit-transform: rotate(360deg); }
+            }
+
+            .luna-label {
+                position: absolute !important;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,10%);
+                z-index: 999;
+                zoom: 0.125;
+            }
+            .three-letters {
+                left: -75px;
+            }
+
+            .alphabet {
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                opacity: 0;
+            }
+            .alphabet.L {
+                background-image: url(img/L.png);
+                height: 497px;
+                width: 381px;
+                transform: translate(0%,-10%);
+            }
+            .alphabet.U {
+                background-image: url(img/U.png);
+                height: 497px;
+                width: 214px;
+                transform: translate(0%,-20%);
+            }
+            .alphabet.N {
+                background-image: url(img/N.png);
+                height: 497px;
+                width: 214px;
+                transform: translate(0%,-30%);
+            } 
+            .alphabet.A {
+                background-image: url(img/A.png);
+                height: 497px;
+                width: 214px;
+                transform: translate(0%,-40%);
+            } 
+
+            .luna-label.move {
+                -webkit-transition: all  3.0s 0.3s ease-in-out;
+                transform: translate(-50%,80%);
+            }
+            .luna-label.move .L{
+                -webkit-transition: all  3.0s 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform: translate(0%,0%);
+                opacity: 0.8;
+            }
+            .luna-label.move .U{
+                -webkit-transition: all  3.0s 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform: translate(0%,0%);
+                opacity: 0.8;
+            }
+            .luna-label.move .N{
+                -webkit-transition: all  3.0s 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform: translate(0%,0%);
+                opacity: 0.8;
+            }
+            .luna-label.move .A{
+                -webkit-transition: all  3.0s 1.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                transform: translate(0%,0%);
+                opacity: 0.8;
+            }
+
+
+        </style>
+        <script>
+            (function(){
+                var isAnimationFinished = false;
+                var isLoadingFinished = false;
+
+                window.addEventListener("load", function(){
+                    window.setTimeout(function(){
+                        clound_one.classList.add("move");
+                        clound_two.classList.add("move");
+
+                        var animationend = function(){
+                            luna_text.removeEventListener("transitionend",animationend, true);
+                            window.setTimeout(function(){
+                               isAnimationFinished = true;
+                            },300);
+                        };
+                        luna_text.addEventListener("transitionend",animationend,true);
+                        luna_text.classList.add("move");
+                    },300);
+                    // var ctx = canvas.getContext("2d");
+                    // ctx.font = "600px Euphoria Script";
+                    // ctx.fillStyle = "#eeeeee";
+                    // ctx.fillText("Luna",40,500);
+                    // var dataURL = canvas.toDataURL();
+                    // canvasImg.src = dataURL;
+                });
+
+                var luna = new Luna();
+                luna.addEventListener( "ready", function(){
+                    luna.getHtmlFile({
+                        path:   "https://www.salesforce.com",
+                        path_type:  "url"
+                    }).then( function( html_file ){
+                        luna.getNewWebview({
+                          html_file: html_file,
+                          property: {
+                            opacity:    0,
+                            isOpaque:   false
+                          }
+                        }).then( function( webview ){
+
+                          // webview.onLoading(function(progress){
+                          //   luna.debug( "Loading: " + progress + "%" );
+                          // }).then(function(result){
+                          //   luna.debug( "webview.onLoading: " + result );
+                          // });
+
+                          webview.onLoaded().then(function(result) {
+                            window.setTimeout(function(){
+                                isLoadingFinished = true;
+                            },300);
+
+                            function checkIfFinished() {
+                                if( isLoadingFinished && isAnimationFinished){
+                                    webview.setProperty( {
+                                      opacity:1.0
+                                    }, { duration:0.3, delay:0 } ).then(function(result){
+                                        window.setTimeout(function(){
+                                            luna.closeWebview( luna.getMainWebview() )
+                                        },300);
+                                    });
+                                    return;
+                                }
+                                window.requestAnimationFrame( checkIfFinished );
+                            };
+                            window.requestAnimationFrame( checkIfFinished );
+
+                            
+                          });
+
+                          webview.load();
+
+                        },function( error ){});
+                    }, function(error){});
+                });
+             })();
+        </script>
+    </head>
+    <body>
+        <section class="matostyle ">
+<!--              <canvas id="canvas" width="1000" height="1000" style="width: 500px; height: 500px"></canvas> --> 
+            <div class="moon moon-center" ></div>
+            <div id="clound_one" class="cloud-one" ></div>
+            <div id="luna_text" class="luna-label">
+                <ul class="flex-box">
+                    <li class="flex-one">
+                        <div class="alphabet L"></div>
+                    </li>
+                    <li class="flex-three three-letters">
+                        <ul class="flex-box">
+                            <li class="flex-one"><div class="alphabet U"></div></li>
+                            <li class="flex-one"><div class="alphabet N"></div></li>
+                            <li class="flex-one"><div class="alphabet A"></div></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="clound_two" class="cloud-two" ></div>
+            <div class="loading"></div>
+<!--             <img id="canvasImg" alt="Right click to save me!"> -->
+        </section>
+    </body>
+</html>

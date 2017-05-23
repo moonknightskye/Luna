@@ -1605,6 +1605,11 @@ class CommandProcessor {
     }
     
     private class func checkUserSettings( command: Command ) {
+        if UserSettings.instance.isEnabled() {
+            UserSettings.instance.setStartupEnabled(enabled: false)
+        } else {
+            UserSettings.instance.setStartupEnabled(enabled: true)
+        }
         print( UserSettings.instance.isEnabled() )
     }
 }

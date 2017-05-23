@@ -28,6 +28,10 @@ class UserSettings {
         if self.defaults.string(forKey: "user_startup_enabled") == nil {
             self.defaults.set(false, forKey: "user_startup_enabled")
         }
+        
+        for (key, value) in defaults.dictionaryRepresentation() {
+            print("\(key) = \(value) \n")
+        }
     }
     
     func isEnabled() -> Bool {

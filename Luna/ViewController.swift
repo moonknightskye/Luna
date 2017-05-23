@@ -25,7 +25,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             self.loadStartupPage(htmlFile: htmlFile)
         } else {
             let parameter = NSMutableDictionary()
-            parameter.setValue( "index.html", forKey: "filename")
+            parameter.setValue( "splash.html", forKey: "filename")
             parameter.setValue( "resource", forKey: "path")
             parameter.setValue( "bundle", forKey: "path_type")
 

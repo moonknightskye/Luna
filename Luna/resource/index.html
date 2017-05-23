@@ -56,6 +56,12 @@
                 luna.addEventListener( "ready", function(){
                     luna.debug( "iOS initialized" )
                     App.activatePage( luna );
+
+                    luna.getMainWebview().onLoading(function(progress){
+                        luna.debug( "Loading: " + progress + "%" );
+                    }).then(function(result){
+                        luna.debug( "webview.onLoading: " + result );
+                    });
                 });
              })();
         </script>
