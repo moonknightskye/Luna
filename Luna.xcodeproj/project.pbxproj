@@ -26,6 +26,8 @@
 		70642E081E77ADB400C50DD7 /* Photos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70642E071E77ADB400C50DD7 /* Photos.swift */; };
 		706806621E9CE67F00FD630C /* FileCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706806611E9CE67F00FD630C /* FileCollection.swift */; };
 		706DE2091E556C3A005AE646 /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DE2081E556C3A005AE646 /* String+extension.swift */; };
+		7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */; };
+		7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */; };
 		7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */; };
 		7093486B1E9F3A880007779D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7093486A1E9F3A880007779D /* UIKit.framework */; };
 		709348761E9F43F40007779D /* bluemoon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709348721E9F43F40007779D /* bluemoon@2x.png */; };
@@ -78,6 +80,8 @@
 		70642E071E77ADB400C50DD7 /* Photos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photos.swift; sourceTree = "<group>"; };
 		706806611E9CE67F00FD630C /* FileCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCollection.swift; sourceTree = "<group>"; };
 		706DE2081E556C3A005AE646 /* String+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
+		7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommandProcessor+extension-01.swift"; sourceTree = "<group>"; };
+		7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+URLSessionDownloadDelegate.swift"; sourceTree = "<group>"; };
 		7093486A1E9F3A880007779D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		709348721E9F43F40007779D /* bluemoon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bluemoon@2x.png"; sourceTree = "<group>"; };
@@ -193,6 +197,7 @@
 				70642E071E77ADB400C50DD7 /* Photos.swift */,
 				47875EB01EBCC0B200B739C7 /* CodeReader.swift */,
 				70A587BE1ECAE67A009D541D /* UserSettings.swift */,
+				7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -200,6 +205,7 @@
 		706DE2071E556C16005AE646 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */,
 				7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */,
 				70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */,
 				70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */,
@@ -453,7 +459,9 @@
 				70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */,
 				704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */,
 				7062F0971E6EB51E00CB8144 /* File.swift in Sources */,
+				7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */,
 				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
+				7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */,
 				706DE2091E556C3A005AE646 /* String+extension.swift in Sources */,
 				70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */,
 				47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */,

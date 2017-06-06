@@ -169,6 +169,24 @@ class CommandProcessor {
         case .USER_SETTINGS:
             checkUserSettings( command: command )
             break
+        case .USER_SETTINGS_STARTUP_HTML:
+            checkUserSettingsStartupHtml( command: command )
+            break
+//        case .USER_SETTINGS_ADD:
+//            checkUserSettingsAdd( command: command )
+//            break
+        case .USER_SETTINGS_DELETE:
+            checkUserSettingsDelete( command: command )
+            break
+        case .USER_SETTINGS_SET:
+            checkUserSettingsSet( command: command )
+            break
+        case .USER_SETTINGS_GET:
+            checkUserSettingsGet( command: command )
+            break
+        case .SCREEN_EDGE_SWIPED:
+            checkScreenEdgeSwiped( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1605,27 +1623,118 @@ class CommandProcessor {
     }
     
     private class func checkUserSettings( command: Command ) {
-        if UserSettings.instance.isEnabled() {
-            UserSettings.instance.setStartupEnabled(enabled: false)
-        } else {
-            UserSettings.instance.setStartupEnabled(enabled: true)
-        }
-        print( UserSettings.instance.isEnabled() )
+        procesUserSettings( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
     }
+    
+    private class func procesUserSettings( command: Command, onSuccess: ((NSDictionary)->()), onFail: ((String)->()) ){
+        onSuccess( UserSettings.instance.getUserSettings() )
+    }
+    
+    private class func checkUserSettingsStartupHtml( command: Command ) {
+        processUserSettingsStartupHtml( command: command, onSuccess: { result, raw in
+            command.resolve( value: result, raw: raw )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    
+    private class func processUserSettingsStartupHtml( command: Command, onSuccess: ((NSDictionary, HtmlFile)->()), onFail: ((String)->()) ){
+        if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
+            onSuccess( htmlFile.toDictionary(), htmlFile )
+        } else {
+            onFail(FileError.INEXISTENT.localizedDescription)
+        }
+    }
+    
+    private class func checkScreenEdgeSwiped( command: Command ) {
+		var found = false
+		var count = 0
+
+		let touchesRequired = (command.getParameter() as AnyObject).value(forKeyPath: "touchesRequired") as? Int
+		let direction = (command.getParameter() as AnyObject).value(forKeyPath: "direction") as? String
+
+
+		getCommand(commandCode: .SCREEN_EDGE_SWIPED) { (cmd) in
+			let cmdTouchesRequired = (cmd.getParameter() as AnyObject).value(forKeyPath: "touchesRequired") as? Int
+			let cmdDirection = (cmd.getParameter() as AnyObject).value(forKeyPath: "direction") as? String
+			if touchesRequired == cmdTouchesRequired && cmdDirection == direction {
+				count += 1
+				if count > 1 {
+					found = true
+				}
+			}
+		}
+
+		if !found {
+			let gestureRecognizer = UISwipeGestureRecognizer()
+			gestureRecognizer.numberOfTouchesRequired = touchesRequired!
+			switch touchesRequired! {
+			case 2:
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedTwoFingers))
+				break
+			case 3:
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedThreeFingers))
+				break
+			default:
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedOneFinger))
+				break
+			}
+
+			switch direction!.lowercased() {
+				case "left":
+					gestureRecognizer.direction = .left
+				break
+				case "up":
+					gestureRecognizer.direction = .up
+				break
+				case "down":
+					gestureRecognizer.direction = .down
+				break
+				default:
+					gestureRecognizer.direction = .right
+				break
+			}
+			Shared.shared.ViewController.view.addGestureRecognizer(gestureRecognizer)
+		}
+    }
+
+	public class func processSwipeGesture( swipeDirection: UISwipeGestureRecognizerDirection, touchesRequired:Int ) {
+		getCommand(commandCode: .SCREEN_EDGE_SWIPED) { (command) in
+			let ctouchesRequired = (command.getParameter() as AnyObject).value(forKeyPath: "touchesRequired") as? Int
+			let direction = ((command.getParameter() as AnyObject).value(forKeyPath: "direction") as! String).lowercased()
+
+			if( touchesRequired == ctouchesRequired ) {
+				switch swipeDirection {
+				case UISwipeGestureRecognizerDirection.left:
+					if direction == "left" {
+						command.update(value: true)
+					}
+					break
+				case UISwipeGestureRecognizerDirection.up:
+					if direction == "up" {
+						command.update(value: true)
+					}
+					break
+				case UISwipeGestureRecognizerDirection.down:
+					if direction == "down" {
+						command.update(value: true)
+					}
+					break
+				default:
+					if direction == "right" {
+						command.update(value: true)
+					}
+					break
+				}
+			}
+		}
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

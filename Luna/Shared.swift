@@ -17,5 +17,22 @@ final class Shared: NSObject {
     var DeviceID = UIDevice.current.identifierForVendor!.uuidString
 	var iCloudAvailable = false
 	var allowsCellularAccess = true
+    
+    func screenEdgeSwiped(_ recognizer: UIGestureRecognizer) {
+        if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case UISwipeGestureRecognizerDirection.right:
+                print("Swiped right")
+            case UISwipeGestureRecognizerDirection.down:
+                print("Swiped down")
+            case UISwipeGestureRecognizerDirection.left:
+                print("Swiped left!")
+            case UISwipeGestureRecognizerDirection.up:
+                print("Swiped up")
+            default:
+                break
+            }
+        }
+    }
 
 }

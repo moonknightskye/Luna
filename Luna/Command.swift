@@ -69,6 +69,12 @@ enum CommandCode:Int {
     case REMOVE_EVENT_LISTENER      = 52
     case OPEN_WITH_SAFARI           = 53
     case USER_SETTINGS              = 54
+    case USER_SETTINGS_STARTUP_HTML = 55
+//    case USER_SETTINGS_ADD          = 56
+    case USER_SETTINGS_DELETE       = 57
+    case USER_SETTINGS_SET          = 58
+    case USER_SETTINGS_GET          = 59
+    case SCREEN_EDGE_SWIPED         = 60
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution
@@ -179,8 +185,10 @@ class Command {
             })
         } else {            
             print( "[WARN] No webview to send response" );
-            CommandProcessor.remove(command: self)
-        }
+			if( status != CommandStatus.UPDATE ) {
+				CommandProcessor.remove(command: self)
+			}
+		}
     }
     
     private func setCommandID( commandID: Int ) {

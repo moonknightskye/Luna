@@ -10,6 +10,50 @@
 	<array>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Splash Screen</string>
+			<key>Key</key>
+			<string>user_splash_screen</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Values</key>
+			<array>
+				<string>Shake 1 time or greater</string>
+				<string>Shake 3 times or greater</string>
+				<string>Shake 6 times or greater</string>
+				<string>1-finger right edge swipe</string>
+				<string>2-finger right edge swipe</string>
+				<string>3-finger right edge swipe</string>
+				<string>1-finger left edge swipe</string>
+				<string>2-finger left edge swipe</string>
+				<string>3-finger left edge swipe</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Shake 1 time or greater</string>
+				<string>Shake 3 times or greater</string>
+				<string>Shake 6 times or greater</string>
+				<string>1-finger right edge swipe</string>
+				<string>2-finger right edge swipe</string>
+				<string>3-finger right edge swipe</string>
+				<string>1-finger left edge swipe</string>
+				<string>2-finger left edge swipe</string>
+				<string>3-finger left edge swipe</string>
+			</array>
+			<key>Title</key>
+			<string>Show on</string>
+			<key>Key</key>
+			<string>user_show_settings</string>
+			<key>DefaultValue</key>
+			<string>Shake 3 times or greater</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Startup Page</string>

@@ -1,0 +1,289 @@
+@font-face {
+  font-family: 'Euphoria Script';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Euphoria Script'), local('EuphoriaScript-Regular'), url(../fonts/euphoria.woff) format('woff');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lato Light'), local('Lato-Light'), url(../fonts/lato-light.woff) format('woff');
+}
+
+body {
+    background: transparent;
+    margin: 0px;
+    position: fixed !important;
+    width: 100%;
+    height: 100%;
+    color: #BDBDBD;
+}
+
+.matostyle {
+    background: radial-gradient(ellipse at center, #424242 0%, #000000 100%);
+    font-size: 14pt;
+    width: 100%;
+    height: 100%;
+}
+
+.header {
+    font-family: "Lato", sans-serif !important;
+    font-weight: 300;
+    font-size: 20pt;
+    letter-spacing: 5px;
+    background: -webkit-linear-gradient(white, #38495a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.section {
+    margin: 10px;
+}
+
+.background {
+    position: absolute !important;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.splashscreen .moon {
+    background-image: url(../img/luna.png);
+    background-repeat: no-repeat;
+    width: 75%;
+    height: 310px;
+    background-size: contain;
+    background-position: center;
+    margin: auto;
+}
+
+.splashscreen .moon-center {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-75%);
+}
+.splashscreen .label-center {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,30%);
+}
+
+.splashscreen .loading {
+    position: absolute !important;
+    bottom: 25px;
+    right: 25px;
+}
+.splashscreen .loading:after {
+    border-width: 0 1px 0 0;
+    border-style: solid;
+    border-color: #e0e0e0;
+    border-radius: 50%;
+    display: block;
+    height: 30px;
+    left: 50%;
+    margin: -25px 0 0 -25px;
+    position: absolute;
+    top: 50%;
+    width: 30px;
+    content: "";
+    -webkit-animation: spin 1s infinite linear;
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+
+.splashscreen .luna-label {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,80%);
+    zoom: 0.125;
+}
+.splashscreen .three-letters {
+    left: -75px;
+}
+
+.splashscreen .alphabet {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    opacity: 0.2;
+}
+.splashscreen .alphabet.L {
+    background-image: url(../img/L.png);
+    height: 497px;
+    width: 381px;
+    -webkit-transform: translate(0%,-50%);
+}
+.splashscreen .alphabet.U {
+    background-image: url(../img/U.png);
+    height: 497px;
+    width: 214px;
+    -webkit-transform: translate(0%,-50%);
+}
+.splashscreen .alphabet.N {
+    background-image: url(../img/N.png);
+    height: 497px;
+    width: 214px;
+    -webkit-transform: translate(0%,-50%);
+} 
+.splashscreen .alphabet.A {
+    background-image: url(../img/A.png);
+    height: 497px;
+    width: 214px;
+    -webkit-transform: translate(0%,-50%);
+} 
+
+.splashscreen .luna-label.move .L{
+    -webkit-transition: all  2.2s 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -webkit-transform: translate(0%,0%);
+    opacity: 0.8;
+}
+.splashscreen .luna-label.move .U{
+    -webkit-transition: all  2.2s 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -webkit-transform: translate(0%,0%);
+    opacity: 0.8;
+}
+.splashscreen .luna-label.move .N{
+    -webkit-transition: all  2.2s 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -webkit-transform: translate(0%,0%);
+    opacity: 0.8;
+}
+.splashscreen .luna-label.move .A{
+    -webkit-transition: all  2.2s 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    -webkit-transform: translate(0%,0%);
+    opacity: 0.8;
+}
+
+.splashscreen .cloud-one {
+    background-image: url(../img/cloud-one.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 1600px;
+    height: 1122px;
+    -webkit-transform: scale(0.5) translate(-50%,-56%);
+    opacity: 0.8;
+}
+
+.splashscreen .cloud-six {
+    background-image: url(../img/cloud-six.png);
+    background-repeat: repeat-x;
+    background-size: contain;
+    background-position: center;
+    width: 15000px;
+    height: 648px;
+    -webkit-transform: scale(1.0) translate(0%,-34%);
+    position: absolute !important;
+    top: 0px;
+    left: 0px;
+    opacity: 0.4;
+}
+.splashscreen .cloud-six.move {
+    -webkit-animation: cloudsix 4000.0s infinite ease-out;
+}
+@-webkit-keyframes cloudsix {
+    from { -webkit-transform: scale(1.0) translate(0%,-34%); }
+    to { -webkit-transform: scale(1.0) translate(-90%,-34%); }
+}
+
+.splashscreen .cloud-four {
+    background-image: url(../img/cloud-four.png);
+    background-repeat: repeat-x;
+    background-size: contain;
+    background-position: center;
+    width: 16800px;
+    height: 338px;
+    position: absolute !important;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.8;
+    -webkit-transform: scale(1.3) translate(-70%,0%);
+}
+.splashscreen .cloud-four.move {
+    -webkit-animation: cloudfour 3000.0s infinite ease-out;
+}
+@-webkit-keyframes cloudfour {
+    from { -webkit-transform: scale(1.3) translate(-70%,0%); }
+    to { -webkit-transform: scale(1.3) translate(0%,0%); }
+}
+
+.settings .cloud-four {
+    filter: blur(4px);
+    opacity: 0.3;
+}
+.settings .cloud-one {
+    filter: blur(4px);
+    opacity: 0.3;
+}
+.settings .cloud-six {
+    filter: blur(4px);
+    opacity: 0.2;
+}
+.settings .moon {
+    filter: blur(6px);
+    opacity: 0.4;
+}
+
+.splashscreen .cloud-six.smove {
+    -webkit-animation: scloudsix 4000.0s infinite ease-out;
+}
+@-webkit-keyframes scloudsix {
+    from { -webkit-transform: scale(1.0) translate(0%,-34%); }
+    to { -webkit-transform: scale(1.0) translate(-90%,-34%); }
+}
+
+.splashscreen .cloud-four.smove {
+    -webkit-animation: scloudfour 3000.0s infinite ease-out;
+}
+@-webkit-keyframes scloudfour {
+    from { -webkit-transform: scale(1.3) translate(-70%,0%); }
+    to { -webkit-transform: scale(1.3) translate(0%,0%); }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

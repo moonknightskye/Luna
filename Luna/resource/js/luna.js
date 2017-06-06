@@ -106,7 +106,13 @@
         SHAKE_END                   : 51,
         REMOVE_EVENT_LISTENER       : 52,
         OPEN_WITH_SAFARI            : 53,
-        USER_SETTINGS               : 54
+        USER_SETTINGS               : 54,
+        USER_SETTINGS_STARTUP_HTML  : 55,
+        // USER_SETTINGS_ADD           : 56,
+        USER_SETTINGS_DELETE        : 57,
+        USER_SETTINGS_SET           : 58,
+        USER_SETTINGS_GET           : 59,
+        SCREEN_EDGE_SWIPED          : 60
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -246,9 +252,25 @@
             return _removeEventListener( evt_command_code, event_id )
         };
 
-        luna.addEventListener = function( event_name, callback ) {
+        luna.addEventListener = function( event_name, callback, parameter ) {
             var command_code;
             switch( event_name ) {
+                case "screenEdgeSwiped":
+                    command_code = COMMAND.SCREEN_EDGE_SWIPED;
+                    if(!parameter) {
+                        parameter = {
+                            touchesRequired : 1,
+                            direction       : "right"
+                        }
+                    } else {
+                        if( !parameter.touchesRequired ) {
+                            parameter.touchesRequired = 1;
+                        }
+                        if( !parameter.direction ) {
+                            parameter.direction = "right";
+                        }
+                    }
+                    break;
                 case "shakestart":
                     command_code = COMMAND.SHAKE_BEGIN;
                     break;
@@ -265,7 +287,7 @@
                 default:
                     return new Promise.reject("Invalid eventname: " + event_name);
             }
-            return _addEventListener( command_code, event_name, callback );
+            return _addEventListener( command_code, event_name, callback, parameter );
         };
 
         luna.getFileCollection = function( parameter ) {
@@ -310,9 +332,9 @@
         luna.getImageFile = function(parameter) {
             _setPathType( parameter );
             var command = new Command({
-                command_code:   COMMAND.GET_IMAGE_FILE,
+                command_code    : COMMAND.GET_IMAGE_FILE,
                 priority        : CommandPriority.LOW,
-                parameter:      parameter
+                parameter       : parameter
             });
             command.onResolve( function( result ) {
                 parameter = apollo11.mergeJSON( result, parameter );
@@ -338,9 +360,9 @@
         luna.getZipFile = function(parameter) {
             _setPathType( parameter );
             var command = new Command({
-                command_code:   COMMAND.GET_ZIP_FILE,
+                command_code    : COMMAND.GET_ZIP_FILE,
                 priority        : CommandPriority.LOW,
-                parameter:      parameter
+                parameter       : parameter
             });
             command.onResolve( function( result ) {
                 parameter = apollo11.mergeJSON( result, parameter )
@@ -355,9 +377,9 @@
                 param.property = parameter.property
             }
             var command = new Command({
-                command_code:   COMMAND.NEW_WEB_VIEW,
-                priority            : CommandPriority.CRITICAL,
-                parameter:      param
+                command_code    : COMMAND.NEW_WEB_VIEW,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : param
             });
             command.onResolve( function( webview_id ) {
                 parameter.webview_id = webview_id;
@@ -394,9 +416,9 @@
                 };
             }
             var command = new Command({
-                command_code:       COMMAND.MEDIA_PICKER,
+                command_code        : COMMAND.MEDIA_PICKER,
                 priority            : CommandPriority.CRITICAL,
-                parameter:          option
+                parameter           : option
             });
             command.onResolve( function( result ) {
                 return new ImageFile( result );
@@ -494,6 +516,9 @@
         luna.settings = function() {
             var command = new Command({
                 command_code    : COMMAND.USER_SETTINGS
+            });
+            command.onResolve( function( result ) {
+                return new Settings( result );
             });
             return CommandProcessor.queue( command );
         };
@@ -832,18 +857,18 @@
 
             webview.onLoaded = function() {
                 var command = new Command({
-                    command_code:       COMMAND.WEB_VIEW_ONLOADED,
+                    command_code        : COMMAND.WEB_VIEW_ONLOADED,
                     priority            : CommandPriority.CRITICAL,
-                    target_webview_id:  this.getID()
+                    target_webview_id   : this.getID()
                 });
                 return CommandProcessor.queue( command );
             };
 
             webview.onLoading = function( fn ) {
                 var command = new Command({
-                    command_code:       COMMAND.WEB_VIEW_ONLOADING,
+                    command_code        : COMMAND.WEB_VIEW_ONLOADING,
                     priority            : CommandPriority.CRITICAL,
-                    target_webview_id:  this.getID()
+                    target_webview_id   : this.getID()
                 });
                 command.onUpdate( fn )
                 return CommandProcessor.queue( command );
@@ -1265,6 +1290,95 @@
 
             init();
             return fileCol;
+        };
+
+        function Settings( param ) {
+            var settings = {};
+            var _INTERNAL_DATA = {
+                splash_screen      : true,
+                startup_type       : "URL",
+                startup_page       : "https://www.your_site_here.com",
+                startup_enabled    : false
+            };
+
+            function init() {
+                _INTERNAL_DATA = apollo11.mergeJSON( param, _INTERNAL_DATA );
+            };
+
+            settings.getDefaults = function(){
+                return _INTERNAL_DATA;
+            };
+
+            settings.isShowSplashScreen = function() {
+                return _INTERNAL_DATA.splash_screen;
+            };
+
+            settings.isEnabled = function() {
+                return _INTERNAL_DATA.startup_enabled;
+            };
+
+            settings.getStartupPage = function(){
+                return _INTERNAL_DATA.startup_page;
+            };
+
+            settings.getPathType = function(){
+                return _INTERNAL_DATA.startup_type;
+            };
+
+            settings.getStartupHtmlFile = function(){
+                var command = new Command({
+                    command_code    : COMMAND.USER_SETTINGS_STARTUP_HTML
+                });
+                command.onResolve( function( result ) {
+                    return new HtmlFile( result );
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            // settings.add = function( param ) {
+            //     var command = new Command({
+            //         command_code    : COMMAND.USER_SETTINGS_ADD,
+            //         parameter       : param
+            //     });
+            //     return CommandProcessor.queue( command );
+            // };
+
+            settings.get = function( param ) {
+                var command = new Command({
+                    command_code    : COMMAND.USER_SETTINGS_GET,
+                    parameter       : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            settings.delete = function( param ) {
+                var command = new Command({
+                    command_code    : COMMAND.USER_SETTINGS_DELETE,
+                    parameter       : param
+                });
+                command.onResolve( function(result){
+                    _INTERNAL_DATA[ param[ "key" ] ] = undefined;
+                    return result;
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            settings.set = function( param ) {
+                var command = new Command({
+                    command_code    : COMMAND.USER_SETTINGS_SET,
+                    parameter       : param
+                });
+                command.onResolve( function(result){
+                    var entry = {};
+                    entry[ param["key"] ] = param["value"];
+                    _INTERNAL_DATA = apollo11.mergeJSON( entry, _INTERNAL_DATA );
+                    return result;
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            init();
+            return settings;
         };
 
         function File( param ) {

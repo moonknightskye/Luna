@@ -202,9 +202,10 @@
             //addOneTimeEventListener( parent, "DOMNodeInserted", fn );
             var observer = new MutationObserver( function( mutations ) {
               mutations.forEach( function( mutation ) {
-                if ( mutation.type === "childList" ) {
+                if ( mutation.type === "childList" && mutation.addedNodes.length > 0) {
                     if ( fn ) {
                         fn();
+                        observer.disconnect();
                     }
                 }
               });    
@@ -215,7 +216,21 @@
         
         function removeDOM( child, parent, fn ) {
             parent = parent || getParent( child );
-            addOneTimeEventListener( parent, "DOMNodeRemoved", fn );
+            if(!parent) {
+                return;
+            }
+            //addOneTimeEventListener( parent, "DOMNodeRemoved", fn );
+            var observer = new MutationObserver( function( mutations ) {
+              mutations.forEach( function( mutation ) {
+                if ( mutation.type === "childList" && mutation.removedNodes.length > 0) {
+                    if ( fn ) {
+                        fn();
+                        observer.disconnect();
+                    }
+                }
+              });    
+            });
+            observer.observe( parent, { attributes: true, childList: true, characterData: true } );
             parent.removeChild( child );
         };
         
@@ -240,7 +255,7 @@
         function getParent( elem, fn ) {
             var _return;
             var parent = elem.parentElement;
-            if ( parent.nodeName === "BODY" ) {
+            if ( !parent ) {
                 return false;
             }
             if ( isUndefined( fn ) ) {

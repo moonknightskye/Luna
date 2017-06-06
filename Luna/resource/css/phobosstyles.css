@@ -1,0 +1,248 @@
+.phobos .back {
+	transform: translateX(-25%);
+    filter: blur(5px);
+}
+
+.phobos .input-select {
+	position: absolute !important;
+    top: 0px;
+    left: 0px;
+	width: 100%;
+    height: 100%;
+    margin: auto;
+    background-color: transparent;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+.phobos .input-select .select-body {
+	width: 100%;
+}
+
+.phobos .content-label {
+    line-height: 22pt;
+}
+
+.phobos .input-select ul {
+    padding: 8pt !important;
+}
+
+.phobos .input-select ul li{
+    padding: 4pt 0;
+    border-bottom: 1px solid rgba(250, 250, 250, 0.1);
+}
+
+.phobos .input-select ul li div {
+	transition: all 0.3s ease-in-out;
+    padding: 0 8pt;
+    transform: translateX(10%);
+    opacity: 0;
+}
+
+.phobos .input-select[data-active="1"] ul li div{
+    transform: translateX(0%);
+    opacity: 1;
+}
+.phobos .input-select[data-active] {
+	transition: all 0.2s 0s ease-in-out;
+}
+.phobos .input-select[data-active="1"] {
+	transform: translateX(0%);
+	z-index: 100;
+}
+.phobos .input-select[data-active="0"] {
+	transform: translateX(50%);
+}
+.phobos .input-select[data-selected]:not([data-selected=""]) {
+	transition: all 0.2s 0.4s ease-in-out !important;
+    opacity: 0;
+}
+
+.phobos .input-select[data-selected]:not([data-selected=""]) li div[data-selected="1"] {
+	transition: all 0.2s 0s ease-out !important;
+    transform: scale(1.06);
+    color: white;
+}
+.phobos .input-select[data-selected]:not([data-selected=""]) li div[data-selected="0"] {
+	transition: all 0.2s ease-in-out !important;
+    transform: translateX(10%);
+    opacity: 0;
+}
+
+.phobos input[type=checkbox] {
+   -webkit-appearance: none;
+    width: 48px;
+    height: 30px;
+    background-color: transparent;
+    border-radius: 16px;
+    border: 2px solid #9E9E9E;
+    margin: 0pt;
+    margin: auto;
+    position: absolute;
+    right: 0px;
+}
+
+.phobos input[type=checkbox]:after {
+    transition: all 0.2s ease;
+    content: "";
+    width: 22px;
+    height: 22px;
+    z-index: 1;
+    position: absolute !important;
+    background-color: #9E9E9E;
+    border-radius: 12px;
+    line-height: 15px;
+    top: 2px;
+    left: 2px;
+    opacity: 0.3;
+}
+
+.phobos input[type=checkbox]:checked:after {
+    left: 20px;
+    background-color: #9E9E9E;
+    opacity: 1;
+    margin: 0px;
+}
+
+.phobos input:focus,
+.phobos select:focus,
+.phobos textarea:focus,
+.phobos button:focus {
+    outline: none;
+}
+
+.phobos .section-content {
+    padding: 4pt 0pt;
+}
+
+.phobos .input-select-btn {
+    display: block;
+    text-align: right;
+    padding-right: 10pt;
+    line-height: 22pt;
+}
+.phobos .input-select-btn:after {
+    content:"";
+    position: absolute !important;
+}
+
+.phobos .input-select-btn i {
+    border: solid #9E9E9E;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3pt;            
+}
+
+.phobos .input-select-btn .right {
+    transform: rotate(-45deg) translate(6px,4px);
+}
+
+.phobos .input-text {
+    display: block;
+    border-bottom: 1px solid rgba(158, 158, 158, 0.63);
+}
+
+.phobos input[type=text] {
+    display: block;
+	background-color: transparent;
+    width: 90%;
+    border: 0px;
+    color: #9E9E9E;
+    font-size: 14pt;
+    padding: 0px;
+	border-radius: 0px;
+}
+
+@keyframes showclose {
+    0% { transform: scale(0.5); }
+    50% { transform: scale(1.1); }
+    75% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+.input-text-clear {
+    position: absolute !important;
+    bottom: 6px;
+    right: 0px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    animation: showclose 0.4s forwards ease-in-out;
+}
+.input-text-clear.hidden {
+    animation: showclosehide 0.4s forwards ease-in-out;
+}
+@keyframes showclosehide {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.4); }
+    75% { transform: scale(0.6); }
+    100% { transform: scale(0); }
+}
+.input-text-clear::before, .input-text-clear::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  margin-top: -1px;
+  background: #9e9e9e;
+}
+.input-text-clear::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.input-text-clear::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.input-text-clear::before, .input-text-clear::after {
+  height: 1px;
+}
+
+.phobos .section-content .flex-box li {
+    min-height: 30px;
+}
+
+.phobos .content-description {
+    font-size: small;
+    color: #9e9e9e;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

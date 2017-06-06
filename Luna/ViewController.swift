@@ -16,39 +16,49 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         super.viewDidLoad()
         Shared.shared.ViewController = self
         
+        SettingsPage.instance.attachListeners()
         
-        print( UserSettings.instance.getPathType() )
-        print( UserSettings.instance.getFileName() ?? "xxxx" )
-        print( UserSettings.instance.isEnabled() )
-        
-        if UserSettings.instance.isEnabled(), let htmlFile = UserSettings.instance.getStartupHtmlFile() {
-            self.loadStartupPage(htmlFile: htmlFile)
-        } else {
+        if UserSettings.instance.isShowSplashScreen() {
             let parameter = NSMutableDictionary()
             parameter.setValue( "splash.html", forKey: "filename")
             parameter.setValue( "resource", forKey: "path")
             parameter.setValue( "bundle", forKey: "path_type")
-
+            
             let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
             commandGetFile.onResolve { ( htmlFile ) in
                 self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
             }
             CommandProcessor.queue(command: commandGetFile)
+        } else {
+            if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
+                self.loadStartupPage(htmlFile: htmlFile)
+            }
         }
     }
     
     private func loadStartupPage( htmlFile: HtmlFile ) {
         let parameter = NSMutableDictionary()
         parameter.setValue( htmlFile, forKey: "html_file")
-//        let property = NSMutableDictionary()
-//        property.setValue( false, forKey: "isOpaque")
-//        parameter.setValue( property, forKey: "property")
-        
+        let property = NSMutableDictionary()
+        property.setValue( CGFloat(0.0), forKey: "opacity")
+        parameter.setValue( property, forKey: "property")
+
         let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
         command.onResolve { (webview_id) in
             let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
             commandOnLoading.onUpdate(fn: { (progress) in
                 print( "Loading... \(progress)%" )
+            })
+            commandOnLoading.onResolve(fn: { (result) in
+                let setpropparam = NSMutableDictionary()
+                let propparam = NSMutableDictionary()
+                propparam.setValue( CGFloat(1.0), forKey: "opacity")
+                let animaparam = NSMutableDictionary()
+                animaparam.setValue( Double(0.6), forKey: "duration")
+                setpropparam.setValue( propparam, forKey: "property")
+                setpropparam.setValue( animaparam, forKey: "animation")
+                let commandSetProperty = Command(commandCode: CommandCode.ANIMATE_WEB_VIEW, targetWebViewID: Int(webview_id as! Int), parameter: setpropparam)
+                CommandProcessor.queue(command: commandSetProperty)
             })
             CommandProcessor.queue(command: commandOnLoading)
             
@@ -61,7 +71,24 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
         CommandProcessor.queue(command: command)
     }
+    
+    func screenEdgeSwipedOneFinger(_ recognizer: UIGestureRecognizer) {
+        if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
+            CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 1)
+        }
+    }
 
+    func screenEdgeSwipedTwoFingers(_ recognizer: UIGestureRecognizer) {
+        if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
+            CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 2)
+        }
+    }
+
+    func screenEdgeSwipedThreeFingers(_ recognizer: UIGestureRecognizer) {
+        if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
+            CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 3)
+        }
+    }
 
     
     override func didReceiveMemoryWarning() {
@@ -83,6 +110,23 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     override func motionCancelled(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             CommandProcessor.processShakeCancelled()
+        }
+    }
+    
+    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            switch swipeGesture.direction {
+            case UISwipeGestureRecognizerDirection.right:
+                print("Swiped right")
+            case UISwipeGestureRecognizerDirection.down:
+                print("Swiped down")
+            case UISwipeGestureRecognizerDirection.left:
+                print("Swiped left")
+            case UISwipeGestureRecognizerDirection.up:
+                print("Swiped up")
+            default:
+                break
+            }
         }
     }
 }
