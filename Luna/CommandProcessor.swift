@@ -9,9 +9,6 @@
 import Foundation
 import UIKit
 import Photos
-//struct CommandC {
-//    static let someNotification = "TEST"
-//}
 
 class CommandProcessor {
     
@@ -186,6 +183,20 @@ class CommandProcessor {
             break
         case .SCREEN_EDGE_SWIPED:
             checkScreenEdgeSwiped( command: command )
+            break
+        case .WEB_VIEW_RECIEVEMESSAGE:
+            break
+        case .WEB_VIEW_POSTMESSAGE:
+            checkWebViewPostMessage( command: command )
+            break
+        case .USER_SETTINGS_LUNASETTINGS_HTML:
+            checkUserSettingsLunaSettingsHtml( command: command )
+            break
+        case .USER_NOTIFICATION:
+            checkUserNotification( command: command )
+            break
+        case .USER_NOTIFICATION_SHOWMSG:
+            checkUserNotificationShowMessage( command: command )
             break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
@@ -374,28 +385,52 @@ class CommandProcessor {
     
     public class func processWebViewOnload( wkmanager: WebViewManager ) {
         getCommand(commandCode: CommandCode.WEB_VIEW_ONLOAD) { (command) in
-            if command.getTargetWebViewID() == wkmanager.getID() {
-                command.resolve(value: true)
+            if let webviewId = (command.getParameter() as AnyObject).value(forKeyPath: "webview_id") as? Int {
+                if webviewId == wkmanager.getID() {
+                    command.update(value: true)
+                }
             }
+//            if command.getTargetWebViewID() == wkmanager.getID() {
+//                //command.resolve(value: true)
+//                command.update(value: true)
+//            }
         }
     }
     
-    public class func processWebViewOnLoaded( wkmanager: WebViewManager ) {
+    public class func processWebViewOnLoaded( wkmanager: WebViewManager, isSuccess:Bool, errorMessage: String?=nil ) {
         getCommand(commandCode: CommandCode.WEB_VIEW_ONLOADED) { (command) in
-            if command.getTargetWebViewID() == wkmanager.getID() {
-                command.resolve(value: true)
+            if let webviewId = (command.getParameter() as AnyObject).value(forKeyPath: "webview_id") as? Int {
+                if webviewId == wkmanager.getID() {
+                    let param = NSMutableDictionary()
+                    param.setValue( isSuccess, forKey: "success")
+                    if isSuccess {
+                        command.update(value: param)
+                    } else {
+                        param.setValue( errorMessage, forKey: "message")
+                        command.update(value: param)
+                    }
+                }
             }
+//            if command.getTargetWebViewID() == wkmanager.getID() {
+//                //command.resolve(value: true)
+//                command.update(value: true)
+//            }
         }
     }
     
     public class func processWebViewOnLoading( wkmanager: WebViewManager, progress: Double ) {
         getCommand(commandCode: CommandCode.WEB_VIEW_ONLOADING) { (command) in
-            if command.getTargetWebViewID() == wkmanager.getID() {
-                command.update(value:progress)
-                if( progress >= 100.0 ) {
-                    command.resolve(value: true)
+            if let webviewId = (command.getParameter() as AnyObject).value(forKeyPath: "webview_id") as? Int {
+                if webviewId == wkmanager.getID() {
+                    command.update(value:progress)
                 }
             }
+//            if command.getTargetWebViewID() == wkmanager.getID() {
+//                command.update(value:progress)
+////                if( progress >= 100.0 ) {
+////                    command.resolve(value: true)
+////                }
+//            }
         }
     }
     

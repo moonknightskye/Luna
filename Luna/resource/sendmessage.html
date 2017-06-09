@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
+        <script type="text/javascript" src="js/luna.js" ></script>
+        <style>
+            body {
+                background-color: gray;
+            }
+        </style>
+        <script>
+            (function(){
+                var luna = new Luna();
+                luna.addEventListener( "ready", function(){
+
+                    luna.getHtmlFile({
+                        filename    : "sample_site.html",
+                        path        : "resource",
+                        path_type   : "bundle"
+                    }).then( function( html_file ){
+                        //luna.debug(html_file.toJSON());
+
+                        luna.getNewWebview({
+                          html_file: html_file,
+                          property: {
+                            frame: {
+                              height:   667/3,
+                              width:    375,
+                              y:        (667/3)*1,
+                              x:        0
+                            },
+                            opacity:    1,
+                            isOpaque:   false
+                          }
+                        }).then( function( webview ){
+                            webview.load();
+
+
+                            btn.addEventListener("click", function(){
+                                webview.postMessage("HELLO WORLD").then(function(){
+                                    luna.debug("send message");
+                                }, function(message){
+                                    luna.debug(message);
+                                });
+                            });
+
+                            btnsp.addEventListener("click", function(){
+                                webview.postMessage("MAHALO", webview.getID()).then(function(){
+                                    luna.debug("send message to sp");
+                                }, function(message){
+                                    luna.debug(message);
+                                });
+                            });
+
+
+                        });
+                    });
+
+                    luna.getHtmlFile({
+                        filename    : "sample_site2.html",
+                        path        : "resource",
+                        path_type   : "bundle"
+                    }).then( function( html_file ){
+                        //luna.debug(html_file.toJSON());
+
+                        luna.getNewWebview({
+                          html_file: html_file,
+                          property: {
+                            frame: {
+                              height:   667/3,
+                              width:    375,
+                              y:        (667/3)*2,
+                              x:        0
+                            },
+                            opacity:    1,
+                            isOpaque:   false
+                          }
+                        }).then( function( webview ){
+                            webview.load();
+                        });
+                    });
+
+
+                });
+            })();
+        </script>
+    </head>
+    <body>
+        HELLO WORLD
+        <button id="btn">SEND MESSAGE</button>
+        <button id="btnsp">SEND MESSAGE TO ONLY ONE</button>
+        <div class="debug"></div>
+    </body>
+ </html>

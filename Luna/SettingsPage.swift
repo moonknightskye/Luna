@@ -179,10 +179,11 @@ class SettingsPage {
             
             let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
             command.onResolve { (webview_id) in
-            
-                let commandOnLoaded = Command(commandCode: CommandCode.WEB_VIEW_ONLOADED, targetWebViewID: webview_id as? Int)
+                let cmdproperty = NSMutableDictionary()
+                cmdproperty.setValue( webview_id, forKey: "webview_id")
                 
-                commandOnLoaded.onResolve(fn: { (result) in
+                let commandOnLoaded = Command(commandCode: CommandCode.WEB_VIEW_ONLOADED, targetWebViewID: webview_id as? Int, parameter: cmdproperty)
+                commandOnLoaded.onUpdate(fn: { (result) in
                     let setpropparam = NSMutableDictionary()
                     let animaparam = NSMutableDictionary()
                     animaparam.setValue( Double(0.2), forKey: "duration")

@@ -112,7 +112,12 @@
         USER_SETTINGS_DELETE        : 57,
         USER_SETTINGS_SET           : 58,
         USER_SETTINGS_GET           : 59,
-        SCREEN_EDGE_SWIPED          : 60
+        SCREEN_EDGE_SWIPED          : 60,
+        WEB_VIEW_RECIEVEMESSAGE     : 61,
+        WEB_VIEW_POSTMESSAGE        : 62,
+        USER_SETTINGS_LUNASETTINGS_HTML : 63,
+        USER_NOTIFICATION           : 64,
+        USER_NOTIFICATION_SHOWMSG   : 65
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -523,6 +528,15 @@
             return CommandProcessor.queue( command );
         };
 
+        luna.notification = function() {
+            var command = new Command({
+                command_code    : COMMAND.USER_NOTIFICATION
+            });
+            command.onResolve( function( result ) {
+                return new UserNotification();
+            });
+            return CommandProcessor.queue( command );
+        };
 
         luna.debug = function( param ) {
             if( param.constructor === Object ) {
@@ -846,31 +860,88 @@
                 return CommandProcessor.queue( command );
             };
 
-            webview.onLoad = function() {
-                var command = new Command({
-                    command_code        : COMMAND.WEB_VIEW_ONLOAD,
-                    priority            : CommandPriority.CRITICAL,
-                    target_webview_id   : this.getID()
-                });
-                return CommandProcessor.queue( command );
+            // webview.onLoad = function() {
+            //     var command = new Command({
+            //         command_code        : COMMAND.WEB_VIEW_ONLOAD,
+            //         priority            : CommandPriority.CRITICAL,
+            //         target_webview_id   : this.getID()
+            //     });
+            //     return CommandProcessor.queue( command );
+            // };
+
+            // webview.onLoaded = function() {
+            //     var command = new Command({
+            //         command_code        : COMMAND.WEB_VIEW_ONLOADED,
+            //         priority            : CommandPriority.CRITICAL,
+            //         target_webview_id   : this.getID()
+            //     });
+            //     return CommandProcessor.queue( command );
+            // };
+
+            // webview.onLoading = function( fn ) {
+            //     var command = new Command({
+            //         command_code        : COMMAND.WEB_VIEW_ONLOADING,
+            //         priority            : CommandPriority.CRITICAL,
+            //         target_webview_id   : this.getID()
+            //     });
+            //     command.onUpdate( fn )
+            //     return CommandProcessor.queue( command );
+            // };
+
+            webview.addEventListener = function( event_name, callback ) {
+                var command_code;
+                var parameter = {
+                    webview_id    : this.getID(),
+                };
+                switch( event_name ) {
+                    case "load":
+                        command_code = COMMAND.WEB_VIEW_ONLOAD;
+                        break;
+                    case "loaded":
+                        command_code = COMMAND.WEB_VIEW_ONLOADED;
+                        break;
+                    case "loading":
+                        command_code = COMMAND.WEB_VIEW_ONLOADING;
+                        break;
+                    case "message":
+                        command_code = COMMAND.WEB_VIEW_RECIEVEMESSAGE;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback, parameter );
             };
 
-            webview.onLoaded = function() {
-                var command = new Command({
-                    command_code        : COMMAND.WEB_VIEW_ONLOADED,
-                    priority            : CommandPriority.CRITICAL,
-                    target_webview_id   : this.getID()
-                });
-                return CommandProcessor.queue( command );
+            webview.removeEventListener = function( event_name, event_id ) {
+                var evt_command_code;
+                switch( event_name ) {
+                    case "load":
+                        evt_command_code = COMMAND.WEB_VIEW_ONLOAD;
+                        break;
+                    case "loaded":
+                        evt_command_code = COMMAND.WEB_VIEW_ONLOADED;
+                        break;
+                    case "loading":
+                        evt_command_code = COMMAND.WEB_VIEW_ONLOADING;
+                        break;
+                    case "message":
+                        evt_command_code = COMMAND.WEB_VIEW_RECIEVEMESSAGE;
+                        break;  
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( evt_command_code, event_id )
             };
 
-            webview.onLoading = function( fn ) {
+            webview.postMessage = function( message, target_webview_id ) {
                 var command = new Command({
-                    command_code        : COMMAND.WEB_VIEW_ONLOADING,
-                    priority            : CommandPriority.CRITICAL,
-                    target_webview_id   : this.getID()
+                    command_code        : COMMAND.WEB_VIEW_POSTMESSAGE,
+                    target_webview_id   : target_webview_id,
+                    parameter: {
+                        message         : message,
+                        isSendToAll     : ( typeof target_webview_id === "undefined" )
+                    }
                 });
-                command.onUpdate( fn )
                 return CommandProcessor.queue( command );
             };
 
@@ -1335,6 +1406,16 @@
                 return CommandProcessor.queue( command );
             };
 
+            settings.getSettingsHtmlFile = function(){
+                var command = new Command({
+                    command_code    : COMMAND.USER_SETTINGS_LUNASETTINGS_HTML
+                });
+                command.onResolve( function( result ) {
+                    return new HtmlFile( result );
+                });
+                return CommandProcessor.queue( command );
+            };
+
             // settings.add = function( param ) {
             //     var command = new Command({
             //         command_code    : COMMAND.USER_SETTINGS_ADD,
@@ -1380,6 +1461,36 @@
             init();
             return settings;
         };
+
+        function UserNotification() {
+            var userntf = {};
+
+            userntf.greet = function(){
+                console.log("hello");
+                return "MATO";
+            };
+
+            //{badge:1, title:"title", subtitle:"subtitle", body:"body"}
+            userntf.show = function( param ) {
+                var command = new Command({
+                    command_code    : COMMAND.USER_NOTIFICATION_SHOWMSG,
+                    parameter       : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return userntf;
+        };
+
+        // var UserNotification = (function(){
+
+        //     function init(){}
+
+
+        //     return {
+
+        //     };
+        // })();
 
         function File( param ) {
             var file = {

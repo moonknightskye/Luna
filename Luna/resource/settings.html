@@ -48,9 +48,40 @@
             .section-disclaimer {
                 font-size: x-small;
                 position: fixed !important;
+                left: 0px;
                 bottom: 0px;
                 margin: 4pt;
                 color: #616161;
+                text-align: justify;
+            }
+
+            .section-disclaimer-title {
+                text-align: center;
+                font-weight: bold !important;
+                margin-bottom: 2pt;
+            }
+
+            .loading-holder.show {
+                opacity: 1;
+            }
+            .loading-holder {
+                transition: all 0.1s ease-in;
+                position: fixed !important;
+                bottom: 0px;
+                right: 0px;
+                opacity: 0;
+            }
+
+            .content-error {
+                transition: all 0.2s ease-in;
+                opacity: 1;
+            }
+            .content-error.content-hide {
+                opacity: 0;
+            }
+
+            .error {
+                color: #e57373 !important;
             }
 
 
@@ -58,16 +89,29 @@
         <script>
             (function(){
                 window.addEventListener("load", function(){
+                    loading.classList.add("show");
                     window.setTimeout(function(){
                         cloud_six.classList.add("smove");
                         cloud_four.classList.add("smove");
                     },0);
-
                 });
 
                 var luna = new Luna();
                 luna.addEventListener( "ready", function(){
 
+                    luna.getMainWebview().addEventListener("message", function( message ) {
+                        luna.notification().then(function(userNotification){
+                            userNotification.show({title:"Failed to load Startup Page", body:message});
+                        });
+
+                        window.setTimeout(function(){
+                            apollo11.getElement(".info-message", "SELECT").innerText = message;
+                            apollo11.getElement(".content-error", "SELECT").classList.remove("content-hide");
+
+                            var inputelem = apollo11.getElement(".input-text input", "SELECT");
+                            inputelem.classList.add("error");
+                        },0);
+                    });
                     // luna.addEventListener( "screenEdgeSwiped", function(){
                     //     luna.debug("left 2")
                     // },{touchesRequired:2, direction:"left"});
@@ -85,7 +129,9 @@
 
                     luna.settings().then(function(settings){
                         //luna.debug(settings.getDefaults())
-
+                        window.setTimeout(function(){
+                            loading.classList.remove("show");
+                        },3500);
 
                         apollo11.forEveryKey( settings.getDefaults(), function(value, key) {
                             //luna.debug(key + ": " + value)
@@ -99,7 +145,7 @@
                                     if( inputelem.value.length > 0 ) {
                                         window.setTimeout(function(){
                                             inputelem.focus();
-                                        },10);
+                                        },300);
                                     }
                                 } else if( input.classList.contains("input-select-btn") ) {
                                     input.dataset.value = value;
@@ -111,15 +157,27 @@
                                 if( input.classList.contains("input-checkbox") ) {
                                     input.addEventListener("change",function(e){
                                         settings.set({key:input.dataset.src,value:input.checked});
+                                        loading.classList.add("show");
+                                        window.setTimeout(function(){
+                                            loading.classList.remove("show");
+                                        },300);
                                     });
                                 } else if( input.classList.contains("input-text") ) {
                                     var inputelem = apollo11.getElement("input", "SELECT", input);
                                     inputelem.addEventListener("blur",function(e){
                                         settings.set({key:input.dataset.src,value:inputelem.value});
+                                        loading.classList.add("show");
+                                        window.setTimeout(function(){
+                                            loading.classList.remove("show");
+                                        },300);
                                     });
                                 } else if( input.classList.contains("input-select-btn") ) {
                                     input.addEventListener("change",function(e){
                                         settings.set({key:input.dataset.src,value:input.dataset.value});
+                                        loading.classList.add("show");
+                                        window.setTimeout(function(){
+                                            loading.classList.remove("show");
+                                        },300);
                                     },false);
                                 }
                             });
@@ -168,15 +226,15 @@
                                     </span>
                                 </li>
                                 <li class="flex-two">
-                                    <span class="phobos-input input-select-btn" data-src="show_settings" data-id="2" data-value="Shake 3 times" data-choices="{
+                                    <span class="phobos-input input-select-btn" data-src="show_settings" data-id="2" data-value="Shake 3 times or greater" data-choices="{
                                       'choices': ['Shake 1 time or greater', 'Shake 3 times or greater', 'Shake 6 times or greater', '1-finger right edge swipe', '2-finger right edge swipe', '3-finger right edge swipe','1-finger left edge swipe', '2-finger left edge swipe', '3-finger left edge swipe']
                                     }">
-                                        <span>Shake 3 times</span><i class="arrow right"></i>
+                                        <span>Shake 3 times or greater</span><i class="arrow right"></i>
                                     </span>
                                 </li>
                             </ul>
                             <div class="content-description">
-                                Activate this settings page on gesture
+                                <span class="info">ⓘ</span> Activate Luna Settings on gesture
                             </div>
                         </div>
 
@@ -184,7 +242,7 @@
                             <ul class="flex-box">
                                 <li class="flex-two">
                                     <span class="content-label">
-                                        Show Splash Screen
+                                        Show Luna Splash Screen
                                     </span>
                                 </li>
                                 <li class="flex-one">
@@ -192,7 +250,7 @@
                                 </li>
                             </ul>
                             <div class="content-description">
-                                Show Luna splash screen during startup. Splash screen prevents displaying the black screen while the page loads
+                                <span class="info">ⓘ</span> Show Luna Splash Screen during startup. Luna Splash Screen prevents displaying a black screen while the Startup Page loads in the background
                             </div>
                         </div>
 
@@ -208,7 +266,7 @@
                                 </li>
                             </ul>
                             <div class="content-description">
-                                Instead of displaying this setting page. Luna will try to load the Startup Page during app load
+                                <span class="info">ⓘ</span> Instead of displaying Luna Settings. The app will try to load the Startup Page during app load
                             </div>
                         </div>
 
@@ -228,7 +286,7 @@
                                 </li>
                             </ul>
                             <div class="content-description">
-                                Specify URL if the Startup page resides on a server, else choose Document to display iTunes file (you can transfer HTML files to this app using iTunes on your pc)
+                                <span class="info">ⓘ</span> Specify URL if the Startup Page resides on a server, else choose Document to display iTunes file (transfer HTML files to this app using iTunes on your pc)
                             </div>
                         </div>
 
@@ -246,14 +304,17 @@
                                 </li>
                             </ul>
                             <div class="content-description">
-                                If you chose URL, specify the address including the http prefix. Else, specify the relative path of the HTML file located in iTunes file folder
+                                <span class="info">ⓘ</span> If you chose URL, specify the address including the http prefix. Else, specify the relative path of the HTML file located in iTunes file folder. Providing incorrect parameters will redirect to Luna Settings
+                            </div>
+                            <div class="content-description content-error content-hide error">
+                                <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
                             </div>
                         </div>
 
                         <div class="section-disclaimer">
-                            Thank you for using this app. This was developed by Mart Civil working as a Demo Engineer in Salesforce Tokyo Japan Branch. I distribute this app for free so by using this app the developer is not liable to any damage inflicted. As for every software there exists bugs, please send email to mcivil@salesforce.com for bug reports. Please do undestand that I cannot entertain urgent bug fixes for this app is maintained only on my free time.
+                            <div class="section-disclaimer-title">DISCLAIMER</div>
+                            Thank you for using this app. This was being updated and maintained by Mart Ryan Civil working as a Demo Engineer in Salesforce Tokyo Japan Branch. I distribute this app for free so by using this app the developer is not liable to any damage it will inflict. As for every software there exists bugs, please send email to mcivil@salesforce.com for bug reports. Do understand that I cannot entertain urgent bug fixes for this app is maintained only during on my free time.
                         </div>
-
                     </div>
 
                     <div class="debug"></div>
@@ -264,6 +325,9 @@
                 <div id="clound_one" class="cloud-one" ></div>
                 <div id="cloud_six" class="cloud-six"></div>
                 <div id="cloud_four" class="cloud-four"></div>
+            </div>
+            <div id="loading" class="loading-holder">
+                <div class="loading"></div>
             </div>
         </section>
     </body>

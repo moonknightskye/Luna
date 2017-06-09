@@ -75,6 +75,9 @@
         };
 
     	function initSelect( selectelem ) {
+            console.log(selectelem)
+            console.log(selectelem.dataset.value)
+
     		var parent = apollo11.getElement( ".phobos", "SELECT" );
     		if(!parent) { return; }
 
@@ -89,9 +92,13 @@
 
     		var OPTDOM = [];
     		apollo11.forEvery( JSON.parse(selectelem.dataset.choices.replace(/'/g, '"')).choices, function(option){
-    			OPTDOM.push({
+    			var selected = "";
+                if( selectelem.dataset.value == option ) {
+                    selected = 1;
+                }
+                OPTDOM.push({
     				tag:"LI", class:"flex-one", children:[
-    					{tag:"DIV", data:{value:option, selected:""}, text:option}
+    					{tag:"DIV", data:{value:option, selected:selected}, text:option}
     				]
     			});
     		});
@@ -129,10 +136,9 @@
     						var parentTransitionEndHandler = function(e){
     							e.target.removeEventListener("transitionend", parentTransitionEndHandler, true);
     							window.setTimeout(function(){
-	    							apollo11.removeDOM( parent, undefined, function() {
-										selectelem_parent.classList.remove( "back" );
-					                });
-				                },10);
+	    							apollo11.removeDOM( parent, undefined, function() {});
+				                },200);
+                                selectelem_parent.classList.remove( "back" );
     						};
     						parent.addEventListener("transitionend", parentTransitionEndHandler, true);
     						parent.dataset.active = 0;

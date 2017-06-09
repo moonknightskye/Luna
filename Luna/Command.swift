@@ -75,6 +75,11 @@ enum CommandCode:Int {
     case USER_SETTINGS_SET          = 58
     case USER_SETTINGS_GET          = 59
     case SCREEN_EDGE_SWIPED         = 60
+    case WEB_VIEW_RECIEVEMESSAGE    = 61
+    case WEB_VIEW_POSTMESSAGE       = 62
+    case USER_SETTINGS_LUNASETTINGS_HTML = 63
+    case USER_NOTIFICATION          = 64
+    case USER_NOTIFICATION_SHOWMSG  = 65
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution
@@ -114,6 +119,8 @@ class Command {
     }
 
     public init( commandCode:CommandCode, targetWebViewID:Int?=nil, parameter:NSObject?=nil ) {
+        print(commandCode)
+        print(parameter ?? "[NO PARAMETER]")
         Command.command_id_counter += 1
         setCommandID( commandID: Command.command_id_counter )
         setCommandCode( commandCode: commandCode )

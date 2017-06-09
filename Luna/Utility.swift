@@ -20,9 +20,6 @@ class Utility: NSObject {
     func hideStatusBar() {
         UIApplication.shared.isStatusBarHidden = true
     }
-    func greet() {
-        print("Hello World")
-    }
     
     func getContext () -> NSManagedObjectContext {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext

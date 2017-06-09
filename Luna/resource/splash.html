@@ -27,42 +27,64 @@
 
                 var luna = new Luna();
                 luna.addEventListener( "ready", function(){
+
                     luna.settings().then(function(settings){
                         settings.getStartupHtmlFile().then( function( html_file ){
+                            loadPage( html_file );
+                        }, function(error){
+                            settings.getSettingsHtmlFile().then(function( html_file ){
+                                loadPage( html_file, "File does not exists." );
+                            });
+                        });
+                    });
 
-                            luna.getNewWebview({
-                              html_file: html_file,
-                              property: {
-                                opacity:    0,
-                                isOpaque:   false
-                              }
-                            }).then( function( webview ){
+                    function loadPage( html_file, errorMessage, preventLoopFlg ) {
+                        luna.getNewWebview({
+                          html_file: html_file,
+                          property: {
+                            opacity:    0,
+                            isOpaque:   false
+                          }
+                        }).then( function( webview ){
 
-                              webview.onLoaded().then(function(result) {
+                            webview.addEventListener( "loaded", function(result){
+
                                 window.setTimeout(function(){
                                     isLoadingFinished = true;
                                 },300);
                                 function checkIfFinished() {
                                     if( isLoadingFinished && isAnimationFinished){
-                                        webview.setProperty( {
-                                          opacity:1.0
-                                        }, { duration:0.3, delay:0 } ).then(function(result){
-                                            window.setTimeout(function(){
-                                                luna.closeWebview( luna.getMainWebview() )
-                                            },300);
-                                        });
+                                        if( result.success ) {
+                                            webview.setProperty( {
+                                              opacity:1.0
+                                            }, { duration:0.3, delay:0.2 } ).then(function(result){
+                                                window.setTimeout(function(){
+                                                    if( errorMessage ) {
+                                                        webview.postMessage(errorMessage, webview.getID());
+                                                    }
+                                                    luna.closeWebview( luna.getMainWebview() );
+                                                },300);
+                                            });
+                                        } else {
+                                            if( !preventLoopFlg ) {
+                                                luna.settings().then(function(settings){
+                                                    settings.getSettingsHtmlFile().then(function( html_file ){
+                                                        loadPage( html_file, result.message, true );
+                                                    });
+                                                });
+                                            }
+                                        }
                                         return;
                                     }
                                     window.requestAnimationFrame( checkIfFinished );
                                 };
                                 window.requestAnimationFrame( checkIfFinished );
-                              });
+                            });
 
-                              webview.load();
+                            webview.load();
+                        },function( error ){});
+                    };
 
-                            },function( error ){});
-                        }, function(error){});
-                    });
                 });
              })();
         </script>

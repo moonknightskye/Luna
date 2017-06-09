@@ -5,7 +5,7 @@
         <script type="text/javascript" src="js/luna.js" ></script>
         <style>
             body {
-                background-color: orange;
+                background-color: green;
             }
         </style>
         <script>
@@ -14,24 +14,24 @@
                 luna.addEventListener( "ready", function(){
 
                 	var webview = luna.getMainWebview();
-                	var eventId;
+                    var eventId;
 
                 	btn.addEventListener("click", function(){
                         luna.debug("listening....")
                         webview.addEventListener("message", function(message){
                         	luna.debug(message)
                         }).then(function(eventId){
-	                    	eventId = eventId;
-	                    });
+                            eventId = eventId;
+                        });
                     });
 
                     btnstop.addEventListener("click", function(){
-                    	luna.debug("removing....")
-                    	webview.removeEventListener( "message", eventId ).then(function(result){
-		                    luna.debug( "webview.removeEventListener: message " + result );
-		                 },function(error){
-		                    luna.debug( "webview.removeEventListener: message " + error );
-		                 });
+                        luna.debug("removing....")
+                        webview.removeEventListener( "message", eventId ).then(function(result){
+                            luna.debug( "webview.removeEventListener: message " + result );
+                         },function(error){
+                            luna.debug( "webview.removeEventListener: message " + error );
+                         });
                     });
                 });
             })();

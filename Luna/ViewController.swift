@@ -8,7 +8,8 @@
 
 import UIKit
 import AVFoundation
-import CloudKit
+import UserNotifications
+//import CloudKit
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
 
@@ -32,11 +33,14 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         } else {
             if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
                 self.loadStartupPage(htmlFile: htmlFile)
+            } else {
+                let htmlFile = SettingsPage.instance.getPage()
+                self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
             }
         }
     }
     
-    private func loadStartupPage( htmlFile: HtmlFile ) {
+    private func loadStartupPage( htmlFile: HtmlFile, errorMessage:String?=nil ) {
         let parameter = NSMutableDictionary()
         parameter.setValue( htmlFile, forKey: "html_file")
         let property = NSMutableDictionary()
@@ -45,22 +49,49 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 
         let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
         command.onResolve { (webview_id) in
-            let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int)
+            let cmdproperty = NSMutableDictionary()
+            cmdproperty.setValue( webview_id, forKey: "webview_id")
+            
+            let commandOnLoading = Command(commandCode: CommandCode.WEB_VIEW_ONLOADING, targetWebViewID: webview_id as? Int, parameter: cmdproperty)
             commandOnLoading.onUpdate(fn: { (progress) in
                 print( "Loading... \(progress)%" )
             })
-            commandOnLoading.onResolve(fn: { (result) in
-                let setpropparam = NSMutableDictionary()
-                let propparam = NSMutableDictionary()
-                propparam.setValue( CGFloat(1.0), forKey: "opacity")
-                let animaparam = NSMutableDictionary()
-                animaparam.setValue( Double(0.6), forKey: "duration")
-                setpropparam.setValue( propparam, forKey: "property")
-                setpropparam.setValue( animaparam, forKey: "animation")
-                let commandSetProperty = Command(commandCode: CommandCode.ANIMATE_WEB_VIEW, targetWebViewID: Int(webview_id as! Int), parameter: setpropparam)
-                CommandProcessor.queue(command: commandSetProperty)
-            })
             CommandProcessor.queue(command: commandOnLoading)
+            
+            let commandOnLoaded = Command(commandCode: CommandCode.WEB_VIEW_ONLOADED, targetWebViewID: webview_id as? Int, parameter: cmdproperty)
+            commandOnLoaded.onUpdate(fn: { (result) in
+                
+                if let isSuccess = (result as AnyObject).value(forKeyPath: "success") as? Bool {
+                    
+                    if isSuccess {
+                        let setpropparam = NSMutableDictionary()
+                        let propparam = NSMutableDictionary()
+                        propparam.setValue( CGFloat(1.0), forKey: "opacity")
+                        let animaparam = NSMutableDictionary()
+                        animaparam.setValue( Double(0.6), forKey: "duration")
+                        setpropparam.setValue( propparam, forKey: "property")
+                        setpropparam.setValue( animaparam, forKey: "animation")
+                        let commandSetProperty = Command(commandCode: CommandCode.ANIMATE_WEB_VIEW, targetWebViewID: Int(webview_id as! Int), parameter: setpropparam)
+                        commandSetProperty.onResolve(fn: { (result) in
+                            
+                            if errorMessage != nil {
+                                let messageprop = NSMutableDictionary()
+                                messageprop.setValue( errorMessage!, forKey: "message")
+                                messageprop.setValue( false, forKey: "isSendToAll")
+                                
+                                let commandSendMessage = Command(commandCode: CommandCode.WEB_VIEW_POSTMESSAGE, targetWebViewID: Int(webview_id as! Int), parameter: messageprop)
+                                CommandProcessor.queue(command: commandSendMessage)
+                            }
+                        })
+                        CommandProcessor.queue(command: commandSetProperty)
+                    } else {
+                        if let errorMsg = (result as AnyObject).value(forKeyPath: "message") as? String {
+                            self.loadStartupPage(htmlFile: SettingsPage.instance.getPage(), errorMessage: errorMsg)
+                        }
+                    }
+                }
+            })
+            CommandProcessor.queue(command: commandOnLoaded)
             
             CommandProcessor.queue(command:
                 Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int )
@@ -89,7 +120,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 3)
         }
     }
-
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -110,23 +140,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
     override func motionCancelled(_ motion: UIEventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             CommandProcessor.processShakeCancelled()
-        }
-    }
-    
-    func respondToSwipeGesture(gesture: UIGestureRecognizer) {
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-            switch swipeGesture.direction {
-            case UISwipeGestureRecognizerDirection.right:
-                print("Swiped right")
-            case UISwipeGestureRecognizerDirection.down:
-                print("Swiped down")
-            case UISwipeGestureRecognizerDirection.left:
-                print("Swiped left")
-            case UISwipeGestureRecognizerDirection.up:
-                print("Swiped up")
-            default:
-                break
-            }
         }
     }
 }

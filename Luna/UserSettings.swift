@@ -48,7 +48,6 @@ class UserSettings {
                 settings.setValue(value, forKey: key.substring(from: vkey+5))
             }
         }
-        print(settings)
         return settings
     }
     
@@ -108,9 +107,7 @@ class UserSettings {
                         fileId: File.generateID(),
                         document: fileName,
                         path: path)
-                } catch {
-                    return SettingsPage.instance.getPage()
-                }
+                } catch {}
             }
             break
         case .URL_TYPE:

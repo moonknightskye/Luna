@@ -170,8 +170,8 @@ class WebViewManager {
         CommandProcessor.processWebViewOnload(wkmanager: self)
     }
     
-    func onLoaded() {
-        CommandProcessor.processWebViewOnLoaded(wkmanager: self)
+    func onLoaded( isSuccess:Bool?=true, errorMessage: String?=nil ) {
+        CommandProcessor.processWebViewOnLoaded(wkmanager: self, isSuccess: isSuccess!, errorMessage: errorMessage)
     }
     
     func onLoading( progress: Double ) {

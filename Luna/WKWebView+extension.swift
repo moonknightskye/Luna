@@ -39,6 +39,8 @@ extension WKWebView {
         config.userContentController = contentController
         
         self.init( frame:UIScreen.main.bounds, configuration: config )
+        self.navigationDelegate = Shared.shared.ViewController
+        self.uiDelegate = Shared.shared.ViewController
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.loading), options: .new, context: nil)
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         self.isOpaque = false
@@ -172,7 +174,7 @@ extension WKWebView {
                     } else {
                         if self.estimatedProgress == 1 {
                             //self.removeObserver(self, forKeyPath: #keyPath(WKWebView.loading))
-                            wkmanager.onLoaded()
+                            wkmanager.onLoaded(isSuccess: true)
                         }
                     }
                 }

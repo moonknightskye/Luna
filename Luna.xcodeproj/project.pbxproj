@@ -16,6 +16,7 @@
 		6F7BD0935E789F7AFF725A66 /* Pods_Luna.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */; };
 		700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 700064B11E5BD573003CF38D /* WKWebView+extension.swift */; };
 		7001821A1E8E24B800B28C59 /* UIImage+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 700182191E8E24B800B28C59 /* UIImage+extension.swift */; };
+		700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 700324B21EEA9E64006D2250 /* UserNotification.swift */; };
 		7015B2C11EC1A91F00AE1A99 /* AVCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7015B2C01EC1A91F00AE1A99 /* AVCaptureManager.swift */; };
 		701B722E1E9E20F600BABECE /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 701B722D1E9E20F600BABECE /* Settings.bundle */; };
 		7042D46F1EA0B464001B959E /* Contents.json in Resources */ = {isa = PBXBuildFile; fileRef = 7042D46E1EA0B464001B959E /* Contents.json */; };
@@ -43,6 +44,7 @@
 		70B3A6731E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */; };
 		70B3A6751E66A41B006F4E4D /* CommandProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */; };
 		70B3A6791E66A44E006F4E4D /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6781E66A44E006F4E4D /* Command.swift */; };
+		70BB1B0C1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */; };
 		70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D76E4E1E2F6A4F0089B903 /* AppDelegate.swift */; };
 		70D76E511E2F6A4F0089B903 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D76E501E2F6A4F0089B903 /* ViewController.swift */; };
 		70D76E541E2F6A4F0089B903 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70D76E521E2F6A4F0089B903 /* Main.storyboard */; };
@@ -68,6 +70,7 @@
 		47E78F211E9A874B0087F8AC /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		700064B11E5BD573003CF38D /* WKWebView+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKWebView+extension.swift"; sourceTree = "<group>"; };
 		700182191E8E24B800B28C59 /* UIImage+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+extension.swift"; sourceTree = "<group>"; };
+		700324B21EEA9E64006D2250 /* UserNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserNotification.swift; sourceTree = "<group>"; };
 		7015B2BB1EC17B6D00AE1A99 /* Luna-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Luna-Bridging-Header.h"; sourceTree = "<group>"; };
 		7015B2C01EC1A91F00AE1A99 /* AVCaptureManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCaptureManager.swift; sourceTree = "<group>"; };
 		701B722C1E9E075E00BABECE /* Luna.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Luna.entitlements; sourceTree = "<group>"; };
@@ -97,6 +100,7 @@
 		70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+WKScriptMessageHandler.swift"; sourceTree = "<group>"; };
 		70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandProcessor.swift; sourceTree = "<group>"; };
 		70B3A6781E66A44E006F4E4D /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+UNUserNotificationCenterDelegate.swift"; sourceTree = "<group>"; };
 		70D76E4B1E2F6A4F0089B903 /* Luna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Luna.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70D76E4E1E2F6A4F0089B903 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70D76E501E2F6A4F0089B903 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; usesTabs = 0; };
@@ -198,6 +202,7 @@
 				47875EB01EBCC0B200B739C7 /* CodeReader.swift */,
 				70A587BE1ECAE67A009D541D /* UserSettings.swift */,
 				7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */,
+				700324B21EEA9E64006D2250 /* UserNotification.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -214,6 +219,7 @@
 				704835A61E5DACF100F38D39 /* FileManager+extension.swift */,
 				700182191E8E24B800B28C59 /* UIImage+extension.swift */,
 				47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */,
+				70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */,
 			);
 			name = Extension;
 			sourceTree = "<group>";
@@ -449,6 +455,7 @@
 				47875EB11EBCC0B200B739C7 /* CodeReader.swift in Sources */,
 				700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */,
 				47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */,
+				700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */,
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,
 				705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */,
 				70B3A6791E66A44E006F4E4D /* Command.swift in Sources */,
@@ -469,6 +476,7 @@
 				7001821A1E8E24B800B28C59 /* UIImage+extension.swift in Sources */,
 				7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */,
 				70B3A6731E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift in Sources */,
+				70BB1B0C1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

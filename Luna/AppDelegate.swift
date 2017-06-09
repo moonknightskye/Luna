@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import Fabric
 import Crashlytics
+import UserNotifications
 
 
 @UIApplicationMain
@@ -28,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Shared.shared.UIApplication = application
         
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
+        
         return true
     }
 
