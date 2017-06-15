@@ -185,6 +185,7 @@ class CommandProcessor {
             checkScreenEdgeSwiped( command: command )
             break
         case .WEB_VIEW_RECIEVEMESSAGE:
+            checkWebViewRecieveMessage( command: command )
             break
         case .WEB_VIEW_POSTMESSAGE:
             checkWebViewPostMessage( command: command )
@@ -467,7 +468,7 @@ class CommandProcessor {
         }
     }
     public class func processMediaPicker( media:[String : Any]?=nil ) {
-        CommandProcessor.getCommand(commandCode: CommandCode.MEDIA_PICKER) { (command) in
+        getCommand(commandCode: CommandCode.MEDIA_PICKER) { (command) in
             if media != nil {
                 if let type = (command.getParameter() as AnyObject).value(forKeyPath: "from") as? String {
                     if let pickerType = PickerType(rawValue: type) {

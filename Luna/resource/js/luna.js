@@ -933,13 +933,14 @@
                 return _removeEventListener( evt_command_code, event_id )
             };
 
-            webview.postMessage = function( message, target_webview_id ) {
+            webview.postMessage = function( message, target_webview_id, isSendUntilRecieved ) {
                 var command = new Command({
                     command_code        : COMMAND.WEB_VIEW_POSTMESSAGE,
                     target_webview_id   : target_webview_id,
                     parameter: {
                         message         : message,
-                        isSendToAll     : ( typeof target_webview_id === "undefined" )
+                        isSendToAll     : ( typeof target_webview_id === "undefined" ),
+                        isSendUntilRecieved : isSendUntilRecieved
                     }
                 });
                 return CommandProcessor.queue( command );

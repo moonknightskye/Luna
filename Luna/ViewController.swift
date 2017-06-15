@@ -78,6 +78,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
                                 let messageprop = NSMutableDictionary()
                                 messageprop.setValue( errorMessage!, forKey: "message")
                                 messageprop.setValue( false, forKey: "isSendToAll")
+                                messageprop.setValue( true, forKey: "isSendUntilRecieved")
+                                
                                 
                                 let commandSendMessage = Command(commandCode: CommandCode.WEB_VIEW_POSTMESSAGE, targetWebViewID: Int(webview_id as! Int), parameter: messageprop)
                                 CommandProcessor.queue(command: commandSendMessage)

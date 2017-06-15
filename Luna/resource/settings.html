@@ -50,7 +50,7 @@
                 position: fixed !important;
                 left: 0px;
                 bottom: 0px;
-                margin: 4pt;
+                margin: 10px;
                 color: #616161;
                 text-align: justify;
             }
@@ -87,6 +87,7 @@
 
         </style>
         <script>
+
             (function(){
                 window.addEventListener("load", function(){
                     loading.classList.add("show");
@@ -97,12 +98,31 @@
                 });
 
                 var luna = new Luna();
+
                 luna.addEventListener( "ready", function(){
 
                     luna.getMainWebview().addEventListener("message", function( message ) {
                         luna.notification().then(function(userNotification){
-                            userNotification.show({title:"Failed to load Startup Page", body:message});
+                            userNotification.show({title:"Failed to load Startup Page", badge:0, body:message, timeInterval:0.5, repeat:false
+                               // ,choices:[
+                               //  {title:"Penx", value:"Penx", action: function(){ alert("Pen") }},
+                               //  {title:"Pineapplex", value:"Pineapplex", action: function(){ alert("Pineapple") }},
+                               //  {title:"Applex", value:"Applex", action: function(){ alert("Applex") }}
+                               //  ]
+                            });
                         });
+
+                        // window.setTimeout(function(){
+                        //     luna.notification().then(function(userNotification){
+                        //         userNotification.show({title:"TEST", badge:0, body:message, timeInterval:0.5, repeat:false
+                        //            ,choices:[
+                        //             {title:"XXXX", value:"XXXX", action: function(){ alert("Pen") }},
+                        //             {title:"YYYY", value:"YYYY", action: function(){ alert("Pineapple") }},
+                        //             {title:"ZZZZ", value:"ZZZZ", action: function(){ alert("Applex") }}
+                        //             ]
+                        //         });
+                        //     });
+                        // },5000);
 
                         window.setTimeout(function(){
                             apollo11.getElement(".info-message", "SELECT").innerText = message;
@@ -112,20 +132,6 @@
                             inputelem.classList.add("error");
                         },0);
                     });
-                    // luna.addEventListener( "screenEdgeSwiped", function(){
-                    //     luna.debug("left 2")
-                    // },{touchesRequired:2, direction:"left"});
-
-                    // luna.addEventListener( "screenEdgeSwiped", function(){
-                    //     luna.debug("left 1")
-                    // },{touchesRequired:1, direction:"left"});
-
-                    // luna.addEventListener( "screenEdgeSwiped", function(){
-                    //     luna.debug("right 1")
-                    // },{touchesRequired:1, direction:"right"});
-
-
-
 
                     luna.settings().then(function(settings){
                         //luna.debug(settings.getDefaults())
@@ -182,27 +188,6 @@
                                 }
                             });
                         });
-                        // settings.get({key:"startup_page"}).then(function(result){
-                        //     luna.debug("startup_page: " + result)
-                        // });
-
-                        // settings.set({key:"mato_test",value:"mato"}).then(function(result){
-                        //     luna.debug("set: " + result);
-                        //     settings.get({key:"mato_test"}).then(function(result){
-                        //         luna.debug("get: " + result)
-
-                        //         luna.debug(settings.getDefaults());
-
-                        //         settings.delete({key:"mato_test"}).then(function(result){
-                        //             luna.debug("delete mato_test: " + result)
-                        //             luna.debug(settings.getDefaults());
-                        //         }, function(error){
-                        //             luna.debug("delete mato_test: " + error)
-                        //         });
-
-                        //     });
-                        // });
-
                    });
                 });
              })();
@@ -246,7 +231,7 @@
                                     </span>
                                 </li>
                                 <li class="flex-one">
-                                    <input class="phobos-input input-checkbox" type="checkbox" data-src="splash_screen"></li>
+                                    <input class="phobos-input input-checkbox" type="checkbox" data-src="splash_screen"/>
                                 </li>
                             </ul>
                             <div class="content-description">
@@ -262,7 +247,7 @@
                                     </span>
                                 </li>
                                 <li class="flex-one">
-                                    <input class="phobos-input input-checkbox" type="checkbox" data-src="startup_enabled"></li>
+                                    <input class="phobos-input input-checkbox" type="checkbox" data-src="startup_enabled"/>
                                 </li>
                             </ul>
                             <div class="content-description">
@@ -313,7 +298,7 @@
 
                         <div class="section-disclaimer">
                             <div class="section-disclaimer-title">DISCLAIMER</div>
-                            Thank you for using this app. This was being updated and maintained by Mart Ryan Civil working as a Demo Engineer in Salesforce Tokyo Japan Branch. I distribute this app for free so by using this app the developer is not liable to any damage it will inflict. As for every software there exists bugs, please send email to mcivil@salesforce.com for bug reports. Do understand that I cannot entertain urgent bug fixes for this app is maintained only during on my free time.
+                            Thank you for using this app. This was being updated by Mart Ryan Civil working as a Demo Engineer in Salesforce Tokyo Japan Branch. I distribute this app for free so by using this app the developer is not liable to any damage it will inflict. As for every software there exists bugs, please send email to mcivil@salesforce.com for bug reports. Do understand that I cannot entertain urgent bug fixes for this app is maintained only during on my free time.
                         </div>
                     </div>
 

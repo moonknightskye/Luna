@@ -30,6 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
         
+        UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
+        application.registerForRemoteNotifications()
+        
         return true
     }
 
@@ -55,6 +58,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
+    }
+    
+    // Called when APNs has assigned the device a unique token
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        // Convert token to string
+        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        
+        // Print it to console
+        print("APNs device token: \(deviceTokenString)")
+        
+        //EE4598975B9D3A205E9AE62AA01B98EE728862535A2C3EDBFB1541BF05214FAB ip7
+        //D8BADA3155BAE7DFB675898F71A49C1E1AB1AF3270F8A3542CD57F18E49D1EDF ip6plus
+        
+        // Persist it in your backend in case it's new
+    }
+    
+    // Called when APNs failed to register the device for push notifications
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        // Print the error to console (you should alert the user that registration failed)
+        print("APNs registration failed: \(error)")
+    }
+    
+    // Push notification received
+    func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
+        // Print notification payload data
+        print("Push notification received: \(data)")
     }
 
     // MARK: - Core Data stack

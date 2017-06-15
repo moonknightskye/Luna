@@ -76,15 +76,24 @@ extension CommandProcessor {
         }
     }
     
-    public class func checkWebViewPostMessage( command: Command ) {
-        processWebViewPostMessage( command: command, onSuccess: { result in
+    public class func checkWebViewRecieveMessage( command: Command ) {
+        getCommand(commandCode: CommandCode.WEB_VIEW_POSTMESSAGE) { (cmd) in
+            if let isSendUntilRecieved = (cmd.getParameter() as AnyObject).value(forKeyPath: "isSendUntilRecieved") as? Bool {
+                if isSendUntilRecieved {
+                    checkWebViewPostMessage( command: cmd, isSysSent: true )
+                }
+            }
+        }
+    }
+    
+    public class func checkWebViewPostMessage( command: Command, isSysSent:Bool?=false ) {
+        processWebViewPostMessage( command: command, isSysSent:isSysSent!, onSuccess: { result in
             command.resolve( value: result )
         }, onFail: { errorMessage in
             command.reject( errorMessage: errorMessage )
         })
     }
-    
-    private class func processWebViewPostMessage( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ){
+    private class func processWebViewPostMessage( command: Command, isSysSent:Bool, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ){
         var isSent = false
         if let isSendToAll = (command.getParameter() as AnyObject).value(forKeyPath: "isSendToAll") as? Bool, let message = (command.getParameter() as AnyObject).value(forKeyPath: "message") as? String {
             getCommand(commandCode: CommandCode.WEB_VIEW_RECIEVEMESSAGE) { (recievecommand) in
@@ -99,10 +108,14 @@ extension CommandProcessor {
                 }
             }
         }
-        if isSent {
-            onSuccess(true)
-        } else {
-            onFail("Unable to deliver message")
+        let isSendUntilRecieved = ((command.getParameter() as AnyObject).value(forKeyPath: "isSendUntilRecieved") as? Bool) ?? false
+        
+        if (!(isSendUntilRecieved) || isSysSent) {
+            if isSent {
+                onSuccess(true)
+            } else {
+                onFail("Unable to deliver message")
+            }
         }
     }
     
@@ -141,18 +154,10 @@ extension CommandProcessor {
     
     private class func processUserNotificationShowMessage( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
         
-        //actions defination
-        let option1 = UNNotificationAction(identifier: "option1", title: "Action First", options: [.foreground])
-        let option2 = UNNotificationAction(identifier: "option2", title: "Action Second", options: [.foreground])
-        let option3 = UNNotificationAction(identifier: "option3", title: "Action Third", options: [.foreground])
-        
-        let category = UNNotificationCategory(identifier: "actionCategory", actions: [option1,option2,option3], intentIdentifiers: [], options: [])
-        
-        UNUserNotificationCenter.current().setNotificationCategories([category])
-        
         
         let content = UNMutableNotificationContent()
-        let requestIdentifier = "rajanNotification"
+        let requestIdentifier = "LunaNotification\(command.getCommandID())"
+        print( requestIdentifier )
         
         if let badge = (command.getParameter() as AnyObject).value(forKeyPath: "badge") as? NSNumber {
             content.badge = badge
@@ -166,7 +171,27 @@ extension CommandProcessor {
         if let body = (command.getParameter() as AnyObject).value(forKeyPath: "body") as? String {
             content.body = body
         }
-        content.categoryIdentifier = "actionCategory"
+        
+        var options = [UNNotificationAction]()
+        if let opts = (command.getParameter() as AnyObject).value(forKeyPath: "choices") as? [NSDictionary] {
+            var hasOptions = false
+            for (_, option) in opts.enumerated() {
+                if let value = option.value(forKeyPath: "value") as? String, let title = option.value(forKeyPath: "title") as? String {
+                    hasOptions = true
+                    options.append(UNNotificationAction(identifier: value, title: title, options: [.foreground]))
+                }
+                
+            }
+            if hasOptions {
+                let category = UNNotificationCategory(identifier: "LunaActionCategory\(command.getCommandID())", actions: options, intentIdentifiers: [], options: [])
+                
+                UNUserNotificationCenter.current().setNotificationCategories([category])
+                content.categoryIdentifier = "LunaActionCategory\(command.getCommandID())"
+                
+                print( "LunaActionCategory\(command.getCommandID())" )
+            }
+        }
+        
         content.sound = UNNotificationSound.default()
         
         // If you want to attach any image to show in local notification
@@ -177,8 +202,13 @@ extension CommandProcessor {
             content.attachments = [attachment!]
         } catch {}
         
+        var timeInterval = ((command.getParameter() as AnyObject).value(forKeyPath: "timeInterval") as? Double ) ?? 0.5
+        if timeInterval < 0.5 {
+            timeInterval = 0.5
+        }
+        let isRepeating = ((command.getParameter() as AnyObject).value(forKeyPath: "repeat") as? Bool ) ?? false
         
-        let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 0.5, repeats: false)
+        let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: timeInterval, repeats: isRepeating)
         
         let request = UNNotificationRequest(identifier: requestIdentifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { (error:Error?) in
@@ -188,8 +218,7 @@ extension CommandProcessor {
                 return
             }
             print("Notification Register Success")
-            
-            onSuccess(true)
+            //onSuccess(true)
         }
     }
 

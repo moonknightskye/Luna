@@ -22,16 +22,18 @@ extension ViewController: UNUserNotificationCenterDelegate {
     
     // For handling tap and user actions
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        switch response.actionIdentifier {
-        case "option1":
-            print("Action First Tapped x ")
-        case "option2":
-            print("Action Second Tapped xx")
-        case "option3":
-            print("Action Third Tapped xxxx")
-        default:
-            break
-        }
+        
+        print(response.actionIdentifier)
+//        switch response.actionIdentifier {
+//        case "option1":
+//            print("Action First Tapped x ")
+//        case "option2":
+//            print("Action Second Tapped xx")
+//        case "option3":
+//            print("Action Third Tapped xxxx")
+//        default:
+//            break
+//        }
         completionHandler()
     }
 }
