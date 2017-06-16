@@ -26,7 +26,6 @@
 		705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 705D13881E82653B0032ECBE /* AVPlayerManager.swift */; };
 		7062F0971E6EB51E00CB8144 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7062F0961E6EB51E00CB8144 /* File.swift */; };
 		70642E081E77ADB400C50DD7 /* Photos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70642E071E77ADB400C50DD7 /* Photos.swift */; };
-		7067B16F1EF396DF00821DFE /* heroku in Resources */ = {isa = PBXBuildFile; fileRef = 7067B16E1EF396DF00821DFE /* heroku */; };
 		706806621E9CE67F00FD630C /* FileCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706806611E9CE67F00FD630C /* FileCollection.swift */; };
 		706DE2091E556C3A005AE646 /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DE2081E556C3A005AE646 /* String+extension.swift */; };
 		7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */; };
@@ -84,7 +83,6 @@
 		705D13881E82653B0032ECBE /* AVPlayerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVPlayerManager.swift; sourceTree = "<group>"; };
 		7062F0961E6EB51E00CB8144 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		70642E071E77ADB400C50DD7 /* Photos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photos.swift; sourceTree = "<group>"; };
-		7067B16E1EF396DF00821DFE /* heroku */ = {isa = PBXFileReference; lastKnownFileType = folder; path = heroku; sourceTree = "<group>"; };
 		706806611E9CE67F00FD630C /* FileCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCollection.swift; sourceTree = "<group>"; };
 		706DE2081E556C3A005AE646 /* String+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
 		7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommandProcessor+extension-01.swift"; sourceTree = "<group>"; };
@@ -232,7 +230,6 @@
 		70D76E421E2F6A4F0089B903 = {
 			isa = PBXGroup;
 			children = (
-				7067B16E1EF396DF00821DFE /* heroku */,
 				701B722D1E9E20F600BABECE /* Settings.bundle */,
 				70D76E4D1E2F6A4F0089B903 /* Luna */,
 				70D76E4C1E2F6A4F0089B903 /* Products */,
@@ -372,7 +369,6 @@
 				7093487E1E9F44400007779D /* ic_de@3x.png in Resources */,
 				4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */,
 				709348761E9F43F40007779D /* bluemoon@2x.png in Resources */,
-				7067B16F1EF396DF00821DFE /* heroku in Resources */,
 				70D76E5C1E2F6A4F0089B903 /* LaunchScreen.storyboard in Resources */,
 				70A587BB1ECAB08C009D541D /* shirokuma@3x.png in Resources */,
 				70D76E591E2F6A4F0089B903 /* Assets.xcassets in Resources */,
