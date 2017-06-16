@@ -19,6 +19,7 @@
 		700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 700324B21EEA9E64006D2250 /* UserNotification.swift */; };
 		700324B51EF0CAC1006D2250 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700324B41EF0CAC1006D2250 /* UserNotifications.framework */; };
 		7015B2C11EC1A91F00AE1A99 /* AVCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7015B2C01EC1A91F00AE1A99 /* AVCaptureManager.swift */; };
+		701B05A31EF3AE3200C4845F /* SystemSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701B05A21EF3AE3200C4845F /* SystemSettings.swift */; };
 		701B722E1E9E20F600BABECE /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 701B722D1E9E20F600BABECE /* Settings.bundle */; };
 		7042D46F1EA0B464001B959E /* Contents.json in Resources */ = {isa = PBXBuildFile; fileRef = 7042D46E1EA0B464001B959E /* Contents.json */; };
 		70460F1D1E66CAAA003E43EC /* WebViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70460F1C1E66CAAA003E43EC /* WebViewManager.swift */; };
@@ -75,6 +76,7 @@
 		700324B41EF0CAC1006D2250 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		7015B2BB1EC17B6D00AE1A99 /* Luna-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Luna-Bridging-Header.h"; sourceTree = "<group>"; };
 		7015B2C01EC1A91F00AE1A99 /* AVCaptureManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVCaptureManager.swift; sourceTree = "<group>"; };
+		701B05A21EF3AE3200C4845F /* SystemSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemSettings.swift; sourceTree = "<group>"; };
 		701B722C1E9E075E00BABECE /* Luna.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Luna.entitlements; sourceTree = "<group>"; };
 		701B722D1E9E20F600BABECE /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		7042D46E1EA0B464001B959E /* Contents.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Contents.json; path = Assets.xcassets/AppIcon.appiconset/Contents.json; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 				70642E071E77ADB400C50DD7 /* Photos.swift */,
 				47875EB01EBCC0B200B739C7 /* CodeReader.swift */,
 				70A587BE1ECAE67A009D541D /* UserSettings.swift */,
+				701B05A21EF3AE3200C4845F /* SystemSettings.swift */,
 				7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */,
 				700324B21EEA9E64006D2250 /* UserNotification.swift */,
 			);
@@ -466,6 +469,7 @@
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,
 				705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */,
 				70B3A6791E66A44E006F4E4D /* Command.swift in Sources */,
+				701B05A31EF3AE3200C4845F /* SystemSettings.swift in Sources */,
 				70B3A6751E66A41B006F4E4D /* CommandProcessor.swift in Sources */,
 				70E966441E96314100CD09E1 /* InternalStorage.xcdatamodeld in Sources */,
 				70D76E681E2F6B6B0089B903 /* Shared.swift in Sources */,

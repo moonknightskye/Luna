@@ -200,7 +200,6 @@ class CommandProcessor {
             checkUserNotificationShowMessage( command: command )
             break
         default:
-            
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
             return

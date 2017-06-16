@@ -8,12 +8,11 @@
 
 import UIKit
 import AVFoundation
-import CoreLocation
+//import CoreLocation http://www.techotopia.com/index.php/A_Swift_Example_iOS_8_Location_Application
 //import CloudKit
 
-class ViewController: UIViewController, UINavigationControllerDelegate, CLLocationManagerDelegate  {
+class ViewController: UIViewController, UINavigationControllerDelegate  {
 
-    let locationManager = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +39,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate, CLLocati
                 self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
             }
         }
-        
-        let locManager = CLLocationManager()
-        locManager.requestWhenInUseAuthorization()
-        
-
     }
     
     private func loadStartupPage( htmlFile: HtmlFile, errorMessage:String?=nil ) {

@@ -65,8 +65,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Convert token to string
         let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
         
-        // Print it to console
-        print("APNs device token: \(deviceTokenString)")
+        if let token = SystemSettings.instance.get(key: "mobile_token") as? String {
+            if token != deviceTokenString {
+                SystemSettings.instance.set(key: "mobile_token", value: deviceTokenString)
+                print("UPDATED!!!!!!!!")
+                // Print it to console
+                print("APNs device token: \(deviceTokenString)")
+            } else {
+                print("SMAE!!!!!!!!")
+                print(token)
+            }
+        }
+        
+        print( SystemSettings.instance.getSystemSettings() )
         
         //EE4598975B9D3A205E9AE62AA01B98EE728862535A2C3EDBFB1541BF05214FAB ip7
         //D8BADA3155BAE7DFB675898F71A49C1E1AB1AF3270F8A3542CD57F18E49D1EDF ip6plus
