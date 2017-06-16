@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "2C17C7F18622B44832AFBA59AE60BAF65358639C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "2C17C7F18622B44832AFBA59AE60BAF65358639C" : 9223372036854775807,
+    "AFAF840B237BEB651DC0FC5B4372E017A4DCD340" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "04A8DCC2-E3D6-4EDA-8572-A7E23F9BD9FC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "2C17C7F18622B44832AFBA59AE60BAF65358639C" : "Luna\/",
+    "AFAF840B237BEB651DC0FC5B4372E017A4DCD340" : "Luna\/heroku\/luna-push-notification\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Luna",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Luna.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/moonknightskye\/Luna.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2C17C7F18622B44832AFBA59AE60BAF65358639C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/git.heroku.com\/luna-push-notification.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "AFAF840B237BEB651DC0FC5B4372E017A4DCD340"
+    }
+  ]
+}

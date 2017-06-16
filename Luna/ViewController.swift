@@ -8,11 +8,13 @@
 
 import UIKit
 import AVFoundation
-import UserNotifications
+import CoreLocation
 //import CloudKit
 
-class ViewController: UIViewController, UINavigationControllerDelegate  {
+class ViewController: UIViewController, UINavigationControllerDelegate, CLLocationManagerDelegate  {
 
+    let locationManager = CLLocationManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         Shared.shared.ViewController = self
@@ -38,6 +40,11 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
                 self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
             }
         }
+        
+        let locManager = CLLocationManager()
+        locManager.requestWhenInUseAuthorization()
+        
+
     }
     
     private func loadStartupPage( htmlFile: HtmlFile, errorMessage:String?=nil ) {
