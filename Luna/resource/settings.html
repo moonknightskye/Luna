@@ -85,6 +85,13 @@
                 color: #e57373 !important;
             }
 
+            #record {
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+            }
+
 
         </style>
         <script>
@@ -105,36 +112,37 @@
 
                 luna.addEventListener( "ready", function(){
 
-                    record.addEventListener("click", function(e){
-                        luna.getAVAudioRecorder().then(function(audioRecorder){
-                            audioRecorder.record().then(function(result){
-                                //alert(result)
-                            }, function(error){
-                                alert(error)
-                            });
+                    luna.getAVAudioRecorder().then(function(audioRecorder){
+                        var recuius = document.getElementById("recaius");
+
+                        record.addEventListener("touchstart", function(e){
+                            record.innerText = "Recording...";
+                            record.classList.add("cancel");
+                            record.classList.remove("add");
+                            audioRecorder.record();
                         });
-                    });
-                    stoprec.addEventListener("click", function(e){
-                        luna.getAVAudioRecorder().then(function(audioRecorder){
+                        record.addEventListener("touchend", function(e){
+                            record.innerText = "Record";
+                            record.classList.remove("cancel");
+                            record.classList.add("add");
                             audioRecorder.stop().then(function(file){
-                                //alert(file.getFilename())
-
-
                                 audioRecorder.convertAudioToWav({file:file}).then(function(encoded){
-                                    //alert(encoded.getFilename())
                                     wavFile = encoded;
-                                    document.getElementById("recaius").click();
-                                    //alert("Stopped");
+                                    recuius.click();
+                                    recuius.focus();
+                                    record.blur();
                                 }, function(error){
                                     alert(error)
                                 });
-
-
                             }, function(error){
                                 alert(error)
                             });
                         });
+
                     });
+
+                    
+                    
 
                     // luna.httpPost({
                     //     method       : "POST",
@@ -372,6 +380,7 @@
                                                 var fd = new FormData();
                                                 fd.append("voice_id", voice_id);
                                                 fd.append("voice", blob);
+                                                var hasResult = false;
                                                 
                                                 $.ajax({
                                                     url: "https://api.recaius.jp/asr/v2/voices/" + uuid,
@@ -386,10 +395,9 @@
 
                                                         console.log("[INFO] VOICE DATA SENT");
                                                         console.log("[INFO] RESULT: ", result);
-                                                        console.log("[INFO] WAIT 3 SECONDS TO FLUSH SESSION...");
 
                                                         var flush = function(){
-                                                             $.ajax({
+                                                            $.ajax({
                                                                 type: "PUT",
                                                                 url: "https://api.recaius.jp/asr/v2/voices/" + uuid + "/flush",
                                                                 headers: {
@@ -402,6 +410,23 @@
                                                                 }),
                                                                 success: function( result ) {
                                                                     console.log("[INFO] FLUSHED");
+                                                                    $.ajax({
+                                                                        type: "DELETE",
+                                                                        url: "https://api.recaius.jp/auth/v2/tokens",
+                                                                        headers: {
+                                                                            "X-Token"       : token
+                                                                        },
+                                                                        success: function( result ) {
+                                                                            console.log("[INFO] TOKEN DELETED");
+                                                                            if(!hasResult) {
+                                                                                alert("[INFO] NO RESULT");
+                                                                            }
+                                                                        },
+                                                                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                                                            console.log(XMLHttpRequest);
+                                                                            alert(XMLHttpRequest.responseJSON.message);
+                                                                        }
+                                                                    });
                                                                 }
                                                             });
                                                         };
@@ -423,6 +448,7 @@
                                                                             if(s[0] === "RESULT") {
                                                                                 console.log("[INFO] RESULT: ", s[1]);
                                                                                 alert(s[1]);
+                                                                                hasResult = true;
                                                                             }
                                                                         }
                                                                     }
@@ -432,18 +458,22 @@
                                                     },
                                                     error: function(XMLHttpRequest, textStatus, errorThrown) { 
                                                         console.log(XMLHttpRequest);
-                                                        console.log(errorThrown);
+                                                        alert(XMLHttpRequest.responseJSON.message);
                                                     }
                                                 });
 
                                         };
-
-
-
-
-                                      }
+                                      },
+                                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                            console.log(XMLHttpRequest);
+                                            alert(XMLHttpRequest.responseJSON.message);
+                                        }
                                     });
 
+                                },
+                                error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                    console.log(XMLHttpRequest);
+                                    alert(XMLHttpRequest.responseJSON.message);
                                 }
                             });
                         }
@@ -465,19 +495,6 @@
 
                     <div class="section section-setting">
                         <div class="header">LUNA SETTINGS</div> 
-
-                        <div>
-                            <div id="recaius" class="custom-button hide">Recaius</div>
-                            <ul class="flex-box">
-                                <li class="flex-one">
-                                    <div id="record" class="custom-button add">Record</div>
-                                </li>
-                                <li class="flex-one">
-                                    <div id="stoprec" class="custom-button cancel">Stop</div>
-                                </li>
-
-                            </ul>
-                        </div>
 
                         <div class="section-content">
                             <ul class="flex-box">
@@ -579,6 +596,11 @@
                     </div>
 
                     <div class="debug"></div>
+
+                    <div>
+                            <div id="recaius" class="custom-button hide">Recaius</div>
+                            <div id="record" class="custom-button add">Record</div>
+                        </div>
                 </div>
             </div>
             <div class="background">

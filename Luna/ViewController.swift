@@ -13,7 +13,8 @@ import AVFoundation
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
 
-    
+    var recorder:RecordAudio?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Shared.shared.ViewController = self
@@ -40,8 +41,9 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             }
         }
 
-        //let recorder:RecordAudio = RecordAudio()
-        //recorder.startRecording()
+//        recorder = RecordAudio()
+//        recorder?.startRecording()
+//        let _ = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(self.finishRecording), userInfo: nil, repeats: false)
         //request1()
 //        let record:VoiceRecorder = VoiceRecorder.instance
 //        record.checkPermission(onSuccess: { (success) in
@@ -49,6 +51,10 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 //        }) { (error) in
 //            print(error)
 //        }
+    }
+
+    func finishRecording() {
+        recorder?.stopRecording()
     }
     
 //    private func request1() {

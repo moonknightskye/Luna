@@ -19,6 +19,10 @@ import AudioUnit
 
 final class RecordAudio: NSObject {
 
+	var audioFile:File!
+	var destinationFile: ExtAudioFileRef? = nil
+	var error : OSStatus = noErr
+
 	var audioUnit:   AudioUnit?     = nil
 
 	var micPermission   =  false
@@ -106,6 +110,30 @@ final class RecordAudio: NSObject {
 				}
 				if micPermission == false { return }
 
+				do {
+					audioFile = try File(fileId: File.generateID(), file: Data(), document: "TEMP_WAV.wav")
+
+					// Set format to 32-bit Floats, linear PCM
+					var streamFormatDesc = self.getAudioStreamBasicDesc()
+
+					error = ExtAudioFileCreateWithURL(
+						audioFile.getFilePath()! as CFURL,
+						kAudioFileWAVEType,
+						&streamFormatDesc,
+						nil,
+						AudioFileFlags.eraseFile.rawValue,
+						&destinationFile)
+
+					error = ExtAudioFileSetProperty(destinationFile!,
+					                                kExtAudioFileProperty_ClientDataFormat,
+					                                UInt32(MemoryLayout<UInt32>.size),
+					                                &streamFormatDesc)
+
+				} catch {
+					print("FAILED TO CREATE TEMP FILE")
+					return
+				}
+
 				try audioSession.setCategory(AVAudioSessionCategoryRecord)
 				// choose 44100 or 48000 based on hardware rate
 				// sampleRate = 44100.0
@@ -129,6 +157,36 @@ final class RecordAudio: NSObject {
 				// handle error here
 			}
 		}
+	}
+
+	private func getAudioStreamBasicDesc() -> AudioStreamBasicDescription {
+//		let nc = 2  // 2 channel stereo
+//		let streamFormatDesc:AudioStreamBasicDescription = AudioStreamBasicDescription(
+//			mSampleRate:        Double(sampleRate),
+//			mFormatID:          kAudioFormatLinearPCM,
+//			mFormatFlags:       ( kAudioFormatFlagsNativeFloatPacked ),
+//			mBytesPerPacket:    UInt32(nc * MemoryLayout<UInt32>.size),
+//			mFramesPerPacket:   1,
+//			mBytesPerFrame:     UInt32(nc * MemoryLayout<UInt32>.size),
+//			mChannelsPerFrame:  UInt32(nc),
+//			mBitsPerChannel:    UInt32(8 * (MemoryLayout<UInt32>.size)),
+//			mReserved:          UInt32(0)
+//		)
+		var formatFlags = AudioFormatFlags()
+		formatFlags |= kLinearPCMFormatFlagIsSignedInteger
+		formatFlags |= kLinearPCMFormatFlagIsPacked
+		let streamFormatDesc = AudioStreamBasicDescription(
+			mSampleRate: 16000.0,
+			mFormatID: kAudioFormatLinearPCM,
+			mFormatFlags: formatFlags,
+			mBytesPerPacket: UInt32(1*MemoryLayout<Int16>.stride),
+			mFramesPerPacket: 1,
+			mBytesPerFrame: UInt32(1*MemoryLayout<Int16>.stride),
+			mChannelsPerFrame: 1,
+			mBitsPerChannel: 16,
+			mReserved: 0
+		)
+		return streamFormatDesc;
 	}
 
 	private func setupAudioUnit() {
@@ -164,18 +222,7 @@ final class RecordAudio: NSObject {
 		                             UInt32(MemoryLayout<UInt32>.size))
 
 		// Set format to 32-bit Floats, linear PCM
-		let nc = 2  // 2 channel stereo
-		var streamFormatDesc:AudioStreamBasicDescription = AudioStreamBasicDescription(
-			mSampleRate:        Double(sampleRate),
-			mFormatID:          kAudioFormatLinearPCM,
-			mFormatFlags:       ( kAudioFormatFlagsNativeFloatPacked ),
-			mBytesPerPacket:    UInt32(nc * MemoryLayout<UInt32>.size),
-			mFramesPerPacket:   1,
-			mBytesPerFrame:     UInt32(nc * MemoryLayout<UInt32>.size),
-			mChannelsPerFrame:  UInt32(nc),
-			mBitsPerChannel:    UInt32(8 * (MemoryLayout<UInt32>.size)),
-			mReserved:          UInt32(0)
-		)
+		var streamFormatDesc = self.getAudioStreamBasicDesc()
         
 
 		osErr = AudioUnitSetProperty(au,
@@ -210,6 +257,7 @@ final class RecordAudio: NSObject {
 		                             inputBus,
 		                             &one_ui32,
 		                             UInt32(MemoryLayout<UInt32>.size))
+
 		gTmp0 = Int(osErr)
 	}
 
@@ -244,6 +292,7 @@ final class RecordAudio: NSObject {
 		audioObject.processMicrophoneBuffer( inputDataList: &bufferList,
 		                                     frameCount: UInt32(frameCount) )
 
+
 		return 0
 	}
 
@@ -275,25 +324,17 @@ final class RecordAudio: NSObject {
 				let r : Float = 0.2
 				audioLevel = r * tmp + (1.0 - r) * audioLevel
 			}
-//            let i16 = bptr.load(as: UInt16.self)
-//            print(i16)
-            
-            //let i16bufptr = UnsafeBufferPointer(start: dataArray, count: 1)
-            //_ = Data(buffer: i16bufptr)
-            //print(dat)
-
-          
-            //let outputBuffer = AVAudioPCMBuffer(pcmFormat: bufferPointer, frameCapacity: AVAudioFrameCount(frameCount))
-            
-            
-            //sendRequest( data: dat )
-            
 		}
+
+		error = ExtAudioFileWrite(destinationFile!, frameCount, inputDataList)
 	}
 
 	func stopRecording() {
 		AudioUnitUninitialize(self.audioUnit!)
 		isRecording = false
+
+		error = ExtAudioFileDispose(destinationFile!)
+		print("stopped...")
 	}
 
 	func myAudioSessionInterruptionHandler(notification: Notification) -> Void {
