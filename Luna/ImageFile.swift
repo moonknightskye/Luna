@@ -197,7 +197,7 @@ class ImageFile: File {
 		self.init()
 	}
 
-    public func getBase64Value( onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
+    public override func getBase64Value( onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
         switch self.getPathType()! {
         case .ASSET_TYPE:
             Photos.getBinaryImage(asset: self.asset!, onSuccess: { (binaryData) in

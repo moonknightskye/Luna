@@ -14,6 +14,11 @@ extension String {
         return self.characters.count
     }
     
+    func charAt(at: Int) -> Character {
+        let charIndex = self.index(self.startIndex, offsetBy: at)
+        return self[charIndex]
+    }
+    
     func indexOf(target: String) -> Int? {
         let range = (self as NSString).range(of: target)
         guard range.toRange() != nil else {

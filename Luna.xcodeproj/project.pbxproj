@@ -11,6 +11,9 @@
 		4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */ = {isa = PBXBuildFile; fileRef = 4722343B1EAA7C9D00ACE441 /* Sputnik1.js */; };
 		47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */; };
 		47875EB11EBCC0B200B739C7 /* CodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47875EB01EBCC0B200B739C7 /* CodeReader.swift */; };
+		47A728DB1EF82D2A008C04E5 /* RecordAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */; };
+		47A728DD1EFA69FD008C04E5 /* VoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */; };
+		47A728DF1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */; };
 		47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F1F1E988A9C0087F8AC /* ZipFile.swift */; };
 		47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F211E9A874B0087F8AC /* DownloadManager.swift */; };
 		6F7BD0935E789F7AFF725A66 /* Pods_Luna.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C1EB98E66782C19569D2 /* Pods_Luna.framework */; };
@@ -32,6 +35,8 @@
 		7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */; };
 		7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */; };
 		7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */; };
+		70890FF01EF91680005E5BE9 /* SpeechToTextRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */; };
+		70890FF21EF919F0005E5BE9 /* SpeechToTextEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */; };
 		7093486B1E9F3A880007779D /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7093486A1E9F3A880007779D /* UIKit.framework */; };
 		709348761E9F43F40007779D /* bluemoon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709348721E9F43F40007779D /* bluemoon@2x.png */; };
 		709348771E9F43F40007779D /* bluemoon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 709348731E9F43F40007779D /* bluemoon@3x.png */; };
@@ -68,6 +73,9 @@
 		4722343B1EAA7C9D00ACE441 /* Sputnik1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sputnik1.js; sourceTree = "<group>"; };
 		47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift"; sourceTree = "<group>"; };
 		47875EB01EBCC0B200B739C7 /* CodeReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeReader.swift; sourceTree = "<group>"; };
+		47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordAudio.swift; sourceTree = "<group>"; };
+		47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceRecorder.swift; sourceTree = "<group>"; };
+		47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ AVAudioRecorderDelegate.swift"; sourceTree = "<group>"; };
 		47E78F1F1E988A9C0087F8AC /* ZipFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFile.swift; sourceTree = "<group>"; };
 		47E78F211E9A874B0087F8AC /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		700064B11E5BD573003CF38D /* WKWebView+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKWebView+extension.swift"; sourceTree = "<group>"; };
@@ -90,6 +98,8 @@
 		7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommandProcessor+extension-01.swift"; sourceTree = "<group>"; };
 		7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+URLSessionDownloadDelegate.swift"; sourceTree = "<group>"; };
+		70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechToTextRecorder.swift; sourceTree = "<group>"; };
+		70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechToTextEncoder.swift; sourceTree = "<group>"; };
 		7093486A1E9F3A880007779D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		709348721E9F43F40007779D /* bluemoon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bluemoon@2x.png"; sourceTree = "<group>"; };
 		709348731E9F43F40007779D /* bluemoon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bluemoon@3x.png"; sourceTree = "<group>"; };
@@ -209,6 +219,10 @@
 				701B05A21EF3AE3200C4845F /* SystemSettings.swift */,
 				7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */,
 				700324B21EEA9E64006D2250 /* UserNotification.swift */,
+				47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */,
+				70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */,
+				70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */,
+				47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -226,6 +240,7 @@
 				700182191E8E24B800B28C59 /* UIImage+extension.swift */,
 				47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */,
 				70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */,
+				47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */,
 			);
 			name = Extension;
 			sourceTree = "<group>";
@@ -455,6 +470,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				70A587BF1ECAE67A009D541D /* UserSettings.swift in Sources */,
+				70890FF21EF919F0005E5BE9 /* SpeechToTextEncoder.swift in Sources */,
 				70D76E6A1E2F6B760089B903 /* Utility.swift in Sources */,
 				7015B2C11EC1A91F00AE1A99 /* AVCaptureManager.swift in Sources */,
 				70F7903E1E80C27A0080F51E /* VideoFile.swift in Sources */,
@@ -465,6 +481,7 @@
 				47875EB11EBCC0B200B739C7 /* CodeReader.swift in Sources */,
 				700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */,
 				47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */,
+				47A728DF1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift in Sources */,
 				700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */,
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,
 				705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */,
@@ -475,11 +492,14 @@
 				70D76E681E2F6B6B0089B903 /* Shared.swift in Sources */,
 				70460F1D1E66CAAA003E43EC /* WebViewManager.swift in Sources */,
 				70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */,
+				47A728DB1EF82D2A008C04E5 /* RecordAudio.swift in Sources */,
 				704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */,
 				7062F0971E6EB51E00CB8144 /* File.swift in Sources */,
 				7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */,
 				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
+				47A728DD1EFA69FD008C04E5 /* VoiceRecorder.swift in Sources */,
 				7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */,
+				70890FF01EF91680005E5BE9 /* SpeechToTextRecorder.swift in Sources */,
 				706DE2091E556C3A005AE646 /* String+extension.swift in Sources */,
 				70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */,
 				47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */,

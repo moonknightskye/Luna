@@ -39,8 +39,136 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
                 self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
             }
         }
+
+        //let recorder:RecordAudio = RecordAudio()
+        //recorder.startRecording()
+        //request1()
+//        let record:VoiceRecorder = VoiceRecorder.instance
+//        record.checkPermission(onSuccess: { (success) in
+//            record.startRecording()
+//        }) { (error) in
+//            print(error)
+//        }
     }
     
+//    private func request1() {
+//        let parameters = NSMutableDictionary()
+//        parameters.setValue( "POST", forKey: "method")
+//        parameters.setValue( "https://api.recaius.jp/auth/v2/tokens", forKey: "url")
+//        let headers = NSMutableDictionary()
+//        headers.setValue( "application/json", forKey: "Content-Type")
+//        headers.setValue( "application/json", forKey: "Accept")
+//        parameters.setValue( headers, forKey: "headers")
+//        let data = NSMutableDictionary()
+//        let spjp = NSMutableDictionary()
+//        spjp.setValue( "sfdcjpdemo01_MA9N7kF3h9", forKey: "service_id")
+//        spjp.setValue( "sfdc1234", forKey: "password")
+//        let spen = NSMutableDictionary()
+//        spen.setValue( "sfdcjpdemo01_MA9N7kF3h9_enUS", forKey: "service_id")
+//        spen.setValue( "sfdc1234", forKey: "password")
+//        let spch = NSMutableDictionary()
+//        spch.setValue( "sfdcjpdemo01_MA9N7kF3h9_zhCN", forKey: "service_id")
+//        spch.setValue( "sfdc1234", forKey: "password")
+//        data.setValue( spjp, forKey: "speech_recog_jaJP")
+//        data.setValue( spen, forKey: "speech_recog_enUS")
+//        data.setValue( spch, forKey: "speech_recog_zhCN")
+//        data.setValue( 300, forKey: "expiry_sec")
+//        parameters.setValue( data, forKey: "data")
+//        let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
+//        command.onResolve { ( result ) in
+//            self.request2(token: result as! NSDictionary)
+//        }
+//        CommandProcessor.queue(command: command)
+//    }
+//    
+//    private func request2( token:NSDictionary ) {
+//        let token = token.value(forKeyPath: "token") as! String
+//        
+//        let parameters = NSMutableDictionary()
+//        parameters.setValue( "POST", forKey: "method")
+//        parameters.setValue( "https://api.recaius.jp/asr/v2/voices", forKey: "url")
+//        let headers = NSMutableDictionary()
+//        headers.setValue( "application/json", forKey: "Content-Type")
+//        headers.setValue( "application/json", forKey: "Accept")
+//        headers.setValue( token, forKey: "X-Token")
+//        parameters.setValue( headers, forKey: "headers")
+//        let data = NSMutableDictionary()
+//        data.setValue( 300, forKey: "energy_threshold")
+//        data.setValue( 1, forKey: "model_id")
+//        data.setValue( "audio/x-linear", forKey: "audio_type")
+//        data.setValue( false, forKey: "push_to_talk")
+//        data.setValue( "one_best", forKey: "result_type")
+//        data.setValue( 1, forKey: "data_log")
+//        data.setValue( "Hello World!", forKey: "comment")
+//        data.setValue( 1, forKey: "result_count")
+//        parameters.setValue( data, forKey: "data")
+//        let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
+//        command.onResolve { ( result ) in
+//            print(result)
+//            
+//            let uuid = (result as! NSDictionary).value(forKeyPath: "uuid") as! String
+////            let recorder:RecordAudio = RecordAudio()
+////            recorder.setUIID(id: uuid)
+////            recorder.setToken(id: token)
+////            recorder.startRecording()
+//            
+////            let recorder2 = SpeechToTextRecorder()
+////            do {
+////                
+////                let onMicrophoneDataPCM = { [weak self] (pcm: Data) in
+////                    guard let `self` = self else { return }
+////                    guard pcm.count > 0 else { return }
+////                    //self.socket.writeAudio(audio: pcm)
+////                    self.onMicrophoneData?(pcm)
+////                }
+////                
+////                
+////                try recorder2.startRecording()
+////                print("RECORDING.......")
+////            } catch {
+////                print("ERROR")
+////            }
+//            
+//            do {
+//                let audio = try File(fileId: File.generateID(), bundle: "speech.wav", path: "resource/img")
+//                //print(audio.getFilePath())
+//                self.request3(dataUrl:audio.getFilePath()!, data: audio.getFile()!, tokenid: token, uiid: uuid)
+//            } catch {
+//                print("ERRROR")
+//            }
+//            
+//            
+//        }
+//        CommandProcessor.queue(command: command)
+//    }
+//    
+//    func request3( dataUrl:URL, data:Data, tokenid:String, uiid:String ) {
+//        let voice_id = 1;
+//        let parameters = NSMutableDictionary()
+//        parameters.setValue( "PUT", forKey: "method")
+//        parameters.setValue( "https://api.recaius.jp/asr/v2/voices/" + uiid, forKey: "url")
+//        let headers = NSMutableDictionary()
+//        headers.setValue( "multipart/form-data", forKey: "Content-Type")
+//        headers.setValue( tokenid, forKey: "X-Token")
+//        parameters.setValue( headers, forKey: "headers")
+//        
+//        let multipart = NSMutableDictionary()
+//        multipart.setValue( dataUrl, forKey: "dataUrl")
+//        multipart.setValue( data, forKey: "data")
+//        let pmtrs = NSMutableDictionary()
+//        pmtrs.setValue(voice_id, forKey: "voice_id")
+//        multipart.setValue( pmtrs, forKey: "parameters")
+//        multipart.setValue( "audio/wav", forKey: "mimeType")
+//        multipart.setValue( "data.wav", forKey: "filename")
+//        parameters.setValue( multipart, forKey: "multipart")
+//        
+//        let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
+//        command.onResolve { ( result ) in
+//            print(result)
+//        }
+//        CommandProcessor.queue(command: command)
+//    }
+
     private func loadStartupPage( htmlFile: HtmlFile, errorMessage:String?=nil ) {
         let parameter = NSMutableDictionary()
         parameter.setValue( htmlFile, forKey: "html_file")

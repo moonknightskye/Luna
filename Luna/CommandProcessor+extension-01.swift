@@ -221,5 +221,220 @@ extension CommandProcessor {
             //onSuccess(true)
         }
     }
+    
+    public class func checkHttpPost( command: Command ) {
+        processHttpPost( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    
+    private class func processHttpPost( command: Command, onSuccess: @escaping((NSDictionary)->()), onFail: @escaping((String)->()) ) {
+        
+        
+        if let url = ((command.getParameter() as AnyObject).value(forKeyPath: "url") as? String ) {
+            var request = URLRequest(url: URL(string: url)!)
+            
+            let method = ((command.getParameter() as AnyObject).value(forKeyPath: "method") as? String ) ?? "POST"
+            request.httpMethod = method
+            
+            if let parameters = ((command.getParameter() as AnyObject).value(forKeyPath: "data") as? NSDictionary ) {
+                request.httpBody = Utility.shared.dictionaryToJSON(dictonary: parameters).data(using: .utf8)
+            }
+            if let multipart = ((command.getParameter() as AnyObject).value(forKeyPath: "multipart") as? NSDictionary ) {
+                
+                //let boundary = "Boundary-\(UUID().uuidString)"
+                let boundary = self.createBoundary()
+                print( boundary )
+                print( "Boundary-\(UUID().uuidString)" )
+                
+                
+                request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+                
+                let pmtrs = multipart.value(forKeyPath: "parameters") as! NSDictionary
+                let dataUrl = multipart.value(forKeyPath: "dataUrl") as! URL
+                let data = multipart.value(forKeyPath: "data") as! Data
+                let mimeType = multipart.value(forKeyPath: "mimeType") as! String
+                let filename = multipart.value(forKeyPath: "filename") as! String
+                request.httpBody = self.createBody( parameters: pmtrs,
+                                                    boundary: boundary,
+                                                    dataUrl: dataUrl,
+                                                    data: data,
+                                                    mimeType: mimeType,
+                                                    filename: filename)
+            
+            }
+            if let header = ((command.getParameter() as AnyObject).value(forKeyPath: "headers") as? NSDictionary ) {
+                for (key, _) in header {
+                    request.addValue(header[ key ] as! String, forHTTPHeaderField: key as! String)
+                }
+            }
+            
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                guard let data = data, error == nil else {
+                    // check for fundamental networking error
+                    onFail( error!.localizedDescription )
+                    //print("error=\(error!)")
+                    return
+                }
+                
+                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
+                    // check for http errors
+                    print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                    print("response = \(response!)")
+                }
+                
+                if let responseString = String(data: data, encoding: .utf8) {
+                    print("responseString****** = \(responseString)")
+                    if let resp = Utility.shared.StringToDictionary(txt: responseString) {
+                        onSuccess( resp )
+                        return
+                    }
+                }
+                print( "NO RESPONSE" )
+                onFail("NO RESPONSE")
+                
+            }
+            task.resume()
+        }
+    }
+    
+    public class func createBody( parameters: NSDictionary,
+                    boundary: String,
+                    dataUrl: URL,
+                    data: Data,
+                    mimeType: String,
+                    filename: String) -> Data {
+        
+        //https://newfivefour.com/swift-form-data-multipart-upload-URLRequest.html
+        
+        let body = NSMutableData()
+        let boundaryPrefix = "--\(boundary)\r\n"
+        for (key, value) in parameters {
+            body.appendString(boundaryPrefix)
+            body.appendString("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+            body.appendString("\(value)\r\n")
 
+			print(key)
+			print(value)
+        }
+        body.appendString(boundaryPrefix)
+        body.appendString("Content-Disposition: form-data; name=\"voice\"; filename=\"\(filename)\"\r\n")
+        body.appendString("Content-Type: \(mimeType)\r\n\r\n")
+        body.append(data)
+        body.appendString("\r\n")
+        body.appendString("--".appending(boundary.appending("--")))
+
+
+		print(filename)
+		print(mimeType)
+		print(boundary)
+
+        return body as Data
+    }
+    
+    public class func createBoundary() -> String {
+        let multipartChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let length = Int(30 + floor(Double(arc4random_uniform(10))))
+        var boundary = "---------------------------";
+        for _ in 0...length {
+            let char = multipartChars.charAt(at: Int(  Int(arc4random_uniform(10)) * multipartChars.length ) / 10  )
+            boundary.append(char)
+        }
+        return boundary
+    }
+
+
+	public class func checkAVAudioRecorderInit( command: Command ) {
+		processAVAudioRecorderInit( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	private class func processAVAudioRecorderInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+
+		let recorder = VoiceRecorder.instance
+		recorder.checkPermission(onSuccess: onSuccess, onFail: onFail)
+	}
+
+	public class func checkAVAudioRecorderRecord( command: Command ) {
+		processAVAudioRecorderRecord( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	private class func processAVAudioRecorderRecord( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+
+		let recorder = VoiceRecorder.instance
+		recorder.checkPermission(onSuccess: { (result) in
+			recorder.startRecording(onSuccess: onSuccess, onFail: onFail)
+		}) { (error) in
+			onFail( error )
+		}
+	}
+
+	public class func checkAVAudioRecorderStop( command: Command ) {
+		processAVAudioRecorderStop( command: command, onSuccess: { result, raw in
+			command.resolve( value: result, raw: raw )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	private class func processAVAudioRecorderStop( command: Command, onSuccess: @escaping((NSDictionary, File)->()), onFail: @escaping((String)->()) ) {
+
+		let recorder = VoiceRecorder.instance
+		recorder.checkPermission(onSuccess: { (result) in
+			recorder.finishRecording(onSuccess: { (recordedFile) in
+				onSuccess(recordedFile.toDictionary(), recordedFile)
+			}, onFail: { (error) in
+				onFail( error )
+			})
+		}) { (error) in
+			onFail( error )
+		}
+	}
+
+	public class func checkAVAudioConvertToWav( command: Command ) {
+		processAVAudioConvertToWav( command: command, onSuccess: { result, raw in
+			command.resolve( value: result, raw: raw )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	private class func processAVAudioConvertToWav( command: Command, onSuccess: @escaping((NSDictionary, File)->()), onFail: @escaping((String)->()) ) {
+
+		let recorder = VoiceRecorder.instance
+
+		if let audioFile = ((command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary ) {
+			do {
+				let file = try File( file: audioFile )
+				recorder.convertToWav(audioFile: file, onSuccess: { (encodedFile) in
+					onSuccess(encodedFile.toDictionary(), encodedFile)
+				}) { (error) in
+					onFail(error)
+				}
+			} catch let error as NSError {
+				onFail( error.localizedDescription )
+			}
+
+		} else {
+			onFail(FileError.INVALID_PARAMETERS.localizedDescription)
+		}
+	}
+
+
+	//
+
+
+
+}
+
+extension NSMutableData {
+    func appendString(_ string: String) {
+        let data = string.data(using: String.Encoding.utf8, allowLossyConversion: false)
+        append(data!)
+    }
 }

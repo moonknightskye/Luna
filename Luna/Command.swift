@@ -80,6 +80,11 @@ enum CommandCode:Int {
     case USER_SETTINGS_LUNASETTINGS_HTML = 63
     case USER_NOTIFICATION          = 64
     case USER_NOTIFICATION_SHOWMSG  = 65
+    case HTTP_POST                  = 66
+	case AVAUDIO_RECORDER_INIT		= 67
+	case AVAUDIO_RECORDER_RECORD	= 68
+	case AVAUDIO_RECORDER_STOP		= 69
+	case AUDIO_CONVERT_WAV			= 70
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

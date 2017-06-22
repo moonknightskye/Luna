@@ -525,7 +525,21 @@ class File {
     
         return .DOCUMENT_TYPE
     }
-    
+
+	public func getBase64Value( onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
+		switch self.getPathType()! {
+		case .BUNDLE_TYPE, .DOCUMENT_TYPE:
+			if let file = self.getFile() {
+				onSuccess( Utility.shared.DataToBase64(data: file) )
+			}
+			onFail( FileError.INVALID_FORMAT.localizedDescription + ":  \(self.getFileExtension())" )
+			break
+		default:
+			onFail( FileError.UNKNOWN_ERROR.localizedDescription )
+			break
+		}
+	}
+
     public class func getFileObject( url:URL ) {
         //file:///var/mobile/Containers/Data/Application/11A53667-B394-4175-9BE0-7667B666D3B7/Documents/sample.mp4
         //file:///var/containers/Bundle/Application/4EB9C028-2932-473D-A0D2-DDD915F2C3F0/Luna.app/resource/index.html

@@ -199,6 +199,21 @@ class CommandProcessor {
         case .USER_NOTIFICATION_SHOWMSG:
             checkUserNotificationShowMessage( command: command )
             break
+        case .HTTP_POST:
+            checkHttpPost( command: command )
+            break
+		case .AVAUDIO_RECORDER_INIT:
+			checkAVAudioRecorderInit( command: command )
+			break
+		case .AVAUDIO_RECORDER_RECORD:
+			checkAVAudioRecorderRecord( command: command )
+			break
+		case .AVAUDIO_RECORDER_STOP:
+			checkAVAudioRecorderStop( command: command )
+			break
+		case .AUDIO_CONVERT_WAV:
+			checkAVAudioConvertToWav( command: command )
+			break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -810,26 +825,46 @@ class CommandProcessor {
     }
     private class func checkGetBase64Binary( command:Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
         let parameter = command.getParameter()
-        var imageFile:ImageFile?
-        switch( parameter ) {
-        case is ImageFile:
-            imageFile = parameter as? ImageFile
-            break
-        case is NSDictionary:
-            imageFile = ImageFile( imageFile: parameter as! NSDictionary )
-            break
-        default:
-            break;
-        }
-        if imageFile != nil {
-            imageFile!.getBase64Value(onSuccess: { (base64) in
-                command.resolve(value: base64)
-            }, onFail: { (error) in
-                command.reject( errorMessage: error )
-            })
-        } else {
-            command.reject( errorMessage: "Failed to get Image" )
-        }
+		var file:File?
+		switch( parameter ) {
+		case is File:
+			file = parameter as? File
+			break
+		case is NSDictionary:
+			file = File( filedict: parameter as! NSDictionary )
+			break
+		default:
+			break;
+		}
+		if file != nil {
+			file!.getBase64Value(onSuccess: { (base64) in
+				command.resolve(value: base64)
+			}, onFail: { (error) in
+				command.reject( errorMessage: error )
+			})
+		} else {
+			command.reject( errorMessage: "Failed to get Image" )
+		}
+//        var imageFile:ImageFile?
+//        switch( parameter ) {
+//        case is ImageFile:
+//            imageFile = parameter as? ImageFile
+//            break
+//        case is NSDictionary:
+//            imageFile = ImageFile( imageFile: parameter as! NSDictionary )
+//            break
+//        default:
+//            break;
+//        }
+//        if imageFile != nil {
+//            imageFile!.getBase64Value(onSuccess: { (base64) in
+//                command.resolve(value: base64)
+//            }, onFail: { (error) in
+//                command.reject( errorMessage: error )
+//            })
+//        } else {
+//            command.reject( errorMessage: "Failed to get Image" )
+//        }
     }
     
     private class func processGetBase64Resized( command: Command ) {

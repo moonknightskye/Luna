@@ -117,7 +117,12 @@
         WEB_VIEW_POSTMESSAGE        : 62,
         USER_SETTINGS_LUNASETTINGS_HTML : 63,
         USER_NOTIFICATION           : 64,
-        USER_NOTIFICATION_SHOWMSG   : 65
+        USER_NOTIFICATION_SHOWMSG   : 65,
+        HTTP_POST                   : 66,
+        AVAUDIO_RECORDER_INIT       : 67,
+        AVAUDIO_RECORDER_RECORD     : 68,
+        AVAUDIO_RECORDER_STOP       : 69,
+        AUDIO_CONVERT_WAV           : 70
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -402,6 +407,17 @@
             return CommandProcessor.queue( command );
         };
 
+        luna.getAVAudioRecorder = function(){
+            var command = new Command({
+                command_code    : COMMAND.AVAUDIO_RECORDER_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( ) {
+                return new AVAudioRecorder();
+            });
+            return CommandProcessor.queue( command );
+        };
+
         luna.takePhoto = function( option ) {
             if( apollo11.isUndefined( option ) ) {
                 option = {};
@@ -556,7 +572,13 @@
             return false;
         };
 
-
+        luna.httpPost = function(params) {
+            var command = new Command({
+                command_code    : COMMAND.HTTP_POST,
+                parameter       : params
+            });
+            return CommandProcessor.queue( command );
+        };
 
         
         var _INTERNAL_DATA = {
@@ -611,6 +633,45 @@
         /************************
             PRIVATE FUNCTIONS
         ************************/
+        function AVAudioRecorder( param ) {
+            var recorder = {};
+
+            function init() {};
+
+            recorder.record = function() {
+                var command = new Command({
+                    command_code            : COMMAND.AVAUDIO_RECORDER_RECORD,
+                    priority                : CommandPriority.CRITICAL
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            recorder.stop = function() {
+                var command = new Command({
+                    command_code            : COMMAND.AVAUDIO_RECORDER_STOP,
+                    priority                : CommandPriority.CRITICAL
+                });
+                command.onResolve( function( result ) {
+                    return new File( result );
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            recorder.convertAudioToWav = function( param ) {
+                var command = new Command({
+                    command_code            : COMMAND.AUDIO_CONVERT_WAV,
+                    parameter               : param
+                });
+                command.onResolve( function( result ) {
+                    return new File( result );
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            init();
+            return recorder;
+        };
+
 
         function AVCapture( param ) {
             var avCapture = {};
@@ -1582,6 +1643,19 @@
             file.getStatus = function( ) {
                 return _INTERNAL_DATA.status;
             };
+
+            file.getBase64 = function() {
+                var command = new Command({
+                    command_code    : COMMAND.GET_BASE64_BINARY,
+                    priority        : CommandPriority.LOW,
+                    parameter:      this.toJSON()
+                });
+                // command.onResolve( function( base64_value ) {
+                //     return generateDOM( base64_value, file.getFileExtension() );
+                // });
+                return CommandProcessor.queue( command );
+            };
+
 
             file.onDownload = function() {
                 var command = new Command({

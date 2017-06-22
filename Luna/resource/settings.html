@@ -8,6 +8,7 @@
         <script type="text/javascript" src="js/luna.js" ></script>
         <script type="text/javascript" src="../Apollo11.js" ></script>
         <script type="text/javascript" src="js/phobos.js" ></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <style>
 /*        PARALLAX EFFECT
         http://codepen.io/saransh/pen/BKJun
@@ -88,6 +89,9 @@
         </style>
         <script>
 
+            var luna = new Luna();
+
+            var wavFile;
             (function(){
                 window.addEventListener("load", function(){
                     loading.classList.add("show");
@@ -95,11 +99,90 @@
                         cloud_six.classList.add("smove");
                         cloud_four.classList.add("smove");
                     },0);
+
+                    initForm();
                 });
 
-                var luna = new Luna();
-
                 luna.addEventListener( "ready", function(){
+
+                    record.addEventListener("click", function(e){
+                        luna.getAVAudioRecorder().then(function(audioRecorder){
+                            audioRecorder.record().then(function(result){
+                                //alert(result)
+                            }, function(error){
+                                alert(error)
+                            });
+                        });
+                    });
+                    stoprec.addEventListener("click", function(e){
+                        luna.getAVAudioRecorder().then(function(audioRecorder){
+                            audioRecorder.stop().then(function(file){
+                                //alert(file.getFilename())
+
+
+                                audioRecorder.convertAudioToWav({file:file}).then(function(encoded){
+                                    //alert(encoded.getFilename())
+                                    wavFile = encoded;
+                                    document.getElementById("recaius").click();
+                                    //alert("Stopped");
+                                }, function(error){
+                                    alert(error)
+                                });
+
+
+                            }, function(error){
+                                alert(error)
+                            });
+                        });
+                    });
+
+                    // luna.httpPost({
+                    //     method       : "POST",
+                    //     url          : "https://api.recaius.jp/auth/v2/tokens",
+                    //     headers      : { 
+                    //         "Content-Type"  : "application/json",
+                    //         "Accept"        : "application/json"
+                    //     },
+                    //     data : { 
+                    //         speech_recog_jaJP : { 
+                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9', 
+                    //             password: 'sfdc1234' 
+                    //         },
+                    //         speech_recog_enUS: { 
+                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_enUS',
+                    //             password: 'sfdc1234' 
+                    //         },
+                    //         speech_recog_zhCN: { 
+                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_zhCN',
+                    //             password: 'sfdc1234' 
+                    //         }, 
+                    //         expiry_sec: 3600 
+                    //     }
+                    // }).then(function(result){
+                    //     window.setTimeout(function(){
+                    //         luna.httpPost({
+                    //             method      : "POST",
+                    //             url         : "https://api.recaius.jp/asr/v2/voices",
+                    //             headers      : { 
+                    //                 "X-Token"       : result.token,
+                    //                 "Content-Type"  : "application/json",
+                    //                 "Accept"        : "application/json"
+                    //             },
+                    //             data : { 
+                    //                 energy_threshold    : 300,
+                    //                 model_id            : 1,
+                    //                 audio_type          : "audio/x-linear",
+                    //                 push_to_talk        : false,
+                    //                 result_type         : "nbest",
+                    //                 result_count        : 1
+                    //             }
+                    //         }).then(function(result){
+                    //             alert(JSON.stringify(result))
+                    //         });
+
+
+                    //     },0);
+                    // });
 
                     luna.getMainWebview().addEventListener("message", function( message ) {
                         luna.notification().then(function(userNotification){
@@ -191,6 +274,186 @@
                    });
                 });
              })();
+
+             //INIT FORM
+             var initForm = function(){
+                    //var form = document.forms.namedItem("recaius-form");
+                    recaius.addEventListener('click', function(ev) {
+                        ev.preventDefault();
+
+
+                        $.ajax({
+                          type: "POST",
+                          url: "https://api.recaius.jp/auth/v2/tokens",
+                          headers: {
+                            "Content-Type"  : "application/json",
+                            "Accept"        : "application/json"
+                          },
+                          dataType: "json",
+                          data: JSON.stringify({ 
+                                speech_recog_jaJP : { 
+                                    service_id: 'sfdcjpdemo01_MA9N7kF3h9', 
+                                    password: 'sfdc1234' 
+                                },
+                                speech_recog_enUS: { 
+                                    service_id: 'sfdcjpdemo01_MA9N7kF3h9_enUS',
+                                    password: 'sfdc1234' 
+                                },
+                                speech_recog_zhCN: { 
+                                    service_id: 'sfdcjpdemo01_MA9N7kF3h9_zhCN',
+                                    password: 'sfdc1234' 
+                                }, 
+                                expiry_sec: 3600 
+                          }),
+                          success: function( result ) {
+
+                            var token = result.token;
+                            var base_model_id = 1;
+
+                            console.log("[INFO] ACQUIRED TOKEN ID: ", token);
+
+                            $.ajax({
+                                type: "PUT",
+                                url: "https://api.recaius.jp/asr/v2/models/" + base_model_id + "/configuration",
+                                headers: {
+                                    "Content-Type"  : "application/json",
+                                    "X-Token"       : token
+                                },
+                                dataType: "json",
+                                data: JSON.stringify({ 
+                                    arabic_numerals        : 0
+                                }),
+                                success: function( result ) {
+                                    console.log("[INFO] CONFIGURATION: ", result);
+
+                                    $.ajax({
+                                      type: "POST",
+                                      url: "https://api.recaius.jp/asr/v2/voices",
+                                      headers: {
+                                        "X-Token"       : token,
+                                        "Content-Type"  : "application/json",
+                                        "Accept"        : "application/json"
+                                      },
+                                      dataType: "json",
+                                      data: JSON.stringify({ 
+                                        energy_threshold    : 300, //300
+                                        model_id            : 1,
+                                        audio_type          : "audio/x-linear",
+                                        push_to_talk        : false,
+                                        result_type         : "one_best",
+                                        result_count        : 1, //1
+                                        data_log            : 1,
+                                        comment             : "Hello World!"
+                                      }),
+                                      success: function( result ) {
+                                        //alert(JSON.stringify(result))
+
+                                        var uuid        = result.uuid;
+                                        var voice_id    = 1;
+                                        console.log("[INFO] ACQUIRED UUID: ", uuid);
+
+                                        // luna.getFile({
+                                        //     filename:   "recording.wav",
+                                        //     path_type:  "document",
+                                        // }).then(function( file ){
+                                        //     file.getBase64().then(function(base64){
+                                        //         readAudio(apollo11.base64ToBlob(base64));
+                                        //     });
+                                        // });
+                                        if(!wavFile){
+                                            return;
+                                        }
+
+                                        wavFile.getBase64().then(function(base64){
+                                            readAudio(apollo11.base64ToBlob(base64));
+                                        });
+
+                                        var readAudio = function(blob){
+                                                var fd = new FormData();
+                                                fd.append("voice_id", voice_id);
+                                                fd.append("voice", blob);
+                                                
+                                                $.ajax({
+                                                    url: "https://api.recaius.jp/asr/v2/voices/" + uuid,
+                                                    type: "PUT",
+                                                    headers: {
+                                                        "X-Token"       : token
+                                                    },
+                                                    data: fd,
+                                                    processData: false,  // jQuery がデータを処理しないよう指定
+                                                    contentType: false,  // jQuery が contentType を設定しないよう指定
+                                                    success: function(result){  
+
+                                                        console.log("[INFO] VOICE DATA SENT");
+                                                        console.log("[INFO] RESULT: ", result);
+                                                        console.log("[INFO] WAIT 3 SECONDS TO FLUSH SESSION...");
+
+                                                        var flush = function(){
+                                                             $.ajax({
+                                                                type: "PUT",
+                                                                url: "https://api.recaius.jp/asr/v2/voices/" + uuid + "/flush",
+                                                                headers: {
+                                                                    "Content-Type"  : "application/json",
+                                                                    "X-Token"       : token
+                                                                },
+                                                                dataType: "json",
+                                                                data: JSON.stringify({ 
+                                                                    voice_id        : voice_id
+                                                                }),
+                                                                success: function( result ) {
+                                                                    console.log("[INFO] FLUSHED");
+                                                                }
+                                                            });
+                                                        };
+
+                                                        var interval = window.setInterval(function(){
+                                                            $.ajax({
+                                                                type: "GET",
+                                                                url: "https://api.recaius.jp/asr/v2/voices/" + uuid + "/results",
+                                                                headers: {
+                                                                    "X-Token"       : token
+                                                                },
+                                                                success: function( result ) {
+                                                                    if(!result) {
+                                                                        window.clearInterval(interval);
+                                                                        flush();
+                                                                    } else {
+                                                                        // console.log("[INFO] RESULT: ", result);
+                                                                        for (s of result) {
+                                                                            if(s[0] === "RESULT") {
+                                                                                console.log("[INFO] RESULT: ", s[1]);
+                                                                                alert(s[1]);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            });
+                                                        },300);
+                                                    },
+                                                    error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                                        console.log(XMLHttpRequest);
+                                                        console.log(errorThrown);
+                                                    }
+                                                });
+
+                                        };
+
+
+
+
+                                      }
+                                    });
+
+                                }
+                            });
+                        }
+                    });
+                    }, false);
+             
+
+             };
+             //INIT FORM
+
         </script>
     </head>
     <body class="splashscreen settings">
@@ -201,7 +464,20 @@
                 <div class="scroller">
 
                     <div class="section section-setting">
-                        <div class="header">LUNA SETTINGS</div>
+                        <div class="header">LUNA SETTINGS</div> 
+
+                        <div>
+                            <div id="recaius" class="custom-button hide">Recaius</div>
+                            <ul class="flex-box">
+                                <li class="flex-one">
+                                    <div id="record" class="custom-button add">Record</div>
+                                </li>
+                                <li class="flex-one">
+                                    <div id="stoprec" class="custom-button cancel">Stop</div>
+                                </li>
+
+                            </ul>
+                        </div>
 
                         <div class="section-content">
                             <ul class="flex-box">
