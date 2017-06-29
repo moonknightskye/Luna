@@ -11,8 +11,8 @@
 		4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */ = {isa = PBXBuildFile; fileRef = 4722343B1EAA7C9D00ACE441 /* Sputnik1.js */; };
 		47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */; };
 		47875EB11EBCC0B200B739C7 /* CodeReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47875EB01EBCC0B200B739C7 /* CodeReader.swift */; };
-		47A728DB1EF82D2A008C04E5 /* RecordAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */; };
-		47A728DD1EFA69FD008C04E5 /* VoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */; };
+		47A728DB1EF82D2A008C04E5 /* VoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DA1EF82D2A008C04E5 /* VoiceRecorder.swift */; };
+		47A728DD1EFA69FD008C04E5 /* VoiceRecorder2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DC1EFA69FD008C04E5 /* VoiceRecorder2.swift */; };
 		47A728DF1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */; };
 		47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F1F1E988A9C0087F8AC /* ZipFile.swift */; };
 		47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E78F211E9A874B0087F8AC /* DownloadManager.swift */; };
@@ -52,6 +52,7 @@
 		70B3A6751E66A41B006F4E4D /* CommandProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */; };
 		70B3A6791E66A44E006F4E4D /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6781E66A44E006F4E4D /* Command.swift */; };
 		70BB1B0C1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */; };
+		70BEE8721EFCA7040088EC21 /* NSMutableData+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70BEE8711EFCA7040088EC21 /* NSMutableData+extension.swift */; };
 		70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D76E4E1E2F6A4F0089B903 /* AppDelegate.swift */; };
 		70D76E511E2F6A4F0089B903 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D76E501E2F6A4F0089B903 /* ViewController.swift */; };
 		70D76E541E2F6A4F0089B903 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 70D76E521E2F6A4F0089B903 /* Main.storyboard */; };
@@ -73,8 +74,8 @@
 		4722343B1EAA7C9D00ACE441 /* Sputnik1.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = Sputnik1.js; sourceTree = "<group>"; };
 		47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift"; sourceTree = "<group>"; };
 		47875EB01EBCC0B200B739C7 /* CodeReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeReader.swift; sourceTree = "<group>"; };
-		47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordAudio.swift; sourceTree = "<group>"; };
-		47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceRecorder.swift; sourceTree = "<group>"; };
+		47A728DA1EF82D2A008C04E5 /* VoiceRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceRecorder.swift; sourceTree = "<group>"; };
+		47A728DC1EFA69FD008C04E5 /* VoiceRecorder2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceRecorder2.swift; sourceTree = "<group>"; };
 		47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ AVAudioRecorderDelegate.swift"; sourceTree = "<group>"; };
 		47E78F1F1E988A9C0087F8AC /* ZipFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFile.swift; sourceTree = "<group>"; };
 		47E78F211E9A874B0087F8AC /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
@@ -115,6 +116,7 @@
 		70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandProcessor.swift; sourceTree = "<group>"; };
 		70B3A6781E66A44E006F4E4D /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+UNUserNotificationCenterDelegate.swift"; sourceTree = "<group>"; };
+		70BEE8711EFCA7040088EC21 /* NSMutableData+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSMutableData+extension.swift"; sourceTree = "<group>"; };
 		70D76E4B1E2F6A4F0089B903 /* Luna.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Luna.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		70D76E4E1E2F6A4F0089B903 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		70D76E501E2F6A4F0089B903 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; usesTabs = 0; };
@@ -219,10 +221,10 @@
 				701B05A21EF3AE3200C4845F /* SystemSettings.swift */,
 				7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */,
 				700324B21EEA9E64006D2250 /* UserNotification.swift */,
-				47A728DA1EF82D2A008C04E5 /* RecordAudio.swift */,
 				70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */,
 				70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */,
-				47A728DC1EFA69FD008C04E5 /* VoiceRecorder.swift */,
+				47A728DA1EF82D2A008C04E5 /* VoiceRecorder.swift */,
+				47A728DC1EFA69FD008C04E5 /* VoiceRecorder2.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -241,6 +243,7 @@
 				47875EAE1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift */,
 				70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */,
 				47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */,
+				70BEE8711EFCA7040088EC21 /* NSMutableData+extension.swift */,
 			);
 			name = Extension;
 			sourceTree = "<group>";
@@ -482,6 +485,7 @@
 				700064B21E5BD573003CF38D /* WKWebView+extension.swift in Sources */,
 				47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */,
 				47A728DF1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift in Sources */,
+				70BEE8721EFCA7040088EC21 /* NSMutableData+extension.swift in Sources */,
 				700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */,
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,
 				705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */,
@@ -492,12 +496,12 @@
 				70D76E681E2F6B6B0089B903 /* Shared.swift in Sources */,
 				70460F1D1E66CAAA003E43EC /* WebViewManager.swift in Sources */,
 				70D76E4F1E2F6A4F0089B903 /* AppDelegate.swift in Sources */,
-				47A728DB1EF82D2A008C04E5 /* RecordAudio.swift in Sources */,
+				47A728DB1EF82D2A008C04E5 /* VoiceRecorder.swift in Sources */,
 				704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */,
 				7062F0971E6EB51E00CB8144 /* File.swift in Sources */,
 				7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */,
 				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
-				47A728DD1EFA69FD008C04E5 /* VoiceRecorder.swift in Sources */,
+				47A728DD1EFA69FD008C04E5 /* VoiceRecorder2.swift in Sources */,
 				7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */,
 				70890FF01EF91680005E5BE9 /* SpeechToTextRecorder.swift in Sources */,
 				706DE2091E556C3A005AE646 /* String+extension.swift in Sources */,

@@ -10,9 +10,9 @@
         <script type="text/javascript" src="js/phobos.js" ></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <style>
-/*        PARALLAX EFFECT
-        http://codepen.io/saransh/pen/BKJun
-        */
+            /*  PARALLAX EFFECT
+                http://codepen.io/saransh/pen/BKJun
+            */
 
             .header {
                 margin-bottom: 12pt;
@@ -85,10 +85,24 @@
                 color: #e57373 !important;
             }
 
+            #record {
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+            }
+
+
         </style>
         <script>
 
             var luna = new Luna();
+            var audioRecorder;
+            var BYTES_PER_CHUNK = ((1024 * 1024)*1);
+            var blob;
+            var speechSendInterval = -1;
+            var voice_id    = 1;
+
             (function(){
                 window.addEventListener("load", function(){
                     loading.classList.add("show");
@@ -96,58 +110,81 @@
                         cloud_six.classList.add("smove");
                         cloud_four.classList.add("smove");
                     },0);
+
+                    initForm();
                 });
 
                 luna.addEventListener( "ready", function(){
 
+                    luna.getAVAudioRecorder().then(function(_audioRecorder){
+                        audioRecorder = _audioRecorder;
+                        var recuius = document.getElementById("recaius");
 
-                    // luna.httpPost({
-                    //     method       : "POST",
-                    //     url          : "https://api.recaius.jp/auth/v2/tokens",
-                    //     headers      : { 
-                    //         "Content-Type"  : "application/json",
-                    //         "Accept"        : "application/json"
-                    //     },
-                    //     data : { 
-                    //         speech_recog_jaJP : { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9', 
-                    //             password: 'sfdc1234' 
-                    //         },
-                    //         speech_recog_enUS: { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_enUS',
-                    //             password: 'sfdc1234' 
-                    //         },
-                    //         speech_recog_zhCN: { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_zhCN',
-                    //             password: 'sfdc1234' 
-                    //         }, 
-                    //         expiry_sec: 3600 
-                    //     }
-                    // }).then(function(result){
-                    //     window.setTimeout(function(){
-                    //         luna.httpPost({
-                    //             method      : "POST",
-                    //             url         : "https://api.recaius.jp/asr/v2/voices",
-                    //             headers      : { 
-                    //                 "X-Token"       : result.token,
-                    //                 "Content-Type"  : "application/json",
-                    //                 "Accept"        : "application/json"
-                    //             },
-                    //             data : { 
-                    //                 energy_threshold    : 300,
-                    //                 model_id            : 1,
-                    //                 audio_type          : "audio/x-linear",
-                    //                 push_to_talk        : false,
-                    //                 result_type         : "nbest",
-                    //                 result_count        : 1
-                    //             }
-                    //         }).then(function(result){
-                    //             alert(JSON.stringify(result))
-                    //         });
+                        record.addEventListener("touchstart", function(e){
+                            record.innerText = "Recording...";
+                            record.classList.add("cancel");
+                            record.classList.remove("add");
+                            audioRecorder.record().then(function(file){
+                                voice_id = 1;
+                                blob = new Blob();
+                                recuius.click();
+                            }, function(error){
+                                alert(error)
+                            });
+                        });
+                        record.addEventListener("touchend", function(e){
+                            record.innerText = "Record";
+                            record.classList.remove("cancel");
+                            record.classList.add("add");
+                            audioRecorder.stop().then(function(file){
+                                audioRecorder.removeEventListener("recording").then(function(){
+                                    //audio/x-linear //application/octet-binary
+                                    var sBlob = new Blob( [blob], { type: "audio/wav" } ) ;
+                                    //var source = window.URL.createObjectURL( );
+                                    // var DOM = {
+                                    //     tag: "AUDIO",
+                                    //     src: source, //"img/speech.wav",
+                                    //     controls: "controls"
+                                    // };
+                                    // var debug = apollo11.getElement(".debug", "SELECT");
+                                    // apollo11.appendJSONDOM( DOM, debug );
 
+                                    var context
+                                    try {
+                                        // Fix up for prefixing
+                                        var context = new (window.AudioContext || window.webkitAudioContext);
+                                        console.log("Web API created");
+                                    } catch(e) {
+                                        console.log('Web Audio API is not supported in this browser');
+                                    }
 
-                    //     },0);
-                    // });
+                                    let fileReader = new FileReader();
+                                    fileReader.onloadend = () => {
+                                        var buffer = fileReader.result;
+                                        var audioSource = context.createBufferSource();
+                                        audioSource.connect( context.destination );
+
+                                        console.log("Blob Loaded", context, buffer, audioSource);
+                                        context.decodeAudioData(buffer, function(respose) {
+                                            audioSource.buffer = respose;
+                                            audioSource.start()
+                                            console.log("PLAYED");
+                                        },function(err) { 
+                                            console.log("ERROR OCCURED");
+                                            console.log(err);
+                                        });
+
+                                        console.log("RUN")
+                                    }
+                                    console.log("Reading Blob");
+                                    fileReader.readAsArrayBuffer(sBlob);
+                                });
+                            }, function(error){
+                                alert(error)
+                            });
+                        });
+
+                    });
 
                     luna.getMainWebview().addEventListener("message", function( message ) {
                         luna.notification().then(function(userNotification){
@@ -159,18 +196,6 @@
                                //  ]
                             });
                         });
-
-                        // window.setTimeout(function(){
-                        //     luna.notification().then(function(userNotification){
-                        //         userNotification.show({title:"TEST", badge:0, body:message, timeInterval:0.5, repeat:false
-                        //            ,choices:[
-                        //             {title:"XXXX", value:"XXXX", action: function(){ alert("Pen") }},
-                        //             {title:"YYYY", value:"YYYY", action: function(){ alert("Pineapple") }},
-                        //             {title:"ZZZZ", value:"ZZZZ", action: function(){ alert("Applex") }}
-                        //             ]
-                        //         });
-                        //     });
-                        // },5000);
 
                         window.setTimeout(function(){
                             apollo11.getElement(".info-message", "SELECT").innerText = message;
@@ -239,6 +264,24 @@
                    });
                 });
              })();
+
+             //INIT FORM
+             var initForm = function(){
+                    //var form = document.forms.namedItem("recaius-form");
+                    recaius.addEventListener('click', function(ev) {
+                        ev.preventDefault();
+                        audioRecorder.addEventListener("recording", function(bufferbase64){
+                            blob = new Blob([blob, apollo11.base64ToBlob(bufferbase64)]); //audio/x-linear //application/octet-binary
+                            if( parseInt(blob.size) >= BYTES_PER_CHUNK ) {
+                                //readAudio(blob, voice_id);
+                                //console.log(blob,voice_id)
+                                voice_id++;
+                                //blob = new Blob();
+                            }
+                        });
+                    }, false);
+             };
+             //INIT FORM
 
         </script>
     </head>
@@ -351,8 +394,14 @@
                         </div>
                     </div>
 
-                    <div class="debug"></div>
+                    <div class="debug">
+                        DEBUG
+                    </div>
 
+                    <div>
+                        <div id="recaius" class="custom-button hide">Recaius</div>
+                        <div id="record" class="custom-button add">Record</div>
+                    </div>
                 </div>
             </div>
             <div class="background">

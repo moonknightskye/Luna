@@ -13,8 +13,6 @@ import AVFoundation
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
 
-    var recorder:RecordAudio?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         Shared.shared.ViewController = self
@@ -41,21 +39,21 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
             }
         }
 
-//        recorder = RecordAudio()
-//        recorder?.startRecording()
-//        let _ = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(self.finishRecording), userInfo: nil, repeats: false)
         //request1()
-//        let record:VoiceRecorder = VoiceRecorder.instance
-//        record.checkPermission(onSuccess: { (success) in
-//            record.startRecording()
+//        RecordAudio.instance.checkPermission(onSuccess: { (result) in
+//            if result {
+//                RecordAudio.instance.startRecording()
+//                let _ = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(self.finishRecording), userInfo: nil, repeats: false)
+//            }
 //        }) { (error) in
 //            print(error)
 //        }
+        
     }
 
-    func finishRecording() {
-        recorder?.stopRecording()
-    }
+//    func finishRecording() {
+//        RecordAudio.instance.stopRecording()
+//    }
     
 //    private func request1() {
 //        let parameters = NSMutableDictionary()
@@ -113,28 +111,6 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 //            print(result)
 //            
 //            let uuid = (result as! NSDictionary).value(forKeyPath: "uuid") as! String
-////            let recorder:RecordAudio = RecordAudio()
-////            recorder.setUIID(id: uuid)
-////            recorder.setToken(id: token)
-////            recorder.startRecording()
-//            
-////            let recorder2 = SpeechToTextRecorder()
-////            do {
-////                
-////                let onMicrophoneDataPCM = { [weak self] (pcm: Data) in
-////                    guard let `self` = self else { return }
-////                    guard pcm.count > 0 else { return }
-////                    //self.socket.writeAudio(audio: pcm)
-////                    self.onMicrophoneData?(pcm)
-////                }
-////                
-////                
-////                try recorder2.startRecording()
-////                print("RECORDING.......")
-////            } catch {
-////                print("ERROR")
-////            }
-//            
 //            do {
 //                let audio = try File(fileId: File.generateID(), bundle: "speech.wav", path: "resource/img")
 //                //print(audio.getFilePath())
@@ -162,15 +138,19 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
 //        multipart.setValue( dataUrl, forKey: "dataUrl")
 //        multipart.setValue( data, forKey: "data")
 //        let pmtrs = NSMutableDictionary()
-//        pmtrs.setValue(voice_id, forKey: "voice_id")
+//        pmtrs.setValue(voice_id, forKey: "voiceid")
 //        multipart.setValue( pmtrs, forKey: "parameters")
-//        multipart.setValue( "audio/wav", forKey: "mimeType")
-//        multipart.setValue( "data.wav", forKey: "filename")
+//        multipart.setValue( "application/octet-stream", forKey: "mimeType")
+//        multipart.setValue( "test.wav", forKey: "filename")
 //        parameters.setValue( multipart, forKey: "multipart")
 //        
 //        let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
 //        command.onResolve { ( result ) in
 //            print(result)
+//        }
+//        command.onReject { (message) in
+//            print("HELLLLOOOOOOOOO")
+//            print(message)
 //        }
 //        CommandProcessor.queue(command: command)
 //    }

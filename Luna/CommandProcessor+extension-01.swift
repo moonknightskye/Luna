@@ -246,10 +246,6 @@ extension CommandProcessor {
                 
                 //let boundary = "Boundary-\(UUID().uuidString)"
                 let boundary = self.createBoundary()
-                print( boundary )
-                print( "Boundary-\(UUID().uuidString)" )
-                
-                
                 request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
                 
                 let pmtrs = multipart.value(forKeyPath: "parameters") as! NSDictionary
@@ -257,13 +253,17 @@ extension CommandProcessor {
                 let data = multipart.value(forKeyPath: "data") as! Data
                 let mimeType = multipart.value(forKeyPath: "mimeType") as! String
                 let filename = multipart.value(forKeyPath: "filename") as! String
-                request.httpBody = self.createBody( parameters: pmtrs,
-                                                    boundary: boundary,
-                                                    dataUrl: dataUrl,
-                                                    data: data,
-                                                    mimeType: mimeType,
-                                                    filename: filename)
-            
+                
+                let body = self.createBody(
+                    parameters  : pmtrs,
+                    boundary    : boundary,
+                    dataUrl     : dataUrl,
+                    data        : data,
+                    mimeType    : mimeType,
+                    filename    : filename
+                )
+                request.httpBody = body as Data
+                request.setValue(String(body.length), forHTTPHeaderField: "Content-Length")
             }
             if let header = ((command.getParameter() as AnyObject).value(forKeyPath: "headers") as? NSDictionary ) {
                 for (key, _) in header {
@@ -301,13 +301,60 @@ extension CommandProcessor {
     }
     
     public class func createBody( parameters: NSDictionary,
+                                  boundary: String,
+                                  dataUrl: URL,
+                                  data: Data,
+                                  mimeType: String,
+                                  filename: String) -> NSMutableData {
+        
+        //https://github.com/recaius-dev/recaius-swift/blob/master/RecaiusSDKTrial/Recognition/RecognitionAPI.swift
+        
+        let body = NSMutableData()
+        var tempString: String
+        tempString = ""
+        for (key, value) in parameters {
+            tempString += "--\(boundary)\r\n"
+            tempString += "Content-Disposition: form-data; name=\"\(key)\";\r\n"
+            tempString += "\r\n"
+            tempString += String(describing: value)
+            tempString += "\r\n"
+            body.append(tempString.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+            print(tempString)
+        }
+        
+        //  audio/wav
+        //  audio/ogg
+        //  audio/x-linear
+        //  audio/x-m4a
+        //  audio/x-adpcm
+        //  audio/speex
+        
+        tempString = ""
+        tempString += "--\(boundary)\r\n"
+        tempString += "Content-Disposition: form-data; name=\"voice\"; filename=\"test.wav\"\r\n"
+        tempString += "Content-Type: application/octet-stream\r\n"
+        tempString += "\r\n"
+        body.append(tempString.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+        
+        body.append(data)
+        
+        tempString = ""
+        tempString += "\r\n"
+        tempString += "--\(boundary)--\r\n"
+        body.append(tempString.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+        
+        return body
+    }
+    
+    public class func createBody2( parameters: NSDictionary,
                     boundary: String,
                     dataUrl: URL,
                     data: Data,
                     mimeType: String,
-                    filename: String) -> Data {
+                    filename: String) -> NSMutableData {
         
         //https://newfivefour.com/swift-form-data-multipart-upload-URLRequest.html
+        //https://github.com/recaius-dev/recaius-swift/blob/master/RecaiusSDKTrial/Recognition/RecognitionAPI.swift
         
         let body = NSMutableData()
         let boundaryPrefix = "--\(boundary)\r\n"
@@ -331,10 +378,14 @@ extension CommandProcessor {
 		print(mimeType)
 		print(boundary)
 
-        return body as Data
+        return body
     }
     
     public class func createBoundary() -> String {
+        return "---------------------------\(NSUUID().uuidString)";
+    }
+    
+    public class func createBoundary2() -> String {
         let multipartChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let length = Int(30 + floor(Double(arc4random_uniform(10))))
         var boundary = "---------------------------";
@@ -387,7 +438,7 @@ extension CommandProcessor {
 
 		let recorder = VoiceRecorder.instance
 		recorder.checkPermission(onSuccess: { (result) in
-			recorder.finishRecording(onSuccess: { (recordedFile) in
+			recorder.stopRecording(onSuccess: { (recordedFile) in
 				onSuccess(recordedFile.toDictionary(), recordedFile)
 			}, onFail: { (error) in
 				onFail( error )
@@ -424,17 +475,12 @@ extension CommandProcessor {
 			onFail(FileError.INVALID_PARAMETERS.localizedDescription)
 		}
 	}
-
-
-	//
-
-
-
-}
-
-extension NSMutableData {
-    func appendString(_ string: String) {
-        let data = string.data(using: String.Encoding.utf8, allowLossyConversion: false)
-        append(data!)
+    
+    public class func processAVAudioRecorderRecording( buffer: Data ) {
+        getCommand(commandCode: .AVAUDIO_RECORDER_RECORDING) { (command) in
+            command.update(value: Utility.shared.DataToBase64(data: buffer))
+        }
     }
+
+
 }

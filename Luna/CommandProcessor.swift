@@ -214,6 +214,8 @@ class CommandProcessor {
 		case .AUDIO_CONVERT_WAV:
 			checkAVAudioConvertToWav( command: command )
 			break
+        case .AVAUDIO_RECORDER_RECORDING:
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")

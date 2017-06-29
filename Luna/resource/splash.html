@@ -2,8 +2,8 @@
     <head>
         <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <META HTTP-EQUIV="Content-type" CONTENT="text/html; charset=UTF-8" />
-        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
-        <link href="css/lunastyles.css" rel="newer stylesheet" type="text/css" />
+        <link href="css/matostyles.css?v=2" rel="old stylesheet" type="text/css" />
+        <link href="css/lunastyles.css?v=2" rel="newer stylesheet" type="text/css" />
         <script type="text/javascript" src="js/luna.js" ></script>
         <script>
             (function(){
@@ -14,14 +14,45 @@
                     window.setTimeout(function(){
                         cloud_six.classList.add("move");
                         cloud_four.classList.add("move");
-                        var animationend = function(){
-                            A.removeEventListener("transitionend",animationend, true);
-                            window.setTimeout(function(){
-                               isAnimationFinished = true;
-                            },300);
-                        };
-                        A.addEventListener("transitionend",animationend,true);
-                        luna_text.classList.add("move");
+
+                        var letterL = document.querySelector(".L");
+                        var letterU = document.querySelector(".U");
+                        var letterN = document.querySelector(".N");
+                        var letterA = document.querySelector(".A");
+
+                        window.setTimeout(function(){
+                            var animationstartL = function(event){
+                                window.setTimeout(function(){
+                                    var animationstartU = function(event){
+                                        window.setTimeout(function(){
+                                            var animationstartN = function(event){
+                                                window.setTimeout(function(){
+                                                    var animationendA = function(event){
+                                                        letterL.removeEventListener("animationstart",animationstartL, true);
+                                                        letterU.removeEventListener("animationstart",animationstartU, true);
+                                                        letterN.removeEventListener("animationstart",animationstartN, true);
+                                                        letterA.removeEventListener("animationend",animationendA, true);
+                                                        window.setTimeout(function(){
+                                                            isAnimationFinished = true;
+                                                        },300);
+                                                    };
+                                                    letterA.addEventListener("animationend",animationendA, true);
+                                                    letterA.classList.add("move");
+                                                },200);
+                                            };
+                                            letterN.addEventListener("animationstart",animationstartN, true);
+                                            letterN.classList.add("move");
+                                        },200);
+                                    };
+                                    letterU.addEventListener("animationstart",animationstartU, true);
+                                    letterU.classList.add("move");
+                                },200);
+                            };
+                            letterL.addEventListener("animationstart",animationstartL, true);
+                            letterL.classList.add("move");
+                        },200);
+
+
                     },0);
                 });
 
@@ -96,13 +127,13 @@
             <div id="cloud_six" class="cloud-six"></div>
             <div id="luna_text" class="luna-label">
                 <ul class="flex-box">
-                    <li class="flex-one">
+                    <li id="L" class="flex-one">
                         <div class="alphabet L"></div>
                     </li>
                     <li class="flex-three three-letters">
                         <ul class="flex-box">
-                            <li class="flex-one"><div class="alphabet U"></div></li>
-                            <li class="flex-one"><div class="alphabet N"></div></li>
+                            <li id="U" class="flex-one"><div class="alphabet U"></div></li>
+                            <li id="N" class="flex-one"><div class="alphabet N"></div></li>
                             <li id="A" class="flex-one"><div class="alphabet A"></div></li>
                         </ul>
                     </li>

@@ -117,28 +117,45 @@ body {
     background-image: url(../img/L.png);
     height: 497px;
     width: 381px;
-    -webkit-transform: translate(0%,-50%);
+    transform: translate(0%,-50%);
 }
 .splashscreen .alphabet.U {
     background-image: url(../img/U.png);
     height: 497px;
     width: 214px;
-    -webkit-transform: translate(0%,-50%);
+    transform: translate(0%,-50%);
 }
 .splashscreen .alphabet.N {
     background-image: url(../img/N.png);
     height: 497px;
     width: 214px;
-    -webkit-transform: translate(0%,-50%);
+    transform: translate(0%,-50%);
 } 
 .splashscreen .alphabet.A {
     background-image: url(../img/A.png);
     height: 497px;
     width: 214px;
-    -webkit-transform: translate(0%,-50%);
+    transform: translate(0%,-50%);
 } 
 
-.splashscreen .luna-label.move .L{
+.splashscreen .luna-label .L.move{
+    animation: luna-letter 2.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+.splashscreen .luna-label .U.move{
+    animation: luna-letter 2.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+.splashscreen .luna-label .N.move{
+    animation: luna-letter 2.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+.splashscreen .luna-label .A.move{
+    animation: luna-letter 2.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+@keyframes luna-letter {
+    from { transform: translate(0%,-50%); opacity: 0.2;}
+    to { transform: translate(0%,0%); opacity: 0.8;}
+}
+
+/*.splashscreen .luna-label.move .L{
     -webkit-transition: all  2.2s 0.2s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     -webkit-transform: translate(0%,0%);
     opacity: 0.8;
@@ -157,7 +174,7 @@ body {
     -webkit-transition: all  2.2s 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     -webkit-transform: translate(0%,0%);
     opacity: 0.8;
-}
+}*/
 
 .splashscreen .cloud-one {
     background-image: url(../img/cloud-one.png);

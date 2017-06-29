@@ -85,6 +85,7 @@ enum CommandCode:Int {
 	case AVAUDIO_RECORDER_RECORD	= 68
 	case AVAUDIO_RECORDER_STOP		= 69
 	case AUDIO_CONVERT_WAV			= 70
+    case AVAUDIO_RECORDER_RECORDING = 71
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

@@ -122,7 +122,8 @@
         AVAUDIO_RECORDER_INIT       : 67,
         AVAUDIO_RECORDER_RECORD     : 68,
         AVAUDIO_RECORDER_STOP       : 69,
-        AUDIO_CONVERT_WAV           : 70
+        AUDIO_CONVERT_WAV           : 70,
+        AVAUDIO_RECORDER_RECORDING  : 71
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -666,6 +667,30 @@
                     return new File( result );
                 });
                 return CommandProcessor.queue( command );
+            };
+
+            recorder.addEventListener = function( event_name, callback ) {
+                var command_code;
+                switch( event_name ) {
+                    case "recording":
+                        command_code = COMMAND.AVAUDIO_RECORDER_RECORDING;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback );
+            };
+
+            recorder.removeEventListener = function( event_name, event_id ) {
+                var evt_command_code;
+                switch( event_name ) {
+                    case "recording":
+                        evt_command_code = COMMAND.AVAUDIO_RECORDER_RECORDING;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( evt_command_code, event_id )
             };
 
             init();
