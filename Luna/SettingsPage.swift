@@ -114,9 +114,14 @@ class SettingsPage {
     func getPage() -> HtmlFile {
         var settingPage:HtmlFile?
         do {
+            var bundlefile = "settings.html"
+            if !SystemSettings.instance.isLoggedIn() {
+                bundlefile = "user.html"
+            }
+
             settingPage = try HtmlFile(
                 fileId: File.generateID(),
-                bundle: "settings.html",
+                bundle: bundlefile,
                 path: "resource")
         } catch {}
         return settingPage!

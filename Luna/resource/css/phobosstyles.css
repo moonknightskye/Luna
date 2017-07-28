@@ -144,6 +144,7 @@
     border-bottom: 1px solid rgba(158, 158, 158, 0.63);
 }
 
+.phobos input[type=password],
 .phobos input[type=text] {
     display: block;
 	background-color: transparent;
@@ -248,8 +249,24 @@
     to { -webkit-transform: rotate(360deg); }
 }
 
-
-
+.phobos .button {
+    border: 0px solid;
+    font-weight: bold !important;
+    text-align: center;
+    padding: 8px;
+    border-radius: 30px;
+   -webkit-user-select: none;
+   user-select: none;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+.phobos .button.pressed {
+    background-color: #FAFAFA;
+    color: #757575;
+    opacity: 1 !important;
+}
 
 
 

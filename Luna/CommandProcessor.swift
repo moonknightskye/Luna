@@ -216,6 +216,12 @@ class CommandProcessor {
 			break
         case .AVAUDIO_RECORDER_RECORDING:
             break
+		case .SYSTEM_SETTINGS:
+			checkSystemSettings( command: command )
+			break
+		case .SYSTEM_SETTINGS_SET:
+			checkSystemSettingsSet( command: command )
+			break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")

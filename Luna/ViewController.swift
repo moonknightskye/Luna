@@ -19,6 +19,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         
         SettingsPage.instance.attachListeners()
         
+        print( SystemSettings.instance.getSystemSettings() )
+        
         if UserSettings.instance.isShowSplashScreen() {
             let parameter = NSMutableDictionary()
             parameter.setValue( "splash.html", forKey: "filename")
@@ -40,7 +42,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
 
         //request1()
-//        RecordAudio.instance.checkPermission(onSuccess: { (result) in
+//        RecordAudio.instance.checkPermission(onSuccess: { (result)  in
 //            if result {
 //                RecordAudio.instance.startRecording()
 //                let _ = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(self.finishRecording), userInfo: nil, repeats: false)

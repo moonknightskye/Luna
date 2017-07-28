@@ -22,6 +22,13 @@
                 } else if( element.classList.contains("input-text") ) {
                     var textboxelem = apollo11.getElement("input", "SELECT", element);
                     initTextbox( textboxelem )
+                } else if( element.classList.contains("button") ) {
+                    element.addEventListener("touchstart", function(e){
+                        element.classList.add("pressed");
+                    });
+                    element.addEventListener("touchend", function(e){
+                        element.classList.remove("pressed");
+                    });
                 }
             });
         };
@@ -75,9 +82,6 @@
         };
 
     	function initSelect( selectelem ) {
-            console.log(selectelem)
-            console.log(selectelem.dataset.value)
-
     		var parent = apollo11.getElement( ".phobos", "SELECT" );
     		if(!parent) { return; }
 

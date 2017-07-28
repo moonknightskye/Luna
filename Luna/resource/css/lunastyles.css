@@ -176,7 +176,7 @@ body {
     opacity: 0.8;
 }*/
 
-.splashscreen .cloud-one {
+.cloud-one {
     background-image: url(../img/cloud-one.png);
     background-repeat: no-repeat;
     background-size: cover;
@@ -186,7 +186,7 @@ body {
     opacity: 0.6;
 }
 
-.splashscreen .cloud-six {
+.cloud-six {
     background-image: url(../img/cloud-six.png);
     background-repeat: repeat-x;
     background-size: contain;
@@ -199,7 +199,7 @@ body {
     left: 0px;
     opacity: 0.4;
 }
-.splashscreen .cloud-six.move {
+.cloud-six.move {
     -webkit-animation: cloudsix 4000.0s infinite ease-out;
 }
 @-webkit-keyframes cloudsix {
@@ -207,7 +207,7 @@ body {
     to { -webkit-transform: scale(1.0) translate(-90%,-34%); }
 }
 
-.splashscreen .cloud-four {
+.cloud-four {
     background-image: url(../img/cloud-four.png);
     background-repeat: repeat-x;
     background-size: contain;
@@ -220,7 +220,7 @@ body {
     opacity: 0.8;
     -webkit-transform: scale(1.3) translate(-70%,0%);
 }
-.splashscreen .cloud-four.move {
+.cloud-four.move {
     -webkit-animation: cloudfour 3000.0s infinite ease-out;
 }
 @-webkit-keyframes cloudfour {
@@ -245,7 +245,7 @@ body {
     opacity: 0.4;
 }
 
-.splashscreen .cloud-six.smove {
+.cloud-six.smove {
     -webkit-animation: scloudsix 4000.0s infinite ease-out;
 }
 @-webkit-keyframes scloudsix {
@@ -253,7 +253,7 @@ body {
     to { -webkit-transform: scale(1.0) translate(-90%,-34%); }
 }
 
-.splashscreen .cloud-four.smove {
+.cloud-four.smove {
     -webkit-animation: scloudfour 3000.0s infinite ease-out;
 }
 @-webkit-keyframes scloudfour {

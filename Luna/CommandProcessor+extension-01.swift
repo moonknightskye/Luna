@@ -26,7 +26,35 @@ extension CommandProcessor {
 //            onFail( FileError.INVALID_PARAMETERS.localizedDescription )
 //        }
 //    }
-    
+
+	public class func checkSystemSettings( command: Command ) {
+		procesSystemSettings( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	public class func procesSystemSettings( command: Command, onSuccess: ((NSDictionary)->()), onFail: ((String)->()) ){
+		onSuccess( SystemSettings.instance.getSystemSettings() )
+	}
+
+	public class func checkSystemSettingsSet( command: Command ) {
+		checkSystemSettingsSet( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	private class func checkSystemSettingsSet( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ){
+		if let key = (command.getParameter() as AnyObject).value(forKeyPath: "key") as? String,
+			let value = (command.getParameter() as AnyObject).value(forKeyPath: "value") as Any? {
+			SystemSettings.instance.set(key: key, value: value)
+			onSuccess( true )
+		} else {
+			onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+		}
+	}
+
     public class func checkUserSettingsDelete( command: Command ) {
         checkUserSettingsDelete( command: command, onSuccess: { result in
             command.resolve( value: result )

@@ -123,7 +123,9 @@
         AVAUDIO_RECORDER_RECORD     : 68,
         AVAUDIO_RECORDER_STOP       : 69,
         AUDIO_CONVERT_WAV           : 70,
-        AVAUDIO_RECORDER_RECORDING  : 71
+        AVAUDIO_RECORDER_RECORDING  : 71,
+        SYSTEM_SETTINGS             : 72,
+        SYSTEM_SETTINGS_SET         : 73
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -541,6 +543,16 @@
             });
             command.onResolve( function( result ) {
                 return new Settings( result );
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.systemSettings = function() {
+            var command = new Command({
+                command_code    : COMMAND.SYSTEM_SETTINGS
+            });
+            command.onResolve( function( result ) {
+                return new SystemSettings( result );
             });
             return CommandProcessor.queue( command );
         };
@@ -1448,6 +1460,56 @@
 
             init();
             return fileCol;
+        };
+
+        function SystemSettings( param ) {
+            var syssettings = {};
+
+            var _INTERNAL_DATA = {
+                id                 : -1,
+                username           : undefined,
+                password           : undefined,
+                company            : undefined,
+                created            : undefined,
+                lastlogin          : new Date(),
+                isactivated        : false,
+                mobile_locale      : undefined,
+                mobile_added_date  : undefined,
+                mobile_access_date : new Date(),
+                mobile_gps         : undefined,
+                mobile_model       : undefined,
+                mobile_uuid        : undefined,
+                mobile_token       : undefined
+            };
+
+            function init() {
+                _INTERNAL_DATA = apollo11.mergeJSON( param, _INTERNAL_DATA );
+            };
+
+            syssettings.getDefaults = function(){
+                return _INTERNAL_DATA;
+            };
+
+            syssettings.isLoggedIn = function() {
+                return ( _INTERNAL_DATA.username && _INTERNAL_DATA.password );
+            };
+
+            syssettings.set = function( param ) {
+                var command = new Command({
+                    command_code    : COMMAND.SYSTEM_SETTINGS_SET,
+                    parameter       : param
+                });
+                command.onResolve( function(result){
+                    var entry = {};
+                    entry[ param["key"] ] = param["value"];
+                    _INTERNAL_DATA = apollo11.mergeJSON( entry, _INTERNAL_DATA );
+                    return result;
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            init();
+            return syssettings;
         };
 
         function Settings( param ) {

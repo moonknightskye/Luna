@@ -68,11 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let token = SystemSettings.instance.get(key: "mobile_token") as? String {
             if token != deviceTokenString {
                 SystemSettings.instance.set(key: "mobile_token", value: deviceTokenString)
-                print("UPDATED!!!!!!!!")
-                // Print it to console
-                print("APNs device token: \(deviceTokenString)")
             } else {
-                print("SMAE!!!!!!!!")
                 print(token)
             }
         }

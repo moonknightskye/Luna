@@ -6,9 +6,8 @@
         <link href="css/lunastyles.css" rel="newer stylesheet" type="text/css" />
         <link href="css/phobosstyles.css" rel="newer stylesheet" type="text/css" />
         <script type="text/javascript" src="js/luna.js" ></script>
-        <script type="text/javascript" src="../Apollo11.js" ></script>
+        <script type="text/javascript" src="../apollo11.js" ></script>
         <script type="text/javascript" src="js/phobos.js" ></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <style>
 /*        PARALLAX EFFECT
         http://codepen.io/saransh/pen/BKJun
@@ -16,6 +15,7 @@
 
             .header {
                 margin-bottom: 12pt;
+                margin-left: 40px;
             }
 
             .scroller-holder {
@@ -85,10 +85,135 @@
                 color: #e57373 !important;
             }
 
+            #menu {
+                    width: 30px;
+                height: 20px;
+                transform: rotate(0deg);
+                transition: .5s ease-in-out;
+                cursor: pointer;
+                /* position: absolute; */
+                top: 16px;
+                position: fixed;
+                z-index: 151;
+            }
+
+            #menu span {
+              display: block;
+              position: absolute;
+              height: 2px;
+              width: 50%;
+              background: #9e9e9e;
+              opacity: 1;
+              transform: rotate(0deg);
+              transition: .25s ease-in-out;
+              
+            }
+
+            #menu span:nth-child(even) {
+              left: 50%;
+              border-radius: 0 9px 9px 0;
+            }
+
+            #menu span:nth-child(odd) {
+              left:0px;
+              border-radius: 9px 0 0 9px;
+            }
+
+            #menu span:nth-child(1), #menu span:nth-child(2) {
+              top: 0px;
+            }
+
+            #menu span:nth-child(3), #menu span:nth-child(4) {
+              /*top: 18px;*/
+              top: 10px;
+            }
+
+            #menu span:nth-child(5), #menu span:nth-child(6) {
+              /*top: 36px;*/
+              top: 20px;
+            }
+
+            #menu.open span:nth-child(1),#menu.open span:nth-child(6) {
+              -webkit-transform: rotate(45deg);
+              -moz-transform: rotate(45deg);
+              -o-transform: rotate(45deg);
+              transform: rotate(45deg);
+            }
+
+            #menu.open span:nth-child(2),#menu.open span:nth-child(5) {
+              -webkit-transform: rotate(-45deg);
+              -moz-transform: rotate(-45deg);
+              -o-transform: rotate(-45deg);
+              transform: rotate(-45deg);
+            }
+
+            #menu.open span:nth-child(1) {
+              left: 5px;
+              top: 4px;
+            }
+
+            #menu.open span:nth-child(2) {
+              left: calc(50% - 1px);
+              top: 4px;
+            }
+
+            #menu.open span:nth-child(3) {
+              left: -50%;
+              opacity: 0;
+            }
+
+            #menu.open span:nth-child(4) {
+              left: 100%;
+              opacity: 0;
+            }
+
+            #menu.open span:nth-child(5) {
+              left: 5px;
+              top: 13px;
+            }
+
+            #menu.open span:nth-child(6) {
+              left: calc(50% - 1px);
+              top: 13px;
+            }
+
+            .phobos .open-menu {}
+
+            .phobos .menu-content {
+                opacity: 0;
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                height: 0%;
+                width: 100%;
+                background-color: #212121;
+                transition: all 0.4s ease-in-out;
+                z-index: 150;
+            }
+            .phobos .open-menu .menu-content {
+                opacity: 1;
+                height: 100%;
+            }
+
+            .phobos .menu-content-body {
+                transition: all 0.6s ease-in-out;
+                top: -100vh;
+                opacity: 0;
+            }
+            .phobos .open-menu .menu-content-body {
+                top: 60px;
+                opacity: 1;
+            }
+
+            .menu-content-body .menu-item {
+                border-bottom: 2px solid rgba(158, 158, 158, 0.1);
+                padding: 10px;
+                margin: 0px 10px;
+            }
         </style>
         <script>
-
             var luna = new Luna();
+            
             (function(){
                 window.addEventListener("load", function(){
                     loading.classList.add("show");
@@ -96,11 +221,35 @@
                         cloud_six.classList.add("smove");
                         cloud_four.classList.add("smove");
                     },0);
+
+                    menu.addEventListener("click", function(){
+                        menu.classList.toggle("open")
+                        apollo11.getElement(".active", "SELECT").classList.toggle("open-menu")
+                    })
+
                 });
 
                 luna.addEventListener( "ready", function(){
 
-
+                    logout_btn.addEventListener("click", function(){
+                        luna.systemSettings().then(function(syssettings){
+                            Promise.all([
+                                syssettings.set({key:"id", value:-1}),
+                                syssettings.set({key:"username", value:""}),
+                                syssettings.set({key:"password", value:""}),
+                            ]).then( function(values) {
+                                luna.settings().then(function(settings){
+                                    settings.getStartupHtmlFile().then( function( html_file ){
+                                        loadPage( html_file );
+                                    }, function(error){
+                                        settings.getSettingsHtmlFile().then(function( html_file ){
+                                            loadPage( html_file, "File does not exists." );
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
                     // luna.httpPost({
                     //     method       : "POST",
                     //     url          : "https://api.recaius.jp/auth/v2/tokens",
@@ -144,8 +293,6 @@
                     //         }).then(function(result){
                     //             alert(JSON.stringify(result))
                     //         });
-
-
                     //     },0);
                     // });
 
@@ -228,9 +375,9 @@
                                 } else if( input.classList.contains("input-select-btn") ) {
                                     input.addEventListener("change",function(e){
                                         settings.set({key:input.dataset.src,value:input.dataset.value});
-                                        loading.classList.add("show");
+                                        //loading.classList.add("show");
                                         window.setTimeout(function(){
-                                            loading.classList.remove("show");
+                                          //  loading.classList.remove("show");
                                         },300);
                                     },false);
                                 }
@@ -238,6 +385,49 @@
                         });
                    });
                 });
+
+                function loadPage( html_file, errorMessage, preventLoopFlg ) {
+                    luna.getNewWebview({
+                      html_file: html_file,
+                      property: {
+                        opacity:    0,
+                        isOpaque:   false
+                      }
+                    }).then( function( webview ){
+                        webview.addEventListener( "loaded", function(result){
+                            function checkIfFinished() {
+                                if( true ){ //isLoadingFinished && isAnimationFinished
+                                    if( result.success ) {
+                                        loading.classList.remove("show")
+                                        webview.setProperty( {
+                                          opacity:1.0
+                                        }, { duration:0.3, delay:0.2 } ).then(function(result){
+                                            window.setTimeout(function(){
+                                                if( errorMessage ) {
+                                                    webview.postMessage(errorMessage, webview.getID(), true);
+                                                }
+                                                luna.closeWebview( luna.getMainWebview() );
+                                            },300);
+                                        });
+                                    } else {
+                                        if( !preventLoopFlg ) {
+                                            luna.settings().then(function(settings){
+                                                settings.getSettingsHtmlFile().then(function( html_file ){
+                                                    loadPage( html_file, result.message, true );
+                                                });
+                                            });
+                                        }
+                                    }
+                                    return;
+                                }
+                                window.requestAnimationFrame( checkIfFinished );
+                            };
+                            window.requestAnimationFrame( checkIfFinished );
+                        });
+
+                        webview.load();
+                    },function( error ){});
+                };
              })();
 
         </script>
@@ -250,6 +440,29 @@
                 <div class="scroller">
 
                     <div class="section section-setting">
+                        <div id="menu">
+                          <span></span><span></span>
+                          <span></span><span></span>
+                          <span></span><span></span>
+                        </div>
+
+                        <div class="menu-content">
+                              <div class="menu-content-body">
+                                <ul class="flex-box flex-col">
+                                    <li>
+                                        <div class="menu-item">
+                                            Sample
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div id="logout_btn" class="menu-item">
+                                            Logout
+                                        </div>
+                                    </li>
+                                </ul>
+                              </div>
+                        </div>
+
                         <div class="header">LUNA SETTINGS</div> 
 
                         <div class="section-content">
@@ -261,8 +474,7 @@
                                 </li>
                                 <li class="flex-two">
                                     <span class="phobos-input input-select-btn" data-src="show_settings" data-id="2" data-value="Shake 3 times or greater" data-choices="{
-                                      'choices': ['Shake 1 time or greater', 'Shake 3 times or greater', 'Shake 6 times or greater', '1-finger right edge swipe', '2-finger right edge swipe', '3-finger right edge swipe','1-finger left edge swipe', '2-finger left edge swipe', '3-finger left edge swipe']
-                                    }">
+                                      'choices': ['Shake 1 time or greater', 'Shake 3 times or greater', 'Shake 6 times or greater', '1-finger right edge swipe', '2-finger right edge swipe', '3-finger right edge swipe','1-finger left edge swipe', '2-finger left edge swipe', '3-finger left edge swipe']}">
                                         <span>Shake 3 times or greater</span><i class="arrow right"></i>
                                     </span>
                                 </li>
@@ -352,7 +564,6 @@
                     </div>
 
                     <div class="debug"></div>
-
                 </div>
             </div>
             <div class="background">

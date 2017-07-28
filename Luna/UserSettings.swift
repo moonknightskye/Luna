@@ -89,7 +89,7 @@ class UserSettings {
     }
     
     func getStartupHtmlFile() -> HtmlFile? {
-        if !self.isEnabled() {
+        if !self.isEnabled() || !SystemSettings.instance.isLoggedIn() {
             return SettingsPage.instance.getPage()
         }
         

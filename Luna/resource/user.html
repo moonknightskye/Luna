@@ -1,0 +1,910 @@
+<html>
+    <head>
+        <META NAME="viewport" CONTENT="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <META HTTP-EQUIV="Content-type" CONTENT="text/html, charset=UTF-8" />
+        <link href="css/matostyles.css" rel="old stylesheet" type="text/css" />
+        <link href="css/lunastyles.css" rel="newer stylesheet" type="text/css" />
+        <link href="css/phobosstyles.css" rel="newer stylesheet" type="text/css" />
+        <script type="text/javascript" src="../apollo11.js"></script>
+        <script type="text/javascript" src="js/explorer.js"></script>
+        <script type="text/javascript" src="js/phobos.js" ></script>
+        <script type="text/javascript" src="js/luna.js" ></script>
+        <script>
+        (function(){
+            var luna = new Luna();
+
+            window.addEventListener("load", function(){
+
+                var phoboselem = apollo11.getElement(".phobos", "SELECT");
+                var modeelem = apollo11.getElement(".user-setting", "SELECT");
+
+
+                //loading.classList.add("show");
+                window.setTimeout(function(){
+                    //cloud_six.classList.add("smove");
+                    cloud_four.classList.add("smove");
+                },0);
+
+                window.setTimeout(function(){
+                    //cloud_six.classList.add("smove");
+                    modeelem.dataset.mode = "login";
+                },300);
+
+                
+
+                apollo11.forEvery( apollo11.getElement("loginbtn"), function(button){
+                    button.addEventListener("click", function(e){
+                        loading.classList.add("show");
+
+                        var data = {};
+
+                        switch( modeelem.dataset.mode ) {
+                            case "login":
+                                var page = apollo11.getElement(".phobos-page.login", "SELECT");
+                                var errormsg = apollo11.getElement(".info-message", "SELECT", page);
+                                var erroricon = apollo11.getElement(".content-error", "SELECT", page);
+
+                                //errormsg.innerText = "";
+                                erroricon.classList.add("content-hide");
+
+                                apollo11.forEveryKey( {username:"", password:""}, function(value, key) {
+                                    var inputs = apollo11.getElement({src:key},"DATA", page);
+                                    apollo11.forEvery(inputs,function(input){
+                                        var inputelem = apollo11.getElement("input", "SELECT", input);
+                                        if( inputelem ) {
+                                            data[key] = inputelem.value;
+                                        }
+                                    })
+                                });
+                                explorer.ajax({
+                                    type    : "POST",
+                                    url     : "https://luna-10.herokuapp.com/login",
+                                    headers: {
+                                        "Content-Type"      : "application/json"
+                                    },
+                                    responseType: 'json',
+                                    data: JSON.stringify(data)
+                                }).then(function(logindata){
+                                    console.log(logindata)
+                                    loading.classList.remove("show")
+                                    //successmsg.innerText = "Logged in"
+                                    //modeelem.dataset.mode = "success"
+
+                                    luna.systemSettings().then(function(syssettings){
+                                        console.log(syssettings.getDefaults())
+                                        Promise.all([
+                                            syssettings.set({key:"id", value:logindata.id}),
+                                            syssettings.set({key:"username", value:logindata.username}),
+                                            syssettings.set({key:"isactivated", value:logindata.isactivated}),
+                                            syssettings.set({key:"password", value:logindata.password}),
+                                            syssettings.set({key:"company", value:logindata.company}),
+                                            syssettings.set({key:"created", value:logindata.created})
+                                        ]).then( function(values) {
+                                            luna.settings().then(function(settings){
+                                                settings.getStartupHtmlFile().then( function( html_file ){
+                                                    loadPage( html_file );
+                                                }, function(error){
+                                                    settings.getSettingsHtmlFile().then(function( html_file ){
+                                                        loadPage( html_file, "File does not exists." );
+                                                    });
+                                                });
+                                            });
+                                        });
+                                    });
+
+
+                                },function(error){
+                                    console.log(error)
+                                    errormsg.innerText = error.message;
+                                    erroricon.classList.remove("content-hide");
+
+                                    phoboselem.addEventListener("animationend", function(){
+                                        phoboselem.classList.remove("fail")
+                                    }, true);
+                                    phoboselem.classList.add("fail");
+
+                                    loading.classList.remove("show")
+                                });
+                            break;
+
+                            case "register":
+                                var page = apollo11.getElement(".phobos-page.register", "SELECT");
+                                var errormsg = apollo11.getElement(".info-message", "SELECT", page);
+                                var erroricon = apollo11.getElement(".content-error", "SELECT", page);
+
+                                //errormsg.innerText = "";
+                                erroricon.classList.add("content-hide");
+
+                                apollo11.forEveryKey( {username:"", password:"", company:""}, function(value, key) {
+                                    var inputs = apollo11.getElement({src:key},"DATA", page);
+                                    apollo11.forEvery(inputs,function(input){
+                                        if( input.dataset.value ) {
+                                            data[key] = input.dataset.value;
+                                        } else {
+                                            var inputelem = apollo11.getElement("input", "SELECT", input);
+                                            if( inputelem ) {
+                                                data[key] = inputelem.value;
+                                            }
+                                        }
+                                    })
+                                });
+
+                                explorer.ajax({
+                                    type    : "POST",
+                                    url     : "https://luna-10.herokuapp.com/register",
+                                    headers: {
+                                        "Content-Type"      : "application/json"
+                                    },
+                                    responseType: 'json',
+                                    data: JSON.stringify(data)
+                                }).then(function(result){
+                                    console.log(result)
+                                    
+                                    successmsg.innerText = "Please check your email to activate your account"
+                                    modeelem.dataset.mode = "success"
+                                },function(error){
+                                    console.log(error)
+                                    errormsg.innerText = error.message;
+                                    erroricon.classList.remove("content-hide");
+                                    phoboselem.addEventListener("animationend", function(){
+                                        phoboselem.classList.remove("fail")
+                                    }, true);
+                                    phoboselem.classList.add("fail");
+                                    loading.classList.remove("show")
+                                });
+                            break;
+
+                            case "reset":
+                                var page = apollo11.getElement(".phobos-page.reset", "SELECT");
+                                var errormsg = apollo11.getElement(".info-message", "SELECT", page);
+                                var erroricon = apollo11.getElement(".content-error", "SELECT", page);
+
+                                apollo11.forEveryKey( {username:"", password:"", company:""}, function(value, key) {
+                                    var inputs = apollo11.getElement({src:key},"DATA", apollo11.getElement(".phobos-page.reset", "SELECT"));
+                                    apollo11.forEvery(inputs,function(input){
+                                        if( input.dataset.value ) {
+                                            data[key] = input.dataset.value;
+                                        } else {
+                                            var inputelem = apollo11.getElement("input", "SELECT", input);
+                                            if( inputelem ) {
+                                                data[key] = inputelem.value;
+                                            }
+                                        }
+                                    })
+                                });
+
+                                explorer.ajax({
+                                    type    : "POST",
+                                    url     : "https://luna-10.herokuapp.com/resend",
+                                    headers: {
+                                        "Content-Type"      : "application/json"
+                                    },
+                                    responseType: 'json',
+                                    data: JSON.stringify(data)
+                                }).then(function(result){
+                                    console.log(result)
+                                    loading.classList.remove("show")
+                                    successmsg.innerText = "Please check your email to activate your account"
+                                    modeelem.dataset.mode = "success"
+                                },function(error){
+                                    console.log(error)
+                                    errormsg.innerText = error.message;
+                                    erroricon.classList.remove("content-hide");
+                                    phoboselem.addEventListener("animationend", function(){
+                                        phoboselem.classList.remove("fail")
+                                    }, true);
+                                    phoboselem.classList.add("fail");
+                                    loading.classList.remove("show")
+                                });
+                            break;
+
+                            case "resetpwd":
+                                var page = apollo11.getElement(".phobos-page.resetpassword", "SELECT");
+                                var errormsg = apollo11.getElement(".info-message", "SELECT", page);
+                                var erroricon = apollo11.getElement(".content-error", "SELECT", page);
+                                apollo11.forEveryKey( {username:"", password:"", newpassword:""}, function(value, key) {
+                                    var inputs = apollo11.getElement({src:key},"DATA", apollo11.getElement(".phobos-page.resetpwd", "SELECT"));
+                                    apollo11.forEvery(inputs,function(input){
+                                        if( input.dataset.value ) {
+                                            data[key] = input.dataset.value;
+                                        } else {
+                                            var inputelem = apollo11.getElement("input", "SELECT", input);
+                                            if( inputelem ) {
+                                                data[key] = inputelem.value;
+                                            }
+                                        }
+                                    })
+                                });
+                                explorer.ajax({
+                                    type    : "POST",
+                                    url     : "https://luna-10.herokuapp.com/changepassword",
+                                    headers: {
+                                        "Content-Type"      : "application/json"
+                                    },
+                                    responseType: 'json',
+                                    data: JSON.stringify(data)
+                                }).then(function(result){
+                                    console.log(result)
+                                    loading.classList.remove("show")
+                                    successmsg.innerText = "Password changed"
+                                    modeelem.dataset.mode = "success"
+                                },function(error){
+                                    console.log(error)
+                                    errormsg.innerText = error.message;
+                                    erroricon.classList.remove("content-hide");
+
+                                    phoboselem.addEventListener("animationend", function(){
+                                        phoboselem.classList.remove("fail")
+                                    }, true);
+                                    phoboselem.classList.add("fail");
+
+                                    loading.classList.remove("show")
+                                });
+                            break;
+                        }
+                        
+                    });
+                });
+
+                
+                apollo11.getElement(".registerbtn", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "register";
+                    hideerrormsg()
+                });
+                apollo11.getElement(".suloginbackbtn", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "login";
+                    hideerrormsg()
+                });
+                apollo11.getElement(".loginbackbtn", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "login";
+                    hideerrormsg()
+                });
+                apollo11.getElement(".resetbtn", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "reset";
+                    hideerrormsg()
+                });
+                
+                apollo11.getElement(".registerbtnreback", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "register";
+                    hideerrormsg()
+                });
+                apollo11.getElement(".registerbtnback", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "register";
+                    hideerrormsg()
+                });
+                apollo11.getElement(".resetpwbtn", "SELECT").addEventListener("click", function(){
+                    modeelem.dataset.mode = "resetpwd";
+                    hideerrormsg()
+                });
+
+                var hideerrormsg = function() {
+                    apollo11.forEvery( apollo11.getElement("content-error"), function(element){
+                        element.classList.add("content-hide")
+                    })
+                };
+
+                function loadPage( html_file, errorMessage, preventLoopFlg ) {
+                    luna.getNewWebview({
+                      html_file: html_file,
+                      property: {
+                        opacity:    0,
+                        isOpaque:   false
+                      }
+                    }).then( function( webview ){
+                        webview.addEventListener( "loaded", function(result){
+                            function checkIfFinished() {
+                                if( true ){ //isLoadingFinished && isAnimationFinished
+                                    if( result.success ) {
+                                        loading.classList.remove("show")
+                                        webview.setProperty( {
+                                          opacity:1.0
+                                        }, { duration:0.3, delay:0.2 } ).then(function(result){
+                                            window.setTimeout(function(){
+                                                if( errorMessage ) {
+                                                    webview.postMessage(errorMessage, webview.getID(), true);
+                                                }
+                                                luna.closeWebview( luna.getMainWebview() );
+                                            },300);
+                                        });
+                                    } else {
+                                        if( !preventLoopFlg ) {
+                                            luna.settings().then(function(settings){
+                                                settings.getSettingsHtmlFile().then(function( html_file ){
+                                                    loadPage( html_file, result.message, true );
+                                                });
+                                            });
+                                        }
+                                    }
+                                    return;
+                                }
+                                window.requestAnimationFrame( checkIfFinished );
+                            };
+                            window.requestAnimationFrame( checkIfFinished );
+                        });
+
+                        webview.load();
+                    },function( error ){});
+                };
+
+            });
+        })();
+        </script>
+        <style>
+
+            section.phobos {
+                background: radial-gradient(ellipse at top, rgba(66, 66, 66, 0) 0%, #000000 100%);
+                background-color: #424242;
+            }
+
+            section.phobos.fail {
+                animation: error 1s forwards ease-in-out;
+            }
+
+            @keyframes error {
+                0% { background-color: #424242; }
+                40% { background-color: #482626; }
+                100% { background-color: #424242; }
+            }
+
+            .header {
+                margin-bottom: 12pt;
+            }
+
+
+            .setting-page {
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+                opacity: 0;
+            }
+
+            .setting-page.active {
+                z-index: 100;
+/*                position: absolute !important;
+                top: 0px;
+                left: 0px;*/
+                opacity: 1;
+            }
+
+            .section-disclaimer {
+                font-size: x-small;
+                position: fixed !important;
+                left: 0px;
+                bottom: 0px;
+                margin: 10px;
+                color: #616161;
+                text-align: justify;
+            }
+
+            .section-disclaimer-title {
+                text-align: center;
+                font-weight: bold !important;
+                margin-bottom: 2pt;
+            }
+
+            .loading-holder.show {
+                opacity: 1;
+            }
+            .loading-holder {
+                transition: all 0.1s ease-in;
+                position: fixed !important;
+                bottom: 0px;
+                right: 0px;
+                opacity: 0;
+            }
+
+            .content-error {
+                transition: all 0.2s ease-in;
+                opacity: 1;
+            }
+            .content-error.content-hide {
+                opacity: 0;
+            }
+
+            .error {
+                color: #e57373 !important;
+            }
+
+            .register-button-holder {
+                position: fixed !important;
+                width: 100%;
+                bottom: 0px;
+                z-index: 100;
+                bottom: 0px;
+            }
+            .register-button-holder .button {
+                margin: 10px;
+            }
+
+            .phobos-page {
+                width: 100%;
+            }
+
+            .section-form {
+                max-width: 250px;
+                margin: auto;
+            }
+
+            .phobos.user-setting .back {
+                transition: all 0.4s ease-in-out;
+                transform: translate(-75%, -50%);
+                filter: blur(5px);
+            }
+
+
+            .phobos[data-mode="login"] .loginbtn:after {
+                content: "Login"
+            }
+            .phobos[data-mode="register"] .loginbtn:after {
+                content: "Register"
+            }
+            .phobos[data-mode="reset"] .loginbtn:after {
+                content: "Resend Email"
+            }
+            .phobos[data-mode="resetpwd"] .loginbtn:after {
+                content: "Change Password"
+            }
+            .phobos[data-mode="success"] .loginbtn {
+                opacity: 0;
+            }
+
+
+            .phobos:not([data-mode="login"]) .login {
+                z-index: 0;
+                opacity: 0;
+                left: 60%;
+                top: 40%;
+            }
+            .phobos[data-mode="start"] .login {
+                left: 50% !important;
+                top: 40% !important;
+            }
+            .phobos[data-mode="login"] .login {
+                z-index: 100;
+                opacity: 1;
+            }
+
+
+
+            .phobos[data-mode="login"] .register {
+                opacity: 0;
+                left: 40%;
+                top: 60%;
+            }
+            .phobos[data-mode="reset"] .register {
+                opacity: 0;
+                left: 60%;
+                top: 40%;
+            }
+            .phobos[data-mode="register"] .register {
+                opacity: 1;
+                z-index: 1;
+            }
+            .phobos[data-mode="resetpwd"] .register {
+                opacity: 0;
+                left: 60%;
+                top: 40%;
+            }
+
+            .phobos[data-mode="login"] .reset {
+                z-index: 0;
+                opacity: 0;
+                left: 60%;
+                top: 40%;
+            }
+            .phobos[data-mode="register"] .reset {
+                z-index: 0;
+                opacity: 0;
+                left: 40%;
+                top: 60%;
+            }
+            .phobos[data-mode="reset"] .reset {
+                opacity: 1;
+                z-index: 1;
+            }
+            .phobos[data-mode="resetpwd"] .reset {
+                z-index: 0;
+                opacity: 0;
+                left: 40%;
+                top: 60%;
+            }
+
+
+            .phobos[data-mode="login"] .resetpassword {
+                z-index: 0;
+                opacity: 0;
+                left: 60%;
+                top: 40%;
+            }
+            .phobos[data-mode="register"] .resetpassword {
+                z-index: 0;
+                opacity: 0;
+                left: 40%;
+                top: 60%;
+            }
+            .phobos[data-mode="reset"] .resetpassword {
+                z-index: 0;
+                opacity: 0;
+                left: 40%;
+                top: 60%;
+            }
+            .phobos[data-mode="resetpwd"] .resetpassword {
+                opacity: 1;
+                z-index: 1;
+            }
+
+            .phobos:not([data-mode="success"]) .successmessage {
+                top: 60%;
+            }
+            .phobos[data-mode="success"] .successmessage {
+                z-index: 100;
+                opacity: 1;
+            }
+
+
+
+
+            .phobos[data-mode="start"] .moon-position {
+                transform: translate(-50%,50%) scale(2) rotate(20deg);       
+            }
+            .phobos[data-mode="login"] .moon-position {
+                transform: translate(-50%,37%) scale(2); 
+            }
+            .phobos[data-mode="register"] .moon-position {
+                transform: translate(-50%,-50%) scale(1);              
+            }
+            .phobos[data-mode="reset"] .moon-position {
+                transform: translate(-43%,-62%) scale(0.2);
+            }
+            .phobos[data-mode="resetpwd"] .moon-position{
+                transform: translate(-58%, -67%) scale(0.12);
+            }
+
+            .phobos[data-mode="start"] .moon-position .moon{
+                filter: blur(0px);
+                opacity: 1;
+            }
+            .phobos[data-mode="register"] .moon-position .moon{
+                filter: blur(0px);
+            }
+            .phobos[data-mode="login"] .moon-position .moon {
+                filter: blur(0px);
+                
+            }
+            .phobos[data-mode="reset"] .moon-position .moon{
+                transform: rotate(45deg);
+                filter: blur(2px);
+            }
+            .phobos[data-mode="resetpwd"] .moon-position .moon{
+                filter: blur(60px);
+            }
+            .phobos[data-mode="start"] .background {
+                transform: scale(1.2) translateY(-50%);
+            }
+            .phobos[data-mode="login"] .background {
+                transform: scale(1.5) translateY(-60%);
+            }
+            .phobos[data-mode="register"] .background {
+                opacity: 0;
+            }
+
+
+            .phobos[data-mode="success"] .moon-position{
+                transform: translate(-50%, -123%) scale(1.5) rotate(-45deg);
+            }
+            .phobos[data-mode="success"] .moon-position .moon{
+                opacity: 1;
+                filter: blur(0px);
+            }
+            .phobos[data-mode="success"] .background {
+                opacity: 0.3;
+            }
+
+
+
+/*            .phobos[data-mode="login"] .moon-position {
+                transform: translate(-58%, -67%) scale(0.12);
+            }
+            .phobos[data-mode="register"] .moon-position {
+                transform: translate(-43%,-62%) scale(0.2);              
+            }
+            .phobos[data-mode="reset"] .moon-position {
+                transform: translate(-50%,-50%) scale(1);              
+            }
+            .phobos[data-mode="resetpwd"] .moon-position {
+                transform: translate(-50%,37%) scale(2);              
+            }
+
+
+            .phobos[data-mode="register"] .moon-position .moon {
+                filter: blur(10px);
+            }
+            .phobos[data-mode="resetpwd"] .moon-position .moon,
+            .phobos[data-mode="reset"] .moon-position .moon {
+                filter: blur(0px) !important;
+            }
+            .phobos[data-mode="register"] .background {
+                transform: scale(1.5) translateY(-25%);
+            }
+            .phobos[data-mode="resetpwd"] .background {
+                transform: scale(1.5) translateY(-60%);
+            }
+            .phobos[data-mode="reset"] .background {
+                opacity: 0;
+            }*/
+
+            .background,
+            .moon-position,
+            .moon {
+                transition: all 20s ease-in-out;
+            }
+
+
+            .phobos .button.suloginbackbtn,
+            .phobos .button.registerbtnreback,
+            .phobos .button.resetpwbtn,
+            .phobos .button.resetbtn,
+            .phobos .button.registerbtnback,
+            .phobos .button.loginbackbtn,
+            .phobos .button.registerbtn {
+                padding: 2px;
+                width: 130px;
+                margin: auto;
+                font-size: small;
+                border: 0px solid;
+                margin-top: 20px;
+                font-weight: bold;
+                opacity: 0.3;
+            }
+
+            .user-registry .moon {
+                background-image: url(img/luna.png);
+                background-repeat: no-repeat;
+                width: 1090px;
+                height: 1026px;
+                background-size: contain;
+                background-position: center;
+                margin: auto;
+            }
+
+            .user-registry .moon {
+                filter: blur(60px);
+                opacity: 0.4;
+            }
+
+            .successmsg {
+                margin: 0px 10px;
+            }
+
+        </style>
+    </head>
+    <body class="user-registry settings">
+        <section class="phobos user-setting matostyle" data-mode="start">
+
+            <div class="moon-position absolute-center">
+                <div class="moon moon-logo"></div>
+            </div>
+
+            <div class="phobos-page setting-page absolute-center login">
+                <div class="section section-setting section-form">
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Username
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="username">
+                                    <input type="text" value="matotest01@test.com"/>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Password
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="password">
+                                    <input type="password" minlength="6" value="password01"/>
+                                </span>
+                            </li>
+                        </ul>
+                        <div class="content-description content-error content-hide error">
+                            <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="phobos-input button registerbtn">Register</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phobos-page setting-page absolute-center register">
+                <div class="section section-setting section-form">
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Username
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="username">
+                                    <input type="text" value="matotest01@test.com"/>
+                                </span>
+                            </li>
+                        </ul>
+                        <div class="content-description">
+                            <span class="info">ⓘ</span> Input valid email. You will receive activation link after successful registration
+                        </div>
+                        <div class="content-description content-error content-hide error">
+                            <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Password
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="password">
+                                    <input type="password" minlength="6" value="password01"/>
+                                </span>
+                            </li>
+                        </ul>
+                       <div class="content-description">
+                            <span class="info">ⓘ</span> Minimum of 6 characters
+                        </div>
+                        <div class="content-description content-error content-hide error">
+                            <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Company
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-select-btn" data-src="company" data-id="2" data-value="Salesforce" data-choices="{
+                                  'choices': ['Salesforce', 'Salesforce Partner', 'Others']
+                                }">
+                                    <span>Salesforce</span><i class="arrow right"></i>
+                                </span>
+                            </li>
+                        </ul>
+                        <div class="content-description">
+                            <span class="info">ⓘ</span> Select your company
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="phobos-input button loginbackbtn">Login</div> 
+                        <div class="phobos-input button resetbtn">Resend Email</div>
+                        <div class="phobos-input button resetpwbtn">Change Password</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="phobos-page setting-page absolute-center reset">
+                <div class="section section-setting section-form">
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Username
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="username">
+                                    <input type="text" value="matotest01@test.com"/>
+                                </span>
+                            </li>
+                        </ul>
+                        <div class="content-description content-error content-hide error">
+                            <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="phobos-input button registerbtnback">Register</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phobos-page setting-page absolute-center resetpassword">
+                <div class="section section-setting section-form">
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Username
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="username">
+                                    <input type="text" value="matotest01@test.com"/>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    Old Password
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="password">
+                                    <input type="password" minlength="6" value="password01"/>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="section-content text-center">
+                        <ul class="flex-box flex-col">
+                            <li class="flex-one">
+                                <span class="content-label">
+                                    New Password
+                                </span>
+                            </li>
+                            <li class="flex-two">
+                                <span class="phobos-input input-text" data-src="newpassword">
+                                    <input type="password" minlength="6" value="password01"/>
+                                </span>
+                            </li>
+                        </ul>
+                       <div class="content-description">
+                            <span class="info">ⓘ</span> Minimum of 6 characters
+                        </div>
+                        <div class="content-description content-error content-hide error">
+                            <span class="info info-stat">⚠&#xFE0E;</span> <span class="info-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="phobos-input button registerbtnreback">Register</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phobos-page setting-page absolute-center successmessage">
+                <div class="section-content text-center">
+                    <span id="successmsg" class="successmsg">
+                        Hello
+                    </span>
+                </div>
+                <div class="section-content">
+                    <div class="phobos-input button suloginbackbtn">Login</div>
+                </div>
+            </div>
+
+
+
+
+            <div class="background">
+                <div id="cloud_four" class="cloud-four"></div> 
+            </div>
+            <div id="loading" class="loading-holder">
+                <div class="loading"></div>
+            </div>
+            <div class="register-button-holder">
+                <div class="phobos-input button loginbtn"></div>
+            </div>
+        </section>
+    </body>
+</html>

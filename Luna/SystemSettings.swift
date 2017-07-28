@@ -22,14 +22,23 @@ class SystemSettings {
         if self.get(key: "id") == nil {
             self.set(key: "id", value: "")
         }
-        if self.get(key: "email") == nil {
-            self.set(key: "email", value: "")
+        if self.get(key: "username") == nil {
+            self.set(key: "username", value: "")
         }
         if self.get(key: "password") == nil {
             self.set(key: "password", value: "")
         }
-        if self.get(key: "join_date") == nil {
-            self.set(key: "join_date", value: "")
+        if self.get(key: "company") == nil {
+            self.set(key: "company", value: "")
+        }
+        if self.get(key: "created") == nil {
+            self.set(key: "created", value: "")
+        }
+        if self.get(key: "lastlogin") == nil {
+            self.set(key: "lastlogin", value: "")
+        }
+        if self.get(key: "isactivated") == nil {
+            self.set(key: "isactivated", value: false)
         }
         
         //DEVICE SPECIFIC
@@ -39,10 +48,8 @@ class SystemSettings {
         if self.get(key: "mobile_added_date") == nil {
             self.set(key: "mobile_added_date", value: "")
         }
-        self.set(key: "mobile_access_date", value: Date.init())
-        if self.get(key: "mobile_is_activated") == nil {
-            self.set(key: "mobile_is_activated", value: false)
-        }
+        self.set(key: "mobile_access_date", value: Date.init().description)
+        
         if self.get(key: "mobile_gps") == nil {
             self.set(key: "mobile_gps", value: "")
         }
@@ -64,9 +71,19 @@ class SystemSettings {
         for (key, value) in defaults.dictionaryRepresentation() {
             if let vkey = key.indexOf(target: "system_") {
                 settings.setValue(value, forKey: key.substring(from: vkey+7))
+//                delete(key: key.substring(from: vkey+7), onSuccess: { (ddd) in}, onFail: { (ddd) in})
             }
         }
         return settings
+    }
+    
+    public func isLoggedIn() -> Bool {
+        if let loggedIn = get(key: "username") as? String {
+            if !loggedIn.isEmpty {
+                return true
+            }
+        }
+        return false
     }
     
     public func get( key:String ) -> Any? {
@@ -76,23 +93,23 @@ class SystemSettings {
     public func set( key:String, value:Any ) {
         defaults.set(value, forKey: "system_" + key )
     }
-    public func delete( key:String, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
-        if self.get(key:key) != nil {
-            defaults.removeObject(forKey: "system_" + key)
-            onSuccess(true)
-        } else {
-            onFail(FileError.INEXISTENT.localizedDescription)
-        }
-    }
-    public func add( key:String, value: Any, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
-        if self.get( key: key ) == nil {
-            defaults.set(value, forKey: key)
-            onSuccess(true)
-        } else {
-            onFail(FileError.ALREADY_EXISTS.localizedDescription)
-        }
-    }
-    
+//    public func delete( key:String, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
+//        if self.get(key:key) != nil {
+//            defaults.removeObject(forKey: "system_" + key)
+//            onSuccess(true)
+//        } else {
+//            onFail(FileError.INEXISTENT.localizedDescription)
+//        }
+//    }
+//    public func add( key:String, value: Any, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
+//        if self.get( key: key ) == nil {
+//            defaults.set(value, forKey: key)
+//            onSuccess(true)
+//        } else {
+//            onFail(FileError.ALREADY_EXISTS.localizedDescription)
+//        }
+//    }
+
 }
 
 public extension UIDevice {

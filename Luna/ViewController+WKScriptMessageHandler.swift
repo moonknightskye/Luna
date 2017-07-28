@@ -47,19 +47,19 @@ extension ViewController: WKScriptMessageHandler, WKNavigationDelegate, WKUIDele
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        print("============== ERROR LOADING ==============")
-        print(error.localizedDescription)
+        //print("============== ERROR LOADING ==============")
+        //print(error.localizedDescription)
         //CommandProcessor.processWebViewOnLoaded(wkmanager: self)
         if let webview = WebViewManager.getManager(webview: webView) {
             CommandProcessor.processWebViewOnLoaded(wkmanager: webview, isSuccess: false, errorMessage: error.localizedDescription )
         }
-        print("============== ERROR LOADING ==============")
+        //print("============== ERROR LOADING ==============")
     }
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        print("↓↓↓↓↓↓↓↓↓↓↓↓ START LOADING ↓↓↓↓↓↓↓↓↓↓↓↓")
+        //print("↓↓↓↓↓↓↓↓↓↓↓↓ START LOADING ↓↓↓↓↓↓↓↓↓↓↓↓")
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        print("↑↑↑↑↑↑↑↑↑↑↑↑ FINISH LOADING ↑↑↑↑↑↑↑↑↑↑↑↑")
+        //print("↑↑↑↑↑↑↑↑↑↑↑↑ FINISH LOADING ↑↑↑↑↑↑↑↑↑↑↑↑")
     }
     
     func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void)
