@@ -14,6 +14,53 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
+              liveagent.addEventListener( "click", function() {
+                luna.getServiceLiveAgent().then( function(serviceliveagent){
+                  console.log(serviceliveagent)
+                  serviceliveagent.chat({
+                    pod: "d.la1-c2-ukb.salesforceliveagent.com",
+                    org: "00D28000000bEbc",
+                    deployment: "572280000008Sf7",
+                    buttonid:"573280000004Hmi"
+                  }).then(function(result){
+                    luna.debug("servicesos.start: OK");
+                  }, function(error){
+                    luna.debug("servicesos.start: ERROR");
+                  });
+                })
+              })
+
+              sos.addEventListener( "click", function() {
+                luna.getServiceSOS().then( function(servicesos){
+                  servicesos.removeEventListener("stateDidChange")
+                  servicesos.addEventListener("stateDidChange", function(state){
+                    luna.debug( "servicesos stateDidChange: " + state.label);
+                  });
+                  servicesos.removeEventListener("didConnect")
+                  servicesos.addEventListener("didConnect", function(state){
+                    luna.debug( "servicesos didConnect");
+                  });
+                  servicesos.removeEventListener("didStop")
+                  servicesos.addEventListener("didStop", function(reason){
+                    luna.debug( "servicesos didStop: " + reason.label);
+                    luna.notification().then(function(userNotification){
+                        userNotification.show({title:"Service SOS Stopped", badge:0, body:reason.label, timeInterval:0.5, repeat:false});
+                    });
+                  });
+                  servicesos.call({
+                    email       : "mcivil@salesforce.com",
+                    pod         : "d.la1-c2-ukb.salesforceliveagent.com",
+                    org         : "00D28000000bEbc",
+                    deployment  : "0NW280000004Cfv",
+                    autoConnect : true
+                  }).then(function(result){
+                    luna.debug("servicesos.start: OK");
+                  }, function(error){
+                    luna.debug("servicesos.start: ERROR");
+                  });
+                });
+
+              });
 
               setting.addEventListener( "click", function() {
                 luna.settings();

@@ -8,6 +8,7 @@
         <script type="text/javascript" src="js/luna.js" ></script>
         <script type="text/javascript" src="../apollo11.js" ></script>
         <script type="text/javascript" src="js/phobos.js" ></script>
+        <script type="text/javascript" src="js/explorer.js"></script>
         <style>
 /*        PARALLAX EFFECT
         http://codepen.io/saransh/pen/BKJun
@@ -86,7 +87,7 @@
             }
 
             #menu {
-                    width: 30px;
+                width: 30px;
                 height: 20px;
                 transform: rotate(0deg);
                 transition: .5s ease-in-out;
@@ -210,10 +211,16 @@
                 padding: 10px;
                 margin: 0px 10px;
             }
+
+            .phobos-input.menu-item {
+                text-align: left;
+                border-radius: 0px;
+                font-weight: 100 !important;
+            }
         </style>
         <script>
             var luna = new Luna();
-            
+
             (function(){
                 window.addEventListener("load", function(){
                     loading.classList.add("show");
@@ -226,28 +233,90 @@
                         menu.classList.toggle("open")
                         apollo11.getElement(".active", "SELECT").classList.toggle("open-menu")
                     })
-
                 });
 
                 luna.addEventListener( "ready", function(){
-
-                    logout_btn.addEventListener("click", function(){
-                        luna.systemSettings().then(function(syssettings){
+                    luna.systemSettings().then(function(syssettings){
+                        var devicedata = syssettings.getDefaults();
+                        logout_btn.innerText = "Logout " + devicedata.username;
+                        logout_btn.addEventListener("click", function(){
+                            var userid = devicedata.id;
                             Promise.all([
                                 syssettings.set({key:"id", value:-1}),
                                 syssettings.set({key:"username", value:""}),
                                 syssettings.set({key:"password", value:""}),
                             ]).then( function(values) {
-                                luna.settings().then(function(settings){
-                                    settings.getStartupHtmlFile().then( function( html_file ){
-                                        loadPage( html_file );
-                                    }, function(error){
-                                        settings.getSettingsHtmlFile().then(function( html_file ){
-                                            loadPage( html_file, "File does not exists." );
+
+                                var loadSettings = function() {
+                                    luna.settings().then(function(settings){
+                                        settings.getStartupHtmlFile().then( function( html_file ){
+                                            loadPage( html_file );
+                                        }, function(error){
+                                            settings.getSettingsHtmlFile().then(function( html_file ){
+                                                loadPage( html_file, "File does not exists." );
+                                            });
                                         });
                                     });
+                                };
+                                
+                                var devdata = {
+                                    uiid        : devicedata.mobile_uuid,
+                                    token       : devicedata.mobile_token,
+                                    userid      : userid,
+                                };
+                                explorer.ajax({
+                                    type    : "POST",
+                                    url     : "https://luna-10.herokuapp.com/unregisterdevice",
+                                    headers: {
+                                        "Content-Type"      : "application/json"
+                                    },
+                                    responseType: 'json',
+                                    data: JSON.stringify(devdata)
+                                }).then(function(result){
+                                    console.log(result, devdata)
+                                    loadSettings();
+                                },function(error){
+                                    console.log(error, devdata);
+                                    loadSettings();
                                 });
                             });
+                        });
+
+                        var showPage = function( page ) {
+                            luna.getHtmlFile({
+                                path:       page,
+                                path_type:  "url"
+                            }).then( function( html_file ) {
+                                luna.getNewWebview({
+                                    html_file: html_file,
+                                    property: {
+                                        opacity:    0
+                                    }
+                                }).then(
+                                    function( webview ){
+                                        webview.addEventListener( "loaded", function(result){
+                                            webview.setProperty( {
+                                              opacity:1.0
+                                            }, { duration:0.3, delay:0.2 } ).then(function(result){
+                                                luna.closeWebview( luna.getMainWebview() );
+                                            });
+                                        });
+                                        webview.load();
+                                    },function(error){
+                                        luna.debug( error )
+                                    });
+                                }, function(error) {
+                                    luna.debug( "something went wrong" )
+                                }
+                            );
+                        };
+
+                        notification_btn.addEventListener("click", function(){
+                            showPage("https://luna-10.herokuapp.com/html/usernotification.html");
+                        });
+
+                        samplecode_btn.addEventListener("click", function(){
+                            showPage("https://luna-10.herokuapp.com/html/samplecodes.html");
                         });
                     });
                     // luna.httpPost({
@@ -450,12 +519,17 @@
                               <div class="menu-content-body">
                                 <ul class="flex-box flex-col">
                                     <li>
-                                        <div class="menu-item">
-                                            Sample
+                                        <div id="notification_btn" class="phobos-input menu-item button">
+                                            Send User Notification
                                         </div>
                                     </li>
                                     <li>
-                                        <div id="logout_btn" class="menu-item">
+                                        <div id="samplecode_btn" class="phobos-input menu-item button">
+                                            Sample Codes
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div id="logout_btn" class="phobos-input menu-item button">
                                             Logout
                                         </div>
                                     </li>

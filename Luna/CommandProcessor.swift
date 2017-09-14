@@ -222,6 +222,25 @@ class CommandProcessor {
 		case .SYSTEM_SETTINGS_SET:
 			checkSystemSettingsSet( command: command )
 			break
+        case .SF_SERVICESOS_INIT:
+            checkSFServiceSOSInit( command: command )
+            break
+        case .SF_SERVICESOS_START:
+            checkSFServiceSOSStart( command: command )
+            break
+        case .SF_SERVICESOS_STATECHANGE,
+             .SF_SERVICESOS_DIDSTOP,
+             .SF_SERVICESOS_DIDCONNECT:
+            break
+		case .SF_SERVICESOS_STOP:
+			checkSFServiceSOSStop( command: command )
+			break
+        case .SF_SERVICELIVEA_INIT:
+            checkSFServiceLiveAgentInit( command: command )
+            break
+        case .SF_SERVICELIVEA_START:
+            checkSFServiceLiveAgentStart( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")

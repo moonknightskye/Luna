@@ -33,7 +33,13 @@
 		706806621E9CE67F00FD630C /* FileCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706806611E9CE67F00FD630C /* FileCollection.swift */; };
 		706DE2091E556C3A005AE646 /* String+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DE2081E556C3A005AE646 /* String+extension.swift */; };
 		7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */; };
+		707577441F5D245800D2CEDB /* ViewController+ SalesforceServiceCoreDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707577431F5D245800D2CEDB /* ViewController+ SalesforceServiceCoreDelegate.swift */; };
+		707577461F5D3F9100D2CEDB /* SFServiceSOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 707577451F5D3F9100D2CEDB /* SFServiceSOS.swift */; };
+		707C323E1F4C3C8A00A91149 /* electra@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 707C323C1F4C3C8A00A91149 /* electra@2x.png */; };
+		707C323F1F4C3C8A00A91149 /* electra@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 707C323D1F4C3C8A00A91149 /* electra@3x.png */; };
 		7083C1221EE50CCA0086D9E3 /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */; };
+		708593331F6A54DE00080617 /* SFServiceLiveAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708593321F6A54DE00080617 /* SFServiceLiveAgent.swift */; };
+		708593351F6A55A300080617 /* ViewController+ SCSChatDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 708593341F6A55A300080617 /* ViewController+ SCSChatDelegate.swift */; };
 		7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */; };
 		70890FF01EF91680005E5BE9 /* SpeechToTextRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */; };
 		70890FF21EF919F0005E5BE9 /* SpeechToTextEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */; };
@@ -47,6 +53,7 @@
 		70A587BB1ECAB08C009D541D /* shirokuma@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A587BA1ECAB08C009D541D /* shirokuma@3x.png */; };
 		70A587BD1ECAB093009D541D /* shirokuma@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 70A587BC1ECAB093009D541D /* shirokuma@2x.png */; };
 		70A587BF1ECAE67A009D541D /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A587BE1ECAE67A009D541D /* UserSettings.swift */; };
+		70A713481F67AFD600AD98B7 /* URL+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A713471F67AFD600AD98B7 /* URL+extension.swift */; };
 		70B3A6711E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */; };
 		70B3A6731E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */; };
 		70B3A6751E66A41B006F4E4D /* CommandProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */; };
@@ -97,7 +104,13 @@
 		706806611E9CE67F00FD630C /* FileCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileCollection.swift; sourceTree = "<group>"; };
 		706DE2081E556C3A005AE646 /* String+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+extension.swift"; sourceTree = "<group>"; };
 		7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommandProcessor+extension-01.swift"; sourceTree = "<group>"; };
+		707577431F5D245800D2CEDB /* ViewController+ SalesforceServiceCoreDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ SalesforceServiceCoreDelegate.swift"; sourceTree = "<group>"; };
+		707577451F5D3F9100D2CEDB /* SFServiceSOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFServiceSOS.swift; sourceTree = "<group>"; };
+		707C323C1F4C3C8A00A91149 /* electra@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electra@2x.png"; sourceTree = "<group>"; };
+		707C323D1F4C3C8A00A91149 /* electra@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "electra@3x.png"; sourceTree = "<group>"; };
 		7083C1211EE50CCA0086D9E3 /* SettingsPage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
+		708593321F6A54DE00080617 /* SFServiceLiveAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFServiceLiveAgent.swift; sourceTree = "<group>"; };
+		708593341F6A55A300080617 /* ViewController+ SCSChatDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+ SCSChatDelegate.swift"; sourceTree = "<group>"; };
 		7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+URLSessionDownloadDelegate.swift"; sourceTree = "<group>"; };
 		70890FEF1EF91680005E5BE9 /* SpeechToTextRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechToTextRecorder.swift; sourceTree = "<group>"; };
 		70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechToTextEncoder.swift; sourceTree = "<group>"; };
@@ -111,6 +124,7 @@
 		70A587BA1ECAB08C009D541D /* shirokuma@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shirokuma@3x.png"; sourceTree = "<group>"; };
 		70A587BC1ECAB093009D541D /* shirokuma@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shirokuma@2x.png"; sourceTree = "<group>"; };
 		70A587BE1ECAE67A009D541D /* UserSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		70A713471F67AFD600AD98B7 /* URL+extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+extension.swift"; sourceTree = "<group>"; };
 		70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+UIImagePickerControllerDelegate.swift"; sourceTree = "<group>"; };
 		70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ViewController+WKScriptMessageHandler.swift"; sourceTree = "<group>"; };
 		70B3A6741E66A41B006F4E4D /* CommandProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandProcessor.swift; sourceTree = "<group>"; };
@@ -153,6 +167,8 @@
 		472234341EAA79BF00ACE441 /* Custom Icons */ = {
 			isa = PBXGroup;
 			children = (
+				707C323C1F4C3C8A00A91149 /* electra@2x.png */,
+				707C323D1F4C3C8A00A91149 /* electra@3x.png */,
 				7093487A1E9F44400007779D /* ic_de@2x.png */,
 				7093487B1E9F44400007779D /* ic_de@3x.png */,
 				709348721E9F43F40007779D /* bluemoon@2x.png */,
@@ -225,6 +241,8 @@
 				70890FF11EF919F0005E5BE9 /* SpeechToTextEncoder.swift */,
 				47A728DA1EF82D2A008C04E5 /* VoiceRecorder.swift */,
 				47A728DC1EFA69FD008C04E5 /* VoiceRecorder2.swift */,
+				707577451F5D3F9100D2CEDB /* SFServiceSOS.swift */,
+				708593321F6A54DE00080617 /* SFServiceLiveAgent.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -233,6 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				7071EFD31ED6CC7900027EEB /* CommandProcessor+extension-01.swift */,
+				70A713471F67AFD600AD98B7 /* URL+extension.swift */,
 				7085CD401E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift */,
 				70B3A6721E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift */,
 				70B3A6701E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift */,
@@ -244,6 +263,8 @@
 				70BB1B0B1EEA382B004604C4 /* ViewController+UNUserNotificationCenterDelegate.swift */,
 				47A728DE1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift */,
 				70BEE8711EFCA7040088EC21 /* NSMutableData+extension.swift */,
+				707577431F5D245800D2CEDB /* ViewController+ SalesforceServiceCoreDelegate.swift */,
+				708593341F6A55A300080617 /* ViewController+ SCSChatDelegate.swift */,
 			);
 			name = Extension;
 			sourceTree = "<group>";
@@ -387,10 +408,12 @@
 			files = (
 				70D76E751E2F73940089B903 /* resource in Resources */,
 				7093487D1E9F44400007779D /* ic_de@2x.png in Resources */,
+				707C323F1F4C3C8A00A91149 /* electra@3x.png in Resources */,
 				7093487E1E9F44400007779D /* ic_de@3x.png in Resources */,
 				4722343D1EAA7C9D00ACE441 /* Sputnik1.js in Resources */,
 				709348761E9F43F40007779D /* bluemoon@2x.png in Resources */,
 				70D76E5C1E2F6A4F0089B903 /* LaunchScreen.storyboard in Resources */,
+				707C323E1F4C3C8A00A91149 /* electra@2x.png in Resources */,
 				70A587BB1ECAB08C009D541D /* shirokuma@3x.png in Resources */,
 				70D76E591E2F6A4F0089B903 /* Assets.xcassets in Resources */,
 				709348771E9F43F40007779D /* bluemoon@3x.png in Resources */,
@@ -413,9 +436,34 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Luna/Pods-Luna-frameworks.sh",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/ServiceSOS.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/ServiceChat.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/ServiceCases.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/ServiceKnowledge.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/ServiceCore.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/SalesforceSDKCore.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/SalesforceHybridSDK.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/SmartSync.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/SmartStore.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/SalesforceAnalytics.framework",
+				"${PODS_ROOT}/ServiceSDK/Frameworks/SalesforceMobileSDK/CocoaLumberjack.framework",
+				"${BUILT_PRODUCTS_DIR}/Zip/Zip.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ServiceSOS.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ServiceChat.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ServiceCases.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ServiceKnowledge.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ServiceCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SalesforceSDKCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SalesforceHybridSDK.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SmartSync.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SmartStore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SalesforceAnalytics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Zip.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -433,7 +481,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Fabric/run\" 246dfe64d8bb683f7ba9d13b5360af7c3aa6b684 c977ed784ee79b09451f80f42903b1f470ee15b19e9879fad36afb2494e3eacc";
+			shellScript = "\"${PODS_ROOT}/Fabric/run\" 246dfe64d8bb683f7ba9d13b5360af7c3aa6b684 c977ed784ee79b09451f80f42903b1f470ee15b19e9879fad36afb2494e3eacc\n\"$PODS_ROOT/ServiceSDK/Frameworks/ServiceCore.framework/prepare-framework\"";
 		};
 		F59F2F8D9622BAB53E11704B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -456,13 +504,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Luna-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -476,8 +527,10 @@
 				70890FF21EF919F0005E5BE9 /* SpeechToTextEncoder.swift in Sources */,
 				70D76E6A1E2F6B760089B903 /* Utility.swift in Sources */,
 				7015B2C11EC1A91F00AE1A99 /* AVCaptureManager.swift in Sources */,
+				708593331F6A54DE00080617 /* SFServiceLiveAgent.swift in Sources */,
 				70F7903E1E80C27A0080F51E /* VideoFile.swift in Sources */,
 				70D76E571E2F6A4F0089B903 /* Luna.xcdatamodeld in Sources */,
+				708593351F6A55A300080617 /* ViewController+ SCSChatDelegate.swift in Sources */,
 				706806621E9CE67F00FD630C /* FileCollection.swift in Sources */,
 				70F7903C1E7A65330080F51E /* HtmlFile.swift in Sources */,
 				70D76E511E2F6A4F0089B903 /* ViewController.swift in Sources */,
@@ -486,6 +539,7 @@
 				47875EAF1EBCBFC200B739C7 /* ViewController+ AVCaptureMetadataOutputObjectsDelegate.swift in Sources */,
 				47A728DF1EFA6C1A008C04E5 /* ViewController+ AVAudioRecorderDelegate.swift in Sources */,
 				70BEE8721EFCA7040088EC21 /* NSMutableData+extension.swift in Sources */,
+				707577461F5D3F9100D2CEDB /* SFServiceSOS.swift in Sources */,
 				700324B31EEA9E64006D2250 /* UserNotification.swift in Sources */,
 				70642E081E77ADB400C50DD7 /* Photos.swift in Sources */,
 				705D13891E82653B0032ECBE /* AVPlayerManager.swift in Sources */,
@@ -499,6 +553,7 @@
 				47A728DB1EF82D2A008C04E5 /* VoiceRecorder.swift in Sources */,
 				704835A71E5DACF100F38D39 /* FileManager+extension.swift in Sources */,
 				7062F0971E6EB51E00CB8144 /* File.swift in Sources */,
+				707577441F5D245800D2CEDB /* ViewController+ SalesforceServiceCoreDelegate.swift in Sources */,
 				7071EFD41ED6CC7900027EEB /* CommandProcessor+extension-01.swift in Sources */,
 				47E78F221E9A874B0087F8AC /* DownloadManager.swift in Sources */,
 				47A728DD1EFA69FD008C04E5 /* VoiceRecorder2.swift in Sources */,
@@ -508,6 +563,7 @@
 				70F7903A1E7A26860080F51E /* ImageFile.swift in Sources */,
 				47E78F201E988A9C0087F8AC /* ZipFile.swift in Sources */,
 				70B3A6711E668CDB006F4E4D /* ViewController+UIImagePickerControllerDelegate.swift in Sources */,
+				70A713481F67AFD600AD98B7 /* URL+extension.swift in Sources */,
 				7001821A1E8E24B800B28C59 /* UIImage+extension.swift in Sources */,
 				7085CD411E77F67700EF5400 /* ViewController+URLSessionDownloadDelegate.swift in Sources */,
 				70B3A6731E668D2D006F4E4D /* ViewController+WKScriptMessageHandler.swift in Sources */,

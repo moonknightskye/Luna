@@ -125,7 +125,15 @@
         AUDIO_CONVERT_WAV           : 70,
         AVAUDIO_RECORDER_RECORDING  : 71,
         SYSTEM_SETTINGS             : 72,
-        SYSTEM_SETTINGS_SET         : 73
+        SYSTEM_SETTINGS_SET         : 73,
+        SF_SERVICESOS_INIT          : 74,
+        SF_SERVICESOS_START         : 75,
+        SF_SERVICESOS_STATECHANGE   : 76,
+        SF_SERVICESOS_DIDSTOP       : 77,
+        SF_SERVICESOS_DIDCONNECT    : 78,
+        SF_SERVICESOS_STOP          : 79,
+        SF_SERVICELIVEA_INIT        : 80,
+        SF_SERVICELIVEA_START       : 81
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -517,6 +525,27 @@
             return CommandProcessor.queue( command );
         };
 
+        luna.getServiceSOS = function() {
+            var command = new Command({
+                command_code    : COMMAND.SF_SERVICESOS_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( ) {
+                return new ServiceSOS();
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.getServiceLiveAgent = function() {
+            var command = new Command({
+                command_code    : COMMAND.SF_SERVICELIVEA_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( ) {
+                return new ServiceLiveAgent();
+            });
+            return CommandProcessor.queue( command );
+        };
         // luna.getCodeReader = function( parameter ) {
         //     var command = new Command({
         //         command_code    : COMMAND.GET_CODE_READER,
@@ -646,6 +675,91 @@
         /************************
             PRIVATE FUNCTIONS
         ************************/
+        function ServiceLiveAgent() {
+            var servicela = {};
+
+            function init() {};
+
+            init();
+
+            servicela.greet = function(){
+                console.log("HELLO");
+            };
+
+            servicela.chat = function( param ){
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICELIVEA_START,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return servicela;
+        };
+
+        function ServiceSOS() {
+            var servicesos = {};
+
+            function init() {};
+
+            init();
+
+            servicesos.call = function( param ){
+                if( apollo11.isUndefined(param.autoConnect) ) {
+                    param.autoConnect = false;
+                }
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICESOS_START,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            servicesos.end = function(){
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICESOS_STOP
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            servicesos.addEventListener = function( event_name, callback ) {
+                var command_code;
+                switch( event_name ) {
+                    case "stateDidChange":
+                        command_code = COMMAND.SF_SERVICESOS_STATECHANGE;
+                        break;
+                    case "didStop":
+                        command_code = COMMAND.SF_SERVICESOS_DIDSTOP;
+                        break;
+                    case "didConnect":
+                        command_code = COMMAND.SF_SERVICESOS_DIDCONNECT;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback );
+            };
+
+            servicesos.removeEventListener = function( event_name, event_id ) {
+                var evt_command_code;
+                switch( event_name ) {
+                    case "stateDidChange":
+                        evt_command_code = COMMAND.SF_SERVICESOS_STATECHANGE;
+                        break;
+                    case "didStop":
+                        evt_command_code = COMMAND.SF_SERVICESOS_DIDSTOP;
+                        break;
+                    case "didConnect":
+                        evt_command_code = COMMAND.SF_SERVICESOS_DIDCONNECT;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( evt_command_code, event_id )
+            };
+            return servicesos;
+        };
+
         function AVAudioRecorder( param ) {
             var recorder = {};
 

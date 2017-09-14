@@ -26,7 +26,7 @@
                     element.addEventListener("touchstart", function(e){
                         element.classList.add("pressed");
                     });
-                    element.addEventListener("touchend", function(e){
+                    element.addEventListener("transitionend", function(e){
                         element.classList.remove("pressed");
                     });
                 }

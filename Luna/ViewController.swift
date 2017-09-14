@@ -12,6 +12,21 @@ import AVFoundation
 //import CloudKit
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
+    
+    private let isTest = false
+    
+    private func loadTest() {
+        let parameter = NSMutableDictionary()
+        parameter.setValue( "index.html", forKey: "filename")
+        parameter.setValue( "resource", forKey: "path")
+        parameter.setValue( "bundle", forKey: "path_type")
+        
+        let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
+        commandGetFile.onResolve { ( htmlFile ) in
+            self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
+        }
+        CommandProcessor.queue(command: commandGetFile)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,25 +36,33 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         
         print( SystemSettings.instance.getSystemSettings() )
         
-        if UserSettings.instance.isShowSplashScreen() {
-            let parameter = NSMutableDictionary()
-            parameter.setValue( "splash.html", forKey: "filename")
-            parameter.setValue( "resource", forKey: "path")
-            parameter.setValue( "bundle", forKey: "path_type")
-            
-            let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
-            commandGetFile.onResolve { ( htmlFile ) in
-                self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
-            }
-            CommandProcessor.queue(command: commandGetFile)
+        
+        if isTest {
+            loadTest()
         } else {
-            if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
-                self.loadStartupPage(htmlFile: htmlFile)
+            if UserSettings.instance.isShowSplashScreen() {
+                let parameter = NSMutableDictionary()
+                parameter.setValue( "splash.html", forKey: "filename")
+                parameter.setValue( "resource", forKey: "path")
+                parameter.setValue( "bundle", forKey: "path_type")
+                
+                let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
+                commandGetFile.onResolve { ( htmlFile ) in
+                    self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
+                }
+                CommandProcessor.queue(command: commandGetFile)
             } else {
-                let htmlFile = SettingsPage.instance.getPage()
-                self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
+                if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
+                    self.loadStartupPage(htmlFile: htmlFile)
+                } else {
+                    let htmlFile = SettingsPage.instance.getPage()
+                    self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
+                }
             }
         }
+        
+        
+
 
         //request1()
 //        RecordAudio.instance.checkPermission(onSuccess: { (result)  in

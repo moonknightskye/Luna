@@ -51,8 +51,9 @@
             }
         </style>
         <script>
+            var luna = new Luna();
+            
             (function(){
-                var luna = new Luna();
                 luna.addEventListener( "ready", function(){
                     luna.debug( "iOS initialized" )
                     App.activatePage( luna );
@@ -68,6 +69,8 @@
     </head>
     <body>
         <article id="app_content" class="matostyle">
+            <div id="liveagent" class="custom-button">Live Agent</div>
+            <div id="sos" class="custom-button">SOS</div>
             <div id="setting" class="custom-button">SETTING</div>
             <div id="closeme" class="custom-button">CLOSE WINDOW</div>
             <ul class="flex-box">
@@ -174,4 +177,194 @@
         </article>
     </body>
 </html>
+
+<!--  
+
+SF_SERVICESOS_STATECHANGE   78
+SF_SERVICESOS_DIDSTOP       79
+SF_SERVICESOS_DIDCONNECT    80
+
+(NO AGENTS)
+
+
+start()
+===============================
+0 inactive
+1 configuring
+2 initializing
+3 connecting
+4 active
+
+
+
+hello sos stateDidChange
+0   : inactive
+1   : configuring
+===============================
+
+
+"OK, I GOT IT"
+===============================
+hello sos stateDidChange
+1   : configuring
+2   : initializing
+===============================
+===============================
+hello sos didError (DELETE THIS)
+No Agents Available
+===============================
+===============================
+hello sos didStopWith
+No Agents Available
+===============================
+hello sos stateDidChange
+2   : initializing
+0   : inactive
+===============================
+
+
+
+
+==================================================================
+OPERATOR CANCELED
+===============================
+hello sos stateDidChange
+0   : inactive
+1   : configuring
+===============================
+
+"OK, I GOT IT"
+===============================
+hello sos stateDidChange
+1   : configuring
+2   : initializing
+===============================
+===============================
+hello sos stateDidChange
+2   : initializing
+3   : externalUnknown
+===============================
+
+
+
+
+==================================================================
+OPERATOR DIDNT PICKED UP
+===============================
+hello sos stateDidChange
+0   : inactive
+1   : configuring
+===============================
+
+"OK, I GOT IT"
+===============================
+hello sos stateDidChange
+1   : configuring
+2   : initializing
+===============================
+hello sos stateDidChange
+2   : initializing
+3   : externalUnknown
+===============================
+
+
+==================================================================
+OPERATOR DID PICKED UP & OPERATOR CANCELLED (OR WENT OFFLINE)
+===============================
+hello sos stateDidChange
+0   : inactive
+1   : configuring
+===============================
+
+"OK, I GOT IT"
+===============================
+hello sos stateDidChange
+1   : configuring
+2   : initializing
+===============================
+===============================
+hello sos stateDidChange
+2   : initializing
+3   : externalUnknown
+===============================
+===============================
+hello sos stateDidChange
+3   : externalUnknown
+4   : active
+===============================
+===============================
+hello sosDidConnect
+===============================
+
+OPERATOR STOPPED CALL
+===============================
+1 userDisconnected
+2 agentDisconnected
+3 sessionError
+4 externalUnknown
+5 sessionTimeout
+6 backgroundedBeforeConnected
+7 invalid
+
+hello sos didStopWith
+2   : agentDisconnected
+===============================
+===============================
+hello sos stateDidChange
+4   : active
+0   : inactive
+===============================
+
+
+
+
+==================================================================
+OPERATOR DID PICKED UP & USER CANCELLED
+
+===============================
+hello sos stateDidChange
+0   : inactive
+1   : configuring
+===============================
+
+"OK, I GOT IT"
+===============================
+hello sos stateDidChange
+1   : configuring
+2   : initializing
+===============================
+===============================
+hello sos stateDidChange
+2   : initializing
+3   : connecting
+===============================
+===============================
+hello sos stateDidChange
+3   : connecting
+4   : active
+===============================
+===============================
+hello sosDidConnect
+===============================
+===============================
+hello sos didStopWith
+1   : userDisconnected
+===============================
+===============================
+hello sos stateDidChange
+4   : active
+0   : inactive
+===============================
+
+
+
+
+
+
+
+
+-->
+
+
+
 

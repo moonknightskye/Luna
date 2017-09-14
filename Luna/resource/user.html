@@ -16,8 +16,7 @@
             window.addEventListener("load", function(){
 
                 var phoboselem = apollo11.getElement(".phobos", "SELECT");
-                var modeelem = apollo11.getElement(".user-setting", "SELECT");
-
+                var modeelem = apollo11.getElement(".user-setting", "SELECT");      
 
                 //loading.classList.add("show");
                 window.setTimeout(function(){
@@ -52,7 +51,7 @@
                                     apollo11.forEvery(inputs,function(input){
                                         var inputelem = apollo11.getElement("input", "SELECT", input);
                                         if( inputelem ) {
-                                            data[key] = inputelem.value;
+                                            data[key] = inputelem.value.trim();
                                         }
                                     })
                                 });
@@ -66,12 +65,12 @@
                                     data: JSON.stringify(data)
                                 }).then(function(logindata){
                                     console.log(logindata)
-                                    loading.classList.remove("show")
                                     //successmsg.innerText = "Logged in"
                                     //modeelem.dataset.mode = "success"
 
                                     luna.systemSettings().then(function(syssettings){
-                                        console.log(syssettings.getDefaults())
+                                        var devicedata = syssettings.getDefaults();
+                                        console.log( devicedata )
                                         Promise.all([
                                             syssettings.set({key:"id", value:logindata.id}),
                                             syssettings.set({key:"username", value:logindata.username}),
@@ -80,14 +79,43 @@
                                             syssettings.set({key:"company", value:logindata.company}),
                                             syssettings.set({key:"created", value:logindata.created})
                                         ]).then( function(values) {
-                                            luna.settings().then(function(settings){
-                                                settings.getStartupHtmlFile().then( function( html_file ){
-                                                    loadPage( html_file );
-                                                }, function(error){
-                                                    settings.getSettingsHtmlFile().then(function( html_file ){
-                                                        loadPage( html_file, "File does not exists." );
+
+                                            var loadSettings = function() {
+                                                luna.settings().then(function(settings){
+                                                    settings.getStartupHtmlFile().then( function( html_file ){
+                                                        loading.classList.remove("show");
+                                                        loadPage( html_file );
+                                                    }, function(error){
+                                                        settings.getSettingsHtmlFile().then(function( html_file ){
+                                                            loading.classList.remove("show");
+                                                            loadPage( html_file, "File does not exists." );
+                                                        });
                                                     });
                                                 });
+                                            };
+
+                                            var devdata = {
+                                                uiid        : devicedata.mobile_uuid,
+                                                token       : devicedata.mobile_token,
+                                                userid      : logindata.id,
+                                                model       : devicedata.mobile_model,
+                                                locale      : devicedata.mobile_locale,
+                                                gps         : devicedata.mobile_gps
+                                            };
+                                            explorer.ajax({
+                                                type    : "POST",
+                                                url     : "https://luna-10.herokuapp.com/registerdevice",
+                                                headers: {
+                                                    "Content-Type"      : "application/json"
+                                                },
+                                                responseType: 'json',
+                                                data: JSON.stringify(devdata)
+                                            }).then(function(result){
+                                                console.log(result)
+                                                loadSettings();
+                                            },function(error){
+                                                console.log(error);
+                                                loadSettings();
                                             });
                                         });
                                     });
@@ -119,11 +147,11 @@
                                     var inputs = apollo11.getElement({src:key},"DATA", page);
                                     apollo11.forEvery(inputs,function(input){
                                         if( input.dataset.value ) {
-                                            data[key] = input.dataset.value;
+                                            data[key] = input.dataset.value.trim();
                                         } else {
                                             var inputelem = apollo11.getElement("input", "SELECT", input);
                                             if( inputelem ) {
-                                                data[key] = inputelem.value;
+                                                data[key] = inputelem.value.trim();
                                             }
                                         }
                                     })
@@ -142,6 +170,19 @@
                                     
                                     successmsg.innerText = "Please check your email to activate your account"
                                     modeelem.dataset.mode = "success"
+
+                                    apollo11.forEvery( apollo11.getElement({src:"username"},"DATA"), function(elem){
+                                        var inpt = apollo11.getElement("INPUT","TAG",elem)[0]
+                                        if( inpt ) {
+                                            inpt.value = data.username;
+                                        }
+                                    })
+
+                                    // luna.systemSettings().then(function(syssettings){
+                                    //     var devicedata = syssettings.getDefaults();
+                                    //     syssettings.set({key:"username", value:logindata.username})
+                                    // })
+
                                 },function(error){
                                     console.log(error)
                                     errormsg.innerText = error.message;
@@ -163,11 +204,11 @@
                                     var inputs = apollo11.getElement({src:key},"DATA", apollo11.getElement(".phobos-page.reset", "SELECT"));
                                     apollo11.forEvery(inputs,function(input){
                                         if( input.dataset.value ) {
-                                            data[key] = input.dataset.value;
+                                            data[key] = input.dataset.value.trim();
                                         } else {
                                             var inputelem = apollo11.getElement("input", "SELECT", input);
                                             if( inputelem ) {
-                                                data[key] = inputelem.value;
+                                                data[key] = inputelem.value.trim();
                                             }
                                         }
                                     })
@@ -206,11 +247,11 @@
                                     var inputs = apollo11.getElement({src:key},"DATA", apollo11.getElement(".phobos-page.resetpwd", "SELECT"));
                                     apollo11.forEvery(inputs,function(input){
                                         if( input.dataset.value ) {
-                                            data[key] = input.dataset.value;
+                                            data[key] = input.dataset.value.trim();
                                         } else {
                                             var inputelem = apollo11.getElement("input", "SELECT", input);
                                             if( inputelem ) {
-                                                data[key] = inputelem.value;
+                                                data[key] = inputelem.value.trim();
                                             }
                                         }
                                     })
@@ -543,10 +584,10 @@
 
 
             .phobos[data-mode="start"] .moon-position {
-                transform: translate(-50%,50%) scale(2) rotate(20deg);       
+                transform: translate(-50%,60%) scale(2.2) rotate(10deg);       
             }
             .phobos[data-mode="login"] .moon-position {
-                transform: translate(-50%,37%) scale(2); 
+                transform: translate(-50%,39%) scale(2); 
             }
             .phobos[data-mode="register"] .moon-position {
                 transform: translate(-50%,-50%) scale(1);              
@@ -694,7 +735,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="username">
-                                    <input type="text" value="matotest01@test.com"/>
+                                    <input type="text" value=""/> <!-- matotest01@test.com -->
                                 </span>
                             </li>
                         </ul>
@@ -709,7 +750,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="password">
-                                    <input type="password" minlength="6" value="password01"/>
+                                    <input type="password" minlength="6" value=""/> <!-- password01 -->
                                 </span>
                             </li>
                         </ul>
@@ -735,7 +776,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="username">
-                                    <input type="text" value="matotest01@test.com"/>
+                                    <input type="text" value=""/>
                                 </span>
                             </li>
                         </ul>
@@ -756,7 +797,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="password">
-                                    <input type="password" minlength="6" value="password01"/>
+                                    <input type="password" minlength="6" value=""/>
                                 </span>
                             </li>
                         </ul>
@@ -808,7 +849,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="username">
-                                    <input type="text" value="matotest01@test.com"/>
+                                    <input type="text" value=""/>
                                 </span>
                             </li>
                         </ul>
@@ -834,7 +875,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="username">
-                                    <input type="text" value="matotest01@test.com"/>
+                                    <input type="text" value=""/>
                                 </span>
                             </li>
                         </ul>
@@ -849,7 +890,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="password">
-                                    <input type="password" minlength="6" value="password01"/>
+                                    <input type="password" minlength="6" value=""/>
                                 </span>
                             </li>
                         </ul>
@@ -864,7 +905,7 @@
                             </li>
                             <li class="flex-two">
                                 <span class="phobos-input input-text" data-src="newpassword">
-                                    <input type="password" minlength="6" value="password01"/>
+                                    <input type="password" minlength="6" value=""/>
                                 </span>
                             </li>
                         </ul>

@@ -81,6 +81,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Persist it in your backend in case it's new
     }
     
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        //luna://?settings=mato
+        //mato
+        let params = url.queryItems["settings"]
+        print(params ?? "none")
+        print(url)
+        return true
+    }
+    
     // Called when APNs failed to register the device for push notifications
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         // Print the error to console (you should alert the user that registration failed)

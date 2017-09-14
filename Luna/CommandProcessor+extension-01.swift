@@ -8,6 +8,8 @@
 
 import Foundation
 import UserNotifications
+import ServiceCore
+import ServiceSOS
 
 extension CommandProcessor {
     
@@ -26,6 +28,96 @@ extension CommandProcessor {
 //            onFail( FileError.INVALID_PARAMETERS.localizedDescription )
 //        }
 //    }
+    
+    public class func checkSFServiceLiveAgentInit( command: Command ) {
+        processSFServiceLiveAgentInit( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceLiveAgentInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        let _ = SFServiceLiveAgent.instance.getInstance()
+        onSuccess( true )
+    }
+    
+    public class func checkSFServiceLiveAgentStart( command: Command ) {
+        processSFServiceLiveAgentStart( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceLiveAgentStart( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let buttonid = (command.getParameter() as AnyObject).value(forKeyPath: "buttonid") as? String,
+            let pod = (command.getParameter() as AnyObject).value(forKeyPath: "pod") as? String,
+            let org = (command.getParameter() as AnyObject).value(forKeyPath: "org") as? String,
+            let deployment = (command.getParameter() as AnyObject).value(forKeyPath: "deployment") as? String {
+            
+            SFServiceLiveAgent.instance.start(pod: pod, org: org, deployment: deployment, buttonid:buttonid,
+                onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+        }
+    }
+    
+    public class func checkSFServiceSOSInit( command: Command ) {
+        processSFServiceSOSInit( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceSOSInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        let _ = SFServiceSOS.instance.getInstance()
+        onSuccess( true )
+    }
+    
+    public class func processSFServiceSOSstateChange( value: NSDictionary) {
+        getCommand(commandCode: .SF_SERVICESOS_STATECHANGE) { (command) in
+            command.update(value: value)
+        }
+    }
+    public class func processSFServiceSOSdidConnect(){
+        getCommand(commandCode: .SF_SERVICESOS_DIDCONNECT) { (command) in
+            command.update(value: true)
+        }
+    }
+	public class func processSFServiceSOSdidStop( value: NSDictionary) {
+		getCommand(commandCode: .SF_SERVICESOS_DIDSTOP) { (command) in
+			command.update(value: value)
+		}
+	}
+
+    public class func checkSFServiceSOSStart( command: Command ) {
+        processSFServiceSOSStart( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceSOSStart( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+		if let isautoConnect = (command.getParameter() as AnyObject).value(forKeyPath: "autoConnect") as? Bool,
+        let email = (command.getParameter() as AnyObject).value(forKeyPath: "email") as? String,
+		let pod = (command.getParameter() as AnyObject).value(forKeyPath: "pod") as? String,
+		let org = (command.getParameter() as AnyObject).value(forKeyPath: "org") as? String,
+		let deployment = (command.getParameter() as AnyObject).value(forKeyPath: "deployment") as? String {
+            SFServiceSOS.instance.getInstance().start( isautoConnect:isautoConnect, email: email, pod: pod, org: org, deployment: deployment, onSuccess: onSuccess, onFail: onFail)
+		} else {
+			onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+		}
+    }
+
+	public class func checkSFServiceSOSStop( command: Command ) {
+		processSFServiceSOSStop( command: command, onSuccess: { result in
+			command.resolve( value: result )
+		}, onFail: { errorMessage in
+			command.reject( errorMessage: errorMessage )
+		})
+	}
+	public class func processSFServiceSOSStop( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+		SFServiceSOS.instance.getInstance().stop(onSuccess: onSuccess, onFail: onFail)
+	}
 
 	public class func checkSystemSettings( command: Command ) {
 		procesSystemSettings( command: command, onSuccess: { result in
@@ -81,6 +173,9 @@ extension CommandProcessor {
         if let key = (command.getParameter() as AnyObject).value(forKeyPath: "key") as? String {
             if let value = UserSettings.instance.get(key: key) {
                 onSuccess( value )
+                return
+            } else {
+                onFail( "key does not exists" )
                 return
             }
         }

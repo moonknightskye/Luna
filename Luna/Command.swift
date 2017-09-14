@@ -88,6 +88,14 @@ enum CommandCode:Int {
     case AVAUDIO_RECORDER_RECORDING = 71
 	case SYSTEM_SETTINGS			= 72
 	case SYSTEM_SETTINGS_SET		= 73
+    case SF_SERVICESOS_INIT         = 74
+    case SF_SERVICESOS_START        = 75
+    case SF_SERVICESOS_STATECHANGE  = 76
+    case SF_SERVICESOS_DIDSTOP      = 77
+    case SF_SERVICESOS_DIDCONNECT   = 78
+	case SF_SERVICESOS_STOP			= 79
+    case SF_SERVICELIVEA_INIT       = 80
+    case SF_SERVICELIVEA_START      = 81
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution
