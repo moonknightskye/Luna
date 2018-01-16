@@ -5,6 +5,8 @@
 //  Created by Mart Civil on 2017/01/18.
 //  Copyright © 2017年 salesforce.com. All rights reserved.
 //
+// Build Phases/ Run Script/ "${PODS_ROOT}/Fabric/run" 246dfe64d8bb683f7ba9d13b5360af7c3aa6b684 c977ed784ee79b09451f80f42903b1f470ee15b19e9879fad36afb2494e3eacc
+
 
 import UIKit
 import AVFoundation
@@ -13,7 +15,7 @@ import AVFoundation
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
     
-    private let isTest = false
+    private let isTest = true
     
     private func loadTest() {
         let parameter = NSMutableDictionary()
@@ -27,54 +29,101 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         }
         CommandProcessor.queue(command: commandGetFile)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         Shared.shared.ViewController = self
         
         SettingsPage.instance.attachListeners()
         
         print( SystemSettings.instance.getSystemSettings() )
         
-        
-        if isTest {
-            loadTest()
+        if self.isTest {
+            self.loadTest()
         } else {
-            if UserSettings.instance.isShowSplashScreen() {
-                let parameter = NSMutableDictionary()
-                parameter.setValue( "splash.html", forKey: "filename")
-                parameter.setValue( "resource", forKey: "path")
-                parameter.setValue( "bundle", forKey: "path_type")
-                
-                let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
-                commandGetFile.onResolve { ( htmlFile ) in
-                    self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
-                }
-                CommandProcessor.queue(command: commandGetFile)
-            } else {
-                if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
-                    self.loadStartupPage(htmlFile: htmlFile)
-                } else {
-                    let htmlFile = SettingsPage.instance.getPage()
-                    self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
-                }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.checkCustomURLScheme()
+            }
+        }
+    }
+    
+    public func checkCustomURLScheme() {
+        if let id = SystemSettings.instance.get(key: "id") as? Int {
+            if id != -1 {
+                let command = Command( commandCode: CommandCode.LOGACCESS )
+                CommandProcessor.queue(command: command)
             }
         }
         
+        if let customURLScheme = Shared.shared.customURLScheme {
+            if let startup_page = customURLScheme.queryItems["startup_page"] {
+                UserSettings.instance.setShowSplashScreen(show: false)
+                UserSettings.instance.setStartupEnabled(enabled: true)
+                UserSettings.instance.setStartupPage(fileName: startup_page)
+                UserSettings.instance.setPathType(pathType: "URL")
+            } else {
+                let userNotification = Command( commandCode: CommandCode.USER_NOTIFICATION )
+                userNotification.onResolve(fn: { (success) in
+                    let parameter = NSMutableDictionary()
+                    parameter.setValue( "Failed to load Startup Page", forKey: "title")
+                    parameter.setValue( "startup_page not set as a parameter in URL Scheme", forKey: "body")
+                    parameter.setValue( 0, forKey: "badge")
+                    parameter.setValue( Double(0.5), forKey: "timeInterval")
+                    parameter.setValue( false, forKey: "repeat")
+                    let userNotificationMsg = Command( commandCode: CommandCode.USER_NOTIFICATION_SHOWMSG, parameter: parameter )
+                    CommandProcessor.queue(command: userNotificationMsg)
+                })
+                CommandProcessor.queue(command: userNotification)
+            }
+        }
         
-
-
-        //request1()
-//        RecordAudio.instance.checkPermission(onSuccess: { (result)  in
-//            if result {
-//                RecordAudio.instance.startRecording()
-//                let _ = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(self.finishRecording), userInfo: nil, repeats: false)
-//            }
-//        }) { (error) in
-//            print(error)
-//        }
-        
+        loadDefaultView()
     }
+    
+    public func loadDefaultView() {
+        if UserSettings.instance.isShowSplashScreen() {
+            let parameter = NSMutableDictionary()
+            parameter.setValue( "splash.html", forKey: "filename")
+            parameter.setValue( "resource", forKey: "path")
+            parameter.setValue( "bundle", forKey: "path_type")
+            
+            let commandGetFile = Command( commandCode: CommandCode.GET_HTML_FILE, parameter: parameter )
+            commandGetFile.onResolve { ( htmlFile ) in
+                self.loadStartupPage(htmlFile: htmlFile as! HtmlFile)
+            }
+            CommandProcessor.queue(command: commandGetFile)
+        } else {
+            if let htmlFile = UserSettings.instance.getStartupHtmlFile() {
+                self.loadStartupPage(htmlFile: htmlFile)
+            } else {
+                let htmlFile = SettingsPage.instance.getPage()
+                self.loadStartupPage(htmlFile: htmlFile, errorMessage: "File does not exists.")
+            }
+        }
+    }
+    
+    
+//    private func request1() {
+//        let parameters = NSMutableDictionary()
+//        parameters.setValue( "GET", forKey: "method")
+//        parameters.setValue( "http://luna-10.herokuapp.com/getusersanddevice", forKey: "url")
+//        let headers = NSMutableDictionary()
+//        headers.setValue( "application/json", forKey: "Content-Type")
+//        headers.setValue( "application/json", forKey: "Accept")
+//        parameters.setValue( headers, forKey: "headers")
+//        let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
+//        command.onResolve { ( result ) in
+//            print(result)
+//        }
+//        CommandProcessor.queue(command: command)
+//    }
+    
+    
 
 //    func finishRecording() {
 //        RecordAudio.instance.stopRecording()
@@ -203,6 +252,8 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
                 
                 if let isSuccess = (result as AnyObject).value(forKeyPath: "success") as? Bool {
                     
+                    Shared.shared.isAppLoaded = true
+                    
                     if isSuccess {
                         let setpropparam = NSMutableDictionary()
                         let propparam = NSMutableDictionary()
@@ -216,7 +267,7 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
                             
                             if errorMessage != nil {
                                 let messageprop = NSMutableDictionary()
-                                messageprop.setValue( errorMessage!, forKey: "message")
+                                messageprop.setValue( "[ERROR] " + errorMessage!, forKey: "message")
                                 messageprop.setValue( false, forKey: "isSendToAll")
                                 messageprop.setValue( true, forKey: "isSendUntilRecieved")
                                 

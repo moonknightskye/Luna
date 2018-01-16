@@ -58,17 +58,47 @@
                     luna.debug( "iOS initialized" )
                     App.activatePage( luna );
 
-                    luna.getMainWebview().onLoading(function(progress){
-                        luna.debug( "Loading: " + progress + "%" );
-                    }).then(function(result){
-                        luna.debug( "webview.onLoading: " + result );
-                    });
+                    // luna.getMainWebview().onLoading(function(progress){
+                    //     luna.debug( "Loading: " + progress + "%" );
+                    // }).then(function(result){
+                    //     luna.debug( "webview.onLoading: " + result );
+                    // });
                 });
              })();
         </script>
     </head>
     <body>
         <article id="app_content" class="matostyle">
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="getallmonitored" class="custom-button">Get All Beacons</div> 
+                </li>
+            </ul>
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="beacontransmit" class="custom-button">Transmit</div> 
+                </li>
+                <li class="flex-one">
+                    <div id="beaconstop" class="custom-button">Stop</div> 
+                </li>
+                <li class="flex-one">
+                    <div id="beaconstopallscan" class="custom-button">Stop All Scan</div> 
+                </li>
+            </ul>
+            <ul class="flex-box">
+                <li class="flex-one">
+                    <div id="monitorscan" class="custom-button">Monitor</div> 
+                </li>
+                <li class="flex-one">
+                    <div id="stopmonitorscan" class="custom-button">Stop Monitor</div> 
+                </li>
+                <li class="flex-one">
+                    <div id="beaconscan" class="custom-button">Ranging</div> 
+                </li>
+                <li class="flex-one">
+                    <div id="stopbeaconscan" class="custom-button">Stop Raging</div> 
+                </li>
+            </ul>
             <div id="liveagent" class="custom-button">Live Agent</div>
             <div id="sos" class="custom-button">SOS</div>
             <div id="setting" class="custom-button">SETTING</div>

@@ -52,8 +52,7 @@ extension ViewController: SOSDelegate {
     func sosDidConnect(_ sos: SOSSessionManager!) {
         CommandProcessor.processSFServiceSOSdidConnect()
     }
-
-
+    
     /**
      *  Tells the delegate that the SOS state changed.
      *

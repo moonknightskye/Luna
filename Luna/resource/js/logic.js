@@ -1,4 +1,4 @@
-(function( $window, $document ) {
+ (function( $window, $document ) {
   "use strict";
  
       $window.App = (function(){
@@ -14,20 +14,176 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
-              liveagent.addEventListener( "click", function() {
-                luna.getServiceLiveAgent().then( function(serviceliveagent){
-                  console.log(serviceliveagent)
-                  serviceliveagent.chat({
-                    pod: "d.la1-c2-ukb.salesforceliveagent.com",
-                    org: "00D28000000bEbc",
-                    deployment: "572280000008Sf7",
-                    buttonid:"573280000004Hmi"
-                  }).then(function(result){
-                    luna.debug("servicesos.start: OK");
+              luna.ibeacon().then(function(ibeacon){
+
+                luna.debug( "ibeacon: OK");
+
+                ibeacon.addEventListener("didUpdate", function(state){
+                  luna.debug( "ibeacon didUpdate: " + state.label);
+                })
+
+                ibeacon.addEventListener("onRange", function(beacon){
+                  beaconscan.innerText = "Ranging: " + beacon.proximity.code;
+                })
+
+                ibeacon.addEventListener("onMonitor", function(beacon){
+                  monitorscan.innerText = "Monitor: " + beacon.state.code;
+                })
+
+                getallmonitored.addEventListener( "click", function() {
+                  ibeacon.getMonitoredBeacons().then(function(result){
+                    var total = result.monitor.length + result.range.length;
+                    luna.debug("ibeacon.getMonitoredBeacons: OK");
+                    getallmonitored.innerText = "Get All Beacons: " + total;
+                    console.log( result );
                   }, function(error){
-                    luna.debug("servicesos.start: ERROR");
+                    luna.debug("ibeacon.getMonitoredBeacons: " + error);
+                    getallmonitored.innerText = "Get All Beacons: 0";
                   });
                 })
+
+                beacontransmit.addEventListener( "click", function() {
+                  ibeacon.transmit({uiid: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5"}).then(function(result){
+                    luna.debug("ibeacon.transmit: OK");
+                  }, function(error){
+                    luna.debug("ibeacon.transmit: " + error);
+                  });
+                })
+
+                beaconstop.addEventListener( "click", function() {
+                  ibeacon.stop().then(function(result){
+                    luna.debug("ibeacon.stop: OK");
+                  }, function(error){
+                    luna.debug("ibeacon.stop: " + error);
+                  });
+                })
+
+                beaconscan.addEventListener( "click", function() {
+                  ibeacon.startRangingScan({uiid: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5"}).then(function(result){
+                    luna.debug("ibeacon.ranging: OK");
+                  }, function(error){
+                    luna.debug("ibeacon.ranging: " + error);
+                  });
+                })
+                stopbeaconscan.addEventListener( "click", function() {
+                  ibeacon.stopRangingScan({uiid: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5"}).then(function(result){
+                    luna.debug("ibeacon.stopranging: OK");
+                    beaconscan.innerText = "Ranging";
+                  }, function(error){
+                    luna.debug("ibeacon.stopranging: " + error);
+                  });
+                })
+
+                monitorscan.addEventListener( "click", function() {
+                  ibeacon.startMonitoringScan({uiid: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5"}).then(function(result){
+                    luna.debug("ibeacon.monitor: OK");
+                  }, function(error){
+                    luna.debug("ibeacon.monitor: " + error);
+                  });
+                })
+                stopmonitorscan.addEventListener( "click", function() {
+                  ibeacon.stopMonitoringScan({uiid: "5A4BCFCE-174E-4BAC-A814-092E77F6B7E5"}).then(function(result){
+                    luna.debug("ibeacon.stopmonitor: OK");
+                    monitorscan.innerText = "Monitor";
+                  }, function(error){
+                    luna.debug("ibeacon.stopmonitor: " + error);
+                  });
+                })
+
+                beaconstopallscan.addEventListener( "click", function() {
+                  ibeacon.stopAllScan().then(function(result){
+                    luna.debug("ibeacon.stopAllScan: OK");
+                    monitorscan.innerText = "Monitor";
+                    beaconscan.innerText = "Ranging";
+                  }, function(error){
+                    luna.debug("ibeacon.stopAllScan: " + error);
+                  });
+                })
+
+              }, function(error){
+                luna.debug( "no ibeacon: " + error);
+              })
+              
+
+              // https://login.salesforce.com/?un=admin%40swtt16auto.demo&pw=sfdcj111
+              luna.getServiceLiveAgent({
+                  liveAgentPod: "d.la1-c2-ukb.salesforceliveagent.com",
+                  orgId: "00D28000000bEbc",
+                  deploymentId: "572280000008Sf7",
+                  buttonId:"573280000004Hmi",
+                  visitorName: "長谷川 聡"
+                }).then( function(serviceliveagent){
+                  
+                serviceliveagent.removeEventListener("stateDidChange")
+                serviceliveagent.addEventListener("stateDidChange", function(state){
+                  luna.debug( "serviceliveagent stateDidChange: " + state.label);
+                });
+
+                serviceliveagent.removeEventListener("didEnd")
+                serviceliveagent.addEventListener("didEnd", function(reason){
+                  luna.debug( "serviceliveagent didEnd: " + reason.label);
+                  luna.notification().then(function(userNotification){
+                      userNotification.show({title:"Service LiveAgent Stopped", badge:0, body:reason.label, timeInterval:0.5, repeat:false});
+                  });
+                });
+
+                serviceliveagent.clearPrechatObject().then(function(result){
+                  luna.debug("serviceliveagent.clearPrechatObject: OK");
+                }, function(error){
+                  luna.debug("serviceliveagent.clearPrechatObject: ERROR");
+                });
+
+                //search for Contact
+                serviceliveagent.addPrechatObject({
+                  entityName        : "Contact",
+                  saveToTranscript  : "Contact",
+                  linkToEntityName  : "Case",
+                  linkToEntityField : "ContactId",
+                  fields            : [
+                    {label:"First Name", value:"聡", fieldName:"FirstName", doFind:true, isExactMatch:true, doCreate:true},
+                    {label:"Last Name", value:"長谷川", fieldName:"LastName", doFind:true, isExactMatch:true, doCreate:true},
+                    {label:"Email", value:"tethom8+hasegawa@gmail.com", fieldName:"Email", doFind:true, isExactMatch:true, doCreate:true}
+                  ]
+                }).then(function(result){
+                  luna.debug("serviceliveagent.addPrechatObject: OK");
+                }, function(error){
+                  luna.debug("serviceliveagent.addPrechatObject: ERROR");
+                });
+
+                // //create a case and show it
+                serviceliveagent.addPrechatObject({
+                  entityName        : "Case",
+                  saveToTranscript  : "Case",
+                  showOnCreate      : true,
+                  fields            : [
+                    {label:"Subject", value:"Live Agent Chat Session", fieldName:"Subject", doCreate:true}
+                  ]
+                }).then(function(result){
+                  luna.debug("serviceliveagent.addPrechatObject: OK");
+                }, function(error){
+                  luna.debug("serviceliveagent.addPrechatObject: ERROR");
+                });
+
+
+                liveagent.addEventListener( "click", function() {
+                  serviceliveagent.checkAvailability().then(function(isavailable){
+                    if(isavailable) {
+                      luna.debug("serviceliveagent.checkAvailability: available");
+                      serviceliveagent.chat().then(function(result){
+                        console.log(result);
+                      }, function(error){
+                        console.log(error);
+                      });
+                    } else {
+                      luna.debug("serviceliveagent.checkAvailability: not available");
+                      luna.notification().then(function(userNotification){
+                          userNotification.show({title:"Service LiveAgent", badge:0, body:"Agent not Available", timeInterval:0.5, repeat:false});
+                      });
+                    }
+                  })
+                  
+                })
+
               })
 
               sos.addEventListener( "click", function() {

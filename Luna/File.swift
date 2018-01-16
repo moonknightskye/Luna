@@ -204,15 +204,19 @@ class File {
     
     public init( fileId:Int, url:String ) throws {
 		if url.isValidURL() {
+
             if let filePath = URL(string: url) {
                 self.setFilePath(filePath: filePath)
             } else {
                 throw FileError.INVALID_PARAMETERS
             }
             
-            if let filename = url.getFilenameFromURL() {
-                self.setFileName(fileName: filename)
-            }
+            //getFilenameFromURL -> isValidURL -> canOpenURL needs to run in main
+            //DispatchQueue.main.async {
+                if let filename = url.getFilenameFromURL() {
+                    self.setFileName(fileName: filename)
+                }
+            //}
             self.setPathType(pathType: FilePathType.URL_TYPE)
             self.setID(fileId: fileId)
         } else {

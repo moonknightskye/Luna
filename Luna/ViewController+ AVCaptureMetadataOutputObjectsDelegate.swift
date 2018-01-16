@@ -12,8 +12,9 @@ import UIKit
 
 //http://qiita.com/inoue0426/items/4f31e61a494eeb507881
 extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhotoCaptureDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
-    
-	func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
+
+	func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        print("reading..")
         if let avCaptureManager = AVCaptureManager.getActiveManager() {
             CommandProcessor.getCommand(commandCode: CommandCode.AV_CAPTURE_SCANCODE, ifFound: { (command) in
                 if let avmgr = CommandProcessor.getAVCaptureManager(command: command) {
@@ -36,18 +37,25 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
             })
         }
 	}
-    
-    func capture(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhotoSampleBuffer photoSampleBuffer: CMSampleBuffer?, previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-        if let photoSampleBuffer = photoSampleBuffer {
-            let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
-            let image = UIImage(data: photoData!)
-            print("YAY")
-            UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
-        }
-    }
-    
-    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
-        
+
+	@available(iOS 11.0, *)
+	func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+		let photoData = photo.fileDataRepresentation()
+		let image = UIImage(data: photoData!)
+		UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
+	}
+
+//    func photoOutput(_ captureOutput: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
+//        if let photoSampleBuffer = photoSampleBuffer {
+//            let photoData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+//            let image = UIImage(data: photoData!)
+//            print("YAY")
+//            UIImageWriteToSavedPhotosAlbum(image!, nil, nil, nil)
+//        }
+//    }
+
+    func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        print("HELLO WOLRD ******************************************")
         if let avCaptureManager = AVCaptureManager.getActiveManager() {
             CommandProcessor.getCommand(commandCode: CommandCode.AV_CAPTURE_SHOOT_IMAGE, ifFound: { (command) in
                 if let avmgr = CommandProcessor.getAVCaptureManager(command: command) {
@@ -85,7 +93,10 @@ extension ViewController: AVCaptureMetadataOutputObjectsDelegate, AVCapturePhoto
         let height:Int = CVPixelBufferGetHeight(imageBuffer)
         
         let colorSpace:CGColorSpace = CGColorSpaceCreateDeviceRGB()
-        let newContext:CGContext = CGContext(data: baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace,  bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue|CGBitmapInfo.byteOrder32Little.rawValue)!
+        let newContext:CGContext = CGContext(data: baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow:
+            
+            
+            bytesPerRow, space: colorSpace,  bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue|CGBitmapInfo.byteOrder32Little.rawValue)!
         
         let imageRef:CGImage = newContext.makeImage()!
         let resultImage = UIImage(cgImage: imageRef, scale: 1.0, orientation: .right)

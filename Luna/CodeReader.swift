@@ -24,26 +24,26 @@ class CodeReader {
 	var onFound:((String)->Void)?
 
 	let supportedCodeTypes = [
-        AVMetadataObjectTypeUPCECode,
-        AVMetadataObjectTypeCode39Code,
-        AVMetadataObjectTypeCode39Mod43Code,
-        AVMetadataObjectTypeCode93Code,
-        AVMetadataObjectTypeCode128Code,
-        AVMetadataObjectTypeEAN8Code,
-        AVMetadataObjectTypeEAN13Code,
-        AVMetadataObjectTypeAztecCode,
-        AVMetadataObjectTypePDF417Code,
-        AVMetadataObjectTypeQRCode]
+        AVMetadataObject.ObjectType.upce,
+        AVMetadataObject.ObjectType.code39,
+        AVMetadataObject.ObjectType.code39Mod43,
+        AVMetadataObject.ObjectType.code93,
+        AVMetadataObject.ObjectType.code128,
+        AVMetadataObject.ObjectType.ean8,
+        AVMetadataObject.ObjectType.ean13,
+        AVMetadataObject.ObjectType.aztec,
+        AVMetadataObject.ObjectType.pdf417,
+        AVMetadataObject.ObjectType.qr]
 
 
 	init() throws{
 		captureSession = AVCaptureSession()
-        captureSession.sessionPreset = AVCaptureSessionPreset1920x1080
+        captureSession.sessionPreset = AVCaptureSession.Preset.hd1920x1080
         
-		let videoCaptureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+		let videoCaptureDevice = AVCaptureDevice.default(for: AVMediaType.video)
 		let videoInput: AVCaptureDeviceInput
 		do {
-			videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
+			videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice!)
 		} catch {
 			throw FileError.UNKNOWN_ERROR
 		}
@@ -77,7 +77,7 @@ class CodeReader {
             captureSession.addOutput(stillVideoOutput)
             
             stillVideoOutput.alwaysDiscardsLateVideoFrames = true
-            stillVideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable : Int(kCVPixelFormatType_32BGRA)]
+            stillVideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable as! String : Int(kCVPixelFormatType_32BGRA)]
             stillVideoOutput.setSampleBufferDelegate(Shared.shared.ViewController, queue: DispatchQueue.main)
             
         } else {
@@ -89,7 +89,7 @@ class CodeReader {
 		previewLayer = AVCaptureVideoPreviewLayer(session: captureSession);
 		previewLayer.frame = Shared.shared.ViewController.view.layer.bounds
 
-		previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+		previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill;
 		previewLayer.frame.size.width = 200
 		previewLayer.frame.size.height = 200
 		previewLayer.frame.origin.y = 200
@@ -175,7 +175,7 @@ class CodeReader {
     }
     
     func takeSilentPhoto() {
-        if var _:AVCaptureConnection? = stillVideoOutput.connection( withMediaType: AVMediaTypeVideo ) {
+        if var _:AVCaptureConnection? = stillVideoOutput.connection( with: AVMediaType.video ) {
             didTakeSilentPhoto = true
         }
     }

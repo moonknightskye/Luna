@@ -19,23 +19,19 @@
 					<string>bluemoon</string>
 				</array>
 			</dict>
-			<key>de</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>ic_de</string>
-				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
-			</dict>
 			<key>electra</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>electra</string>
 				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
+			</dict>
+			<key>jppost</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>jppost</string>
+				</array>
 			</dict>
 			<key>redmoon</key>
 			<dict>
@@ -44,22 +40,13 @@
 					<string>redmoon</string>
 				</array>
 			</dict>
-			<key>shirokuma</key>
+			<key>tamarun</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>shirokuma</string>
+					<string>tamarun</string>
 				</array>
-				<key>UIPrerenderedIcon</key>
-				<false/>
 			</dict>
-		</dict>
-		<key>CFBundlePrimaryIcon</key>
-		<dict>
-			<key>CFBundleIconFiles</key>
-			<array>
-				<string>AppIcon60x60</string>
-			</array>
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
@@ -83,12 +70,6 @@
 			<array>
 				<string>luna</string>
 			</array>
-			<key>property</key>
-			<string></string>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>None</string>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
@@ -115,17 +96,33 @@
 		<true/>
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>luna-10.herokuapp.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Luna is requesting to access Camera on this device</string>
+	<string>Luna is requesting access Camera on this device</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Luna is requesting to access Location service on this device</string>
+	<string>Luna is requesting access Location service on this device</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Luna is requesting access Location Always Usage service on this device</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Luna is requesting access Location Always and When in Use service on this device</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Luna is requesting to access Microphone on this device</string>
+	<string>Luna is requesting access Microphone on this device</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Luna is requesting to access Motion Sensors on this device</string>
+	<string>Luna is requesting access Motion Sensors on this device</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Luna is requesting to access Photo Library on this device</string>
+	<string>Luna is requesting access Photo Library on this device</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -141,7 +138,7 @@
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
+	<string>UIStatusBarStyleBlackTranslucent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

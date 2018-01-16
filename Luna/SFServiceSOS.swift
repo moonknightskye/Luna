@@ -12,6 +12,8 @@ import ServiceSOS
 
 class SFServiceSOS: SOSOnboardingBaseViewController {
 
+    //https://developer.salesforce.com/docs/atlas.en-us.noversion.service_sdk_ios.meta/service_sdk_ios/check_agent_availability.htm
+    
     static let instance:SFServiceSOS = SFServiceSOS()
     var isValid = false
 
@@ -45,7 +47,7 @@ class SFServiceSOS: SOSOnboardingBaseViewController {
                 
                 
 				options.customFieldData = ["SCQuickSetup__CurrentEmail__c": email]
-				SCServiceCloud.sharedInstance().sos.startSession(with: options, completion: { (error, session) in
+				ServiceCloud.shared().sos.startSession(with: options, completion: { (error, session) in
 					if error != nil {
                         let errorStr = error!.localizedDescription
                         var err = "The following SOSOptions are invalid: "
@@ -72,10 +74,10 @@ class SFServiceSOS: SOSOnboardingBaseViewController {
 		if !isValid {
 			onFail( "SFServiceSOS not initialized" )
 		} else {
-			if SCServiceCloud.sharedInstance().sos.state != SOSSessionState.active {
+			if ServiceCloud.shared().sos.state != SOSSessionState.active {
 				onFail( "No active SOS session" )
 			} else {
-				SCServiceCloud.sharedInstance().sos.stopSession(completion: { (error, session) in
+				ServiceCloud.shared().sos.stopSession(completion: { (error, session) in
 					if error != nil {
 						onFail( error!.localizedDescription )
 					} else {
@@ -91,12 +93,12 @@ class SFServiceSOS: SOSOnboardingBaseViewController {
     }
 
     private func instantiate() {
-        SCServiceCloud.sharedInstance().sos.add( Shared.shared.ViewController )
+        ServiceCloud.shared().sos.add( Shared.shared.ViewController )
         isValid = true
     }
     
     private func deinstantiate() {
-        SCServiceCloud.sharedInstance().sos.remove( Shared.shared.ViewController )
+        ServiceCloud.shared().sos.remove( Shared.shared.ViewController )
         isValid = false
     }
 

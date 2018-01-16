@@ -8,8 +8,8 @@
 
 import UIKit
 import CoreData
-import Fabric
-import Crashlytics
+//import Fabric
+//import Crashlytics
 import UserNotifications
 
 
@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
-        Fabric.with([Crashlytics.self])
+        //Fabric.with([Crashlytics.self])
 
         let _ = FileManager.deleteDocumentFolder(relative: "CACHE")
 		FileManager.initiCloudDirectory()
@@ -33,6 +33,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
         application.registerForRemoteNotifications()
         
+        return true
+    }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        Shared.shared.customURLScheme = url
+        if Shared.shared.isAppLoaded {
+            for (_, manager) in WebViewManager.LIST.enumerated() {
+                manager.close()
+            }
+            Shared.shared.ViewController.checkCustomURLScheme()
+        }
         return true
     }
 
@@ -79,16 +90,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //D8BADA3155BAE7DFB675898F71A49C1E1AB1AF3270F8A3542CD57F18E49D1EDF ip6plus
         
         // Persist it in your backend in case it's new
-    }
-    
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        //luna://?settings=mato
-        //mato
-        let params = url.queryItems["settings"]
-        print(params ?? "none")
-        print(url)
-        return true
     }
     
     // Called when APNs failed to register the device for push notifications

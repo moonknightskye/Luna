@@ -217,6 +217,27 @@
                 border-radius: 0px;
                 font-weight: 100 !important;
             }
+
+            .phobos::after {
+              content: "";
+              width: 100%;
+              height: 100%;
+              background-color: rgba(33, 33, 33, 0);
+              position: fixed !important;
+              transition: .5s ease-in-out;
+            }
+            .phobos.wait::after {
+              z-index: 1000;
+              background-color: rgba(33, 33, 33, 0.9);
+            }
+            .loading-holder {
+              opacity: 0;
+            }
+            .phobos.wait .loading-holder {
+              opacity: 1;
+              z-index: 10001;
+            }
+
         </style>
         <script>
             var luna = new Luna();
@@ -228,6 +249,10 @@
                         cloud_six.classList.add("smove");
                         cloud_four.classList.add("smove");
                     },0);
+
+                    window.setTimeout(function(){
+                        apollo11.getElement("input", "SELECT").focus();
+                    },300);
 
                     menu.addEventListener("click", function(){
                         menu.classList.toggle("open")
@@ -274,6 +299,7 @@
                                     data: JSON.stringify(devdata)
                                 }).then(function(result){
                                     console.log(result, devdata)
+                                    syssettings.set({key:"mobile_id", value:-1});
                                     loadSettings();
                                 },function(error){
                                     console.log(error, devdata);
@@ -283,6 +309,7 @@
                         });
 
                         var showPage = function( page ) {
+                            apollo11.getElement(".phobos", "SELECT").classList.add("wait");
                             luna.getHtmlFile({
                                 path:       page,
                                 path_type:  "url"
@@ -299,6 +326,7 @@
                                               opacity:1.0
                                             }, { duration:0.3, delay:0.2 } ).then(function(result){
                                                 luna.closeWebview( luna.getMainWebview() );
+                                                apollo11.getElement(".phobos", "SELECT").classList.remove("wait");
                                             });
                                         });
                                         webview.load();
@@ -366,8 +394,11 @@
                     // });
 
                     luna.getMainWebview().addEventListener("message", function( message ) {
+                        if( !message.startsWith("[ERROR]") ) {
+                            return;
+                        }
                         luna.notification().then(function(userNotification){
-                            userNotification.show({title:"Failed to load Startup Page", badge:0, body:message, timeInterval:0.5, repeat:false
+                            userNotification.show({title:"Failed to load Startup Page", badge:0, body:message.substring(8, message.length), timeInterval:0.5, repeat:false
                                // ,choices:[
                                //  {title:"Penx", value:"Penx", action: function(){ alert("Pen") }},
                                //  {title:"Pineapplex", value:"Pineapplex", action: function(){ alert("Pineapple") }},

@@ -89,7 +89,7 @@ extension ViewController: WKScriptMessageHandler, WKNavigationDelegate, WKUIDele
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void)
     {
         let alertController = UIAlertController(title: "", message: prompt, preferredStyle: .alert)
-        let okHandler: () -> Void = { handler in
+        let okHandler: () -> Void = { 
             if let textField = alertController.textFields?.first {
                 completionHandler(textField.text)
             } else {

@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '10.3'
+platform :ios, '11.0'
 source 'https://github.com/CocoaPods/Specs.git'
 source 'https://github.com/goinstant/pods-specs-public'
 
@@ -11,5 +11,5 @@ target 'Luna' do
   pod 'ServiceSDK'
   pod 'Fabric'
   pod 'Crashlytics'
-  pod 'Zip', '~> 0.7'
+  pod 'Zip'
 end

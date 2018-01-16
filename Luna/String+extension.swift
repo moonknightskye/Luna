@@ -11,7 +11,7 @@ import Foundation
 extension String {
     
     var length:Int {
-        return self.characters.count
+        return self.count
     }
     
     func charAt(at: Int) -> Character {
@@ -21,7 +21,7 @@ extension String {
     
     func indexOf(target: String) -> Int? {
         let range = (self as NSString).range(of: target)
-        guard range.toRange() != nil else {
+        guard Range(range) != nil else {
             return nil
         }
         return range.location
@@ -29,7 +29,7 @@ extension String {
     
     func lastIndexOf(target: String) -> Int? {
         let range = (self as NSString).range(of: target, options: NSString.CompareOptions.backwards)
-        guard range.toRange() != nil else {
+        guard Range(range) != nil else {
             return nil
         }
         return range.location
@@ -42,7 +42,7 @@ extension String {
     
     func substring(from: Int?, to: Int?) -> String {
         if let start = from {
-            guard start < self.characters.count else {
+            guard start < self.length else {
                 return ""
             }
         }
@@ -63,12 +63,12 @@ extension String {
             startIndex = self.startIndex
         }
         let endIndex: String.Index
-        if let end = to, end >= 0, end < self.characters.count {
+        if let end = to, end >= 0, end < self.length {
             endIndex = self.index(self.startIndex, offsetBy: end)
         } else {
             endIndex = self.endIndex
         }
-        return self[startIndex ..< endIndex]
+        return String(self[startIndex ..< endIndex])
     }
     
     func substring(from: Int) -> String {
@@ -133,7 +133,18 @@ extension String {
         return nil
     }
     
-    func getFilenameFromFilePath() ->String? {
+    func toBool() -> Bool {
+        switch self {
+        case "True", "true", "yes", "1":
+            return true
+        case "False", "false", "no", "0":
+            return false
+        default:
+            return false
+        }
+    }
+    
+    func getFilenameFromFilePath() -> String? {
         var string = self
         if let ampersand = self.indexOf(target: "#") {
             string = string.substring(from: 0, to: ampersand)
@@ -151,10 +162,17 @@ extension String {
     }
     
     func isValidURL() -> Bool {
-        if let url  = URL(string: self) {
-            return Shared.shared.UIApplication.canOpenURL( url )
+        let types: NSTextCheckingResult.CheckingType = [.link]
+        let detector = try? NSDataDetector(types: types.rawValue)
+        guard (detector != nil && self.length > 0) else { return false }
+        if detector!.numberOfMatches(in: self, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, self.length)) > 0 {
+            return true
         }
         return false
+//        if let url  = URL(string: self) {
+//            return Shared.shared.UIApplication.canOpenURL( url )
+//        }
+//        return false
     }
 
 }

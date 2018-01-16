@@ -89,7 +89,7 @@
     content: "";
     width: 22px;
     height: 22px;
-    z-index: 1;
+    z-index: -1 !important;
     position: absolute !important;
     background-color: #9E9E9E;
     border-radius: 12px;
@@ -144,16 +144,31 @@
     border-bottom: 1px solid rgba(158, 158, 158, 0.63);
 }
 
+.phobos textarea,
 .phobos input[type=password],
+.phobos input[type=number],
 .phobos input[type=text] {
     display: block;
-	background-color: transparent;
+    background-color: transparent;
     width: 90%;
     border: 0px;
     color: #9E9E9E;
     font-size: 14pt;
     padding: 0px;
-	border-radius: 0px;
+    border-radius: 0px;
+    border-bottom: 1px solid transparent;
+    top: 2px;
+}
+.phobos input[type=password]:focus,
+.phobos input[type=number]:focus,
+.phobos input[type=text]:focus {
+    border-bottom: 1px solid #FAFAFA;
+}
+
+.phobos textarea {
+    width: 100%;
+    border: 1px solid;
+    padding: 0px 10px;
 }
 
 @keyframes showclose {
@@ -265,7 +280,7 @@
 .phobos .button.pressed {
     background-color: #FAFAFA;
     color: #757575;
-    opacity: 1 !important;
+    opacity: 0.5 !important;
     transform: scale(0.94);
 }
 

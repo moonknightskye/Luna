@@ -29,7 +29,194 @@ extension CommandProcessor {
 //        }
 //    }
     
+    public class func checkiBeaconInit( command: Command ) {
+        processiBeaconInit( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        iBeacon.instance.checkPermissionAction = { isPermitted in
+            if isPermitted {
+                onSuccess( true )
+            } else {
+                onFail("Scanning denied")
+            }
+        }
+        iBeacon.instance.requestAuthorization(status: .authorizedAlways)
+    }
+
+    public class func checkiBeaconTransmit( command: Command ) {
+        processiBeaconTransmit( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconTransmit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let regiondict = (command.getParameter() as AnyObject).value(forKeyPath: "region") as? NSDictionary {
+            if let region = iBeacon.instance.getBeaconRegion(from: regiondict) {
+                iBeacon.instance.transmitiBeacon(region: region, onSuccess: onSuccess, onFail: onFail)
+            } else {
+                onFail("Invalid region")
+            }
+        }
+    }
+    
+    public class func checkiBeaconStop( command: Command ) {
+        processiBeaconStop( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconStop( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        iBeacon.instance.stopiBeacon(onSuccess: onSuccess, onFail: onFail)
+    }
+    
+    public class func checkiBeaconRangingScanner( command: Command ) {
+        processiBeaconRangingScanner( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconRangingScanner( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let regionsdict = (command.getParameter() as AnyObject).value(forKeyPath: "regions") as? [NSDictionary] {
+            iBeacon.instance.startiBeaconRangingScanner(regions: iBeacon.instance.getBeaconRegion(from: regionsdict), onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail("Invalid regions")
+        }
+    }
+    public class func checkiBeaconStopRangingScanner( command: Command ) {
+        processiBeaconStopRangingScanner( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconStopRangingScanner( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let regionsdict = (command.getParameter() as AnyObject).value(forKeyPath: "regions") as? [NSDictionary] {
+            iBeacon.instance.stopiBeaconRangingScanner(regions: iBeacon.instance.getBeaconRegion(from: regionsdict), onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail("Invalid regions")
+        }
+    }
+    
+    public class func checkiBeaconStartMonitoring( command: Command ) {
+        processiBeaconStartMonitoring( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconStartMonitoring( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let regionsdict = (command.getParameter() as AnyObject).value(forKeyPath: "regions") as? [NSDictionary] {
+            iBeacon.instance.startiBeaconMonitoringScanner(regions: iBeacon.instance.getBeaconRegion(from: regionsdict), onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail("Invalid regions")
+        }
+    }
+    public class func checkiBeaconStopMonitoring( command: Command ) {
+        processiBeaconStopMonitoring( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconStopMonitoring( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let regionsdict = (command.getParameter() as AnyObject).value(forKeyPath: "regions") as? [NSDictionary] {
+            iBeacon.instance.stopiBeaconMonitoringScanner(regions: iBeacon.instance.getBeaconRegion(from: regionsdict), onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail("Invalid regions")
+        }
+    }
+    
+    public class func checkiBeaconGetAllBeacons( command: Command ) {
+        processiBeaconGetAllBeacons( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconGetAllBeacons( command: Command, onSuccess: @escaping((NSMutableDictionary)->()), onFail: @escaping((String)->()) ) {
+        iBeacon.instance.getAllMonitoredBeacons(onSuccess: onSuccess, onFail: onFail)
+    }
+    
+    public class func checkiBeaconStopAllScan( command: Command ) {
+        processiBeaconStopAllScan( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processiBeaconStopAllScan( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        iBeacon.instance.stopAlliBeaconScanner(onSuccess: onSuccess, onFail: onFail)
+    }
+    
+    public class func processiBeaconDidUpdate( value: NSDictionary) {
+        getCommand(commandCode: .BEACON_DIDUPDATE) { (command) in
+            command.update(value: value)
+        }
+    }
+    public class func processiBeaconOnRange( value: NSMutableDictionary) {
+        getCommand(commandCode: .BEACON_ONRANGE) { (command) in
+            command.update(value: value)
+        }
+    }
+    public class func processiBeaconOnMonitor( value: NSMutableDictionary) {
+        getCommand(commandCode: .BEACON_ONMONITOR) { (command) in
+            command.update(value: value)
+        }
+    }
+    
+    public class func processSFServiceLiveAgentstateChange( value: NSDictionary) {
+        getCommand(commandCode: .SF_SERVICELIVEA_STATECHANGE) { (command) in
+            command.update(value: value)
+        }
+    }
+    public class func processSFServiceLiveAgentDidend( value: NSDictionary) {
+        getCommand(commandCode: .SF_SERVICELIVEA_DIDEND) { (command) in
+            command.update(value: value)
+        }
+    }
+    
+    public class func checkLogAccess( command: Command ) {
+        processLogAccess( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processLogAccess( command: Command, onSuccess: @escaping((Any)->()), onFail: @escaping((String)->()) ) {
+        if let id = SystemSettings.instance.get(key: "id") as? Int, let mobile_id = SystemSettings.instance.get(key: "mobile_id") as? Int {
+            let parameters = NSMutableDictionary()
+            parameters.setValue( "POST", forKey: "method")
+            parameters.setValue( "http://luna-10.herokuapp.com/logaccess", forKey: "url")
+            let headers = NSMutableDictionary()
+            headers.setValue( "application/json", forKey: "Content-Type")
+            headers.setValue( "application/json", forKey: "Accept")
+            parameters.setValue( headers, forKey: "headers")
+            let data = NSMutableDictionary()
+            data.setValue( id, forKey: "userid")
+            data.setValue( mobile_id, forKey: "deviceid")
+            parameters.setValue( data, forKey: "data")
+            let command = Command( commandCode: CommandCode.HTTP_POST, parameter: parameters )
+            command.onResolve { ( result ) in
+                onSuccess( result )
+            }
+            command.onReject { (error) in
+                onFail( error )
+            }
+            CommandProcessor.queue(command: command)
+        } else {
+            onFail("No userid or mobile id")
+        }
+    }
+    
     public class func checkSFServiceLiveAgentInit( command: Command ) {
+        //https://developer.salesforce.com/docs/atlas.en-us.noversion.service_sdk_ios.meta/service_sdk_ios/live_agent_prechat_fields.htm
         processSFServiceLiveAgentInit( command: command, onSuccess: { result in
             command.resolve( value: result )
         }, onFail: { errorMessage in
@@ -37,8 +224,56 @@ extension CommandProcessor {
         })
     }
     public class func processSFServiceLiveAgentInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
-        let _ = SFServiceLiveAgent.instance.getInstance()
-        onSuccess( true )
+        if let buttonId = (command.getParameter() as AnyObject).value(forKeyPath: "buttonId") as? String,
+            let liveAgentPod = (command.getParameter() as AnyObject).value(forKeyPath: "liveAgentPod") as? String,
+            let orgId = (command.getParameter() as AnyObject).value(forKeyPath: "orgId") as? String,
+            let deploymentId = (command.getParameter() as AnyObject).value(forKeyPath: "deploymentId") as? String {
+            
+            let visitorName = (command.getParameter() as AnyObject).value(forKeyPath: "visitorName") as? String ?? "Guest User"
+
+            SFServiceLiveAgent.instance.instantiate(liveAgentPod: liveAgentPod, orgId: orgId, deploymentId: deploymentId, buttonId: buttonId, visitorName: visitorName, onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail( FileError.INVALID_PARAMETERS.localizedDescription )//msaito@electra.demo
+        }
+        
+
+    }
+    
+    public class func checkSFServiceLiveAgentAddPrechatObject( command: Command ) {
+        processSFServiceLiveAgentAddPrechatObject( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceLiveAgentAddPrechatObject( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        if let prechatObject = (command.getParameter() as AnyObject).value(forKeyPath: "prechatObject") as? NSDictionary {
+            SFServiceLiveAgent.instance.addPrechatObject(prechatObject: prechatObject, onSuccess: onSuccess, onFail: onFail)
+        } else {
+            onFail( FileError.INVALID_PARAMETERS.localizedDescription )
+        }
+    }
+    
+    public class func checkSFServiceLiveAgentClearPrechatObject( command: Command ) {
+        processSFServiceLiveAgentClearPrechatObject( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceLiveAgentClearPrechatObject( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        SFServiceLiveAgent.instance.clearPrechatObject(onSuccess: onSuccess, onFail: onFail)
+    }
+    
+    public class func checkSFServiceLiveAgentCheckAvailability( command: Command ) {
+        processSFServiceLiveAgentCheckAvailability( command: command, onSuccess: { result in
+            command.resolve( value: result )
+        }, onFail: { errorMessage in
+            command.reject( errorMessage: errorMessage )
+        })
+    }
+    public class func processSFServiceLiveAgentCheckAvailability( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+        SFServiceLiveAgent.instance.checkAvailability(onSuccess: onSuccess, onFail: onFail)
     }
     
     public class func checkSFServiceLiveAgentStart( command: Command ) {
@@ -49,16 +284,7 @@ extension CommandProcessor {
         })
     }
     public class func processSFServiceLiveAgentStart( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
-        if let buttonid = (command.getParameter() as AnyObject).value(forKeyPath: "buttonid") as? String,
-            let pod = (command.getParameter() as AnyObject).value(forKeyPath: "pod") as? String,
-            let org = (command.getParameter() as AnyObject).value(forKeyPath: "org") as? String,
-            let deployment = (command.getParameter() as AnyObject).value(forKeyPath: "deployment") as? String {
-            
-            SFServiceLiveAgent.instance.start(pod: pod, org: org, deployment: deployment, buttonid:buttonid,
-                onSuccess: onSuccess, onFail: onFail)
-        } else {
-            onFail( FileError.INVALID_PARAMETERS.localizedDescription )
-        }
+        SFServiceLiveAgent.instance.start(onSuccess: onSuccess, onFail: onFail)
     }
     
     public class func checkSFServiceSOSInit( command: Command ) {
@@ -276,8 +502,6 @@ extension CommandProcessor {
     }
     
     private class func processUserNotificationShowMessage( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
-        
-        
         let content = UNMutableNotificationContent()
         let requestIdentifier = "LunaNotification\(command.getCommandID())"
         print( requestIdentifier )
@@ -354,73 +578,75 @@ extension CommandProcessor {
     }
     
     private class func processHttpPost( command: Command, onSuccess: @escaping((NSDictionary)->()), onFail: @escaping((String)->()) ) {
-        
-        
-        if let url = ((command.getParameter() as AnyObject).value(forKeyPath: "url") as? String ) {
-            var request = URLRequest(url: URL(string: url)!)
-            
-            let method = ((command.getParameter() as AnyObject).value(forKeyPath: "method") as? String ) ?? "POST"
-            request.httpMethod = method
-            
-            if let parameters = ((command.getParameter() as AnyObject).value(forKeyPath: "data") as? NSDictionary ) {
-                request.httpBody = Utility.shared.dictionaryToJSON(dictonary: parameters).data(using: .utf8)
-            }
-            if let multipart = ((command.getParameter() as AnyObject).value(forKeyPath: "multipart") as? NSDictionary ) {
+       // if Reachability.isConnectedToNetwork(){
+            if let url = ((command.getParameter() as AnyObject).value(forKeyPath: "url") as? String ) {
+                var request = URLRequest(url: URL(string: url)!)
                 
-                //let boundary = "Boundary-\(UUID().uuidString)"
-                let boundary = self.createBoundary()
-                request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+                let method = ((command.getParameter() as AnyObject).value(forKeyPath: "method") as? String ) ?? "POST"
+                request.httpMethod = method
                 
-                let pmtrs = multipart.value(forKeyPath: "parameters") as! NSDictionary
-                let dataUrl = multipart.value(forKeyPath: "dataUrl") as! URL
-                let data = multipart.value(forKeyPath: "data") as! Data
-                let mimeType = multipart.value(forKeyPath: "mimeType") as! String
-                let filename = multipart.value(forKeyPath: "filename") as! String
-                
-                let body = self.createBody(
-                    parameters  : pmtrs,
-                    boundary    : boundary,
-                    dataUrl     : dataUrl,
-                    data        : data,
-                    mimeType    : mimeType,
-                    filename    : filename
-                )
-                request.httpBody = body as Data
-                request.setValue(String(body.length), forHTTPHeaderField: "Content-Length")
-            }
-            if let header = ((command.getParameter() as AnyObject).value(forKeyPath: "headers") as? NSDictionary ) {
-                for (key, _) in header {
-                    request.addValue(header[ key ] as! String, forHTTPHeaderField: key as! String)
+                if let parameters = ((command.getParameter() as AnyObject).value(forKeyPath: "data") as? NSDictionary ) {
+                    request.httpBody = Utility.shared.dictionaryToJSON(dictonary: parameters).data(using: .utf8)
                 }
-            }
-            
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                guard let data = data, error == nil else {
-                    // check for fundamental networking error
-                    onFail( error!.localizedDescription )
-                    //print("error=\(error!)")
-                    return
+                if let multipart = ((command.getParameter() as AnyObject).value(forKeyPath: "multipart") as? NSDictionary ) {
+                    
+                    //let boundary = "Boundary-\(UUID().uuidString)"
+                    let boundary = self.createBoundary()
+                    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+                    
+                    let pmtrs = multipart.value(forKeyPath: "parameters") as! NSDictionary
+                    let dataUrl = multipart.value(forKeyPath: "dataUrl") as! URL
+                    let data = multipart.value(forKeyPath: "data") as! Data
+                    let mimeType = multipart.value(forKeyPath: "mimeType") as! String
+                    let filename = multipart.value(forKeyPath: "filename") as! String
+                    
+                    let body = self.createBody(
+                        parameters  : pmtrs,
+                        boundary    : boundary,
+                        dataUrl     : dataUrl,
+                        data        : data,
+                        mimeType    : mimeType,
+                        filename    : filename
+                    )
+                    request.httpBody = body as Data
+                    request.setValue(String(body.length), forHTTPHeaderField: "Content-Length")
                 }
-                
-                if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
-                    // check for http errors
-                    print("statusCode should be 200, but is \(httpStatus.statusCode)")
-                    print("response = \(response!)")
-                }
-                
-                if let responseString = String(data: data, encoding: .utf8) {
-                    print("responseString****** = \(responseString)")
-                    if let resp = Utility.shared.StringToDictionary(txt: responseString) {
-                        onSuccess( resp )
-                        return
+                if let header = ((command.getParameter() as AnyObject).value(forKeyPath: "headers") as? NSDictionary ) {
+                    for (key, _) in header {
+                        request.addValue(header[ key ] as! String, forHTTPHeaderField: key as! String)
                     }
                 }
-                print( "NO RESPONSE" )
-                onFail("NO RESPONSE")
                 
+                let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                    guard let data = data, error == nil else {
+                        // check for fundamental networking error
+                        onFail( error!.localizedDescription )
+                        //print("error=\(error!)")
+                        return
+                    }
+                    
+                    if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
+                        // check for http errors
+                        print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                        print("response = \(response!)")
+                    }
+                    
+                    if let responseString = String(data: data, encoding: .utf8) {
+                        //print("responseString****** = \(responseString)")
+                        if let resp = Utility.shared.StringToDictionary(txt: responseString) {
+                            onSuccess( resp )
+                            return
+                        }
+                    }
+                    print( "NO RESPONSE" )
+                    onFail("NO RESPONSE")
+                    
+                }
+                task.resume()
             }
-            task.resume()
-        }
+//        }else{
+//            onFail("No Internet Connection Available")
+//        }
     }
     
     public class func createBody( parameters: NSDictionary,

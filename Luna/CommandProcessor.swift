@@ -241,6 +241,52 @@ class CommandProcessor {
         case .SF_SERVICELIVEA_START:
             checkSFServiceLiveAgentStart( command: command )
             break
+        case .LOGACCESS:
+            checkLogAccess( command: command )
+            break
+        case .SF_SERVICELIVEA_ADDPREOBJ:
+            checkSFServiceLiveAgentAddPrechatObject( command: command )
+            break
+        case .SF_SERVICELIVEA_CLEARPREOBJ:
+            checkSFServiceLiveAgentClearPrechatObject( command: command )
+            break
+        case .SF_SERVICELIVEA_STATECHANGE,
+             .SF_SERVICELIVEA_DIDEND:
+            break
+        case .SF_SERVICELIVEA_CHECKAVAIL:
+            checkSFServiceLiveAgentCheckAvailability( command: command )
+            break
+        case .BEACON_TRANSMIT:
+            checkiBeaconTransmit( command: command )
+            break
+        case .BEACON_STOP:
+            checkiBeaconStop( command: command )
+            break
+        case .BEACON_ONRANGE,
+             .BEACON_ONMONITOR,
+             .BEACON_DIDUPDATE:
+            break
+        case .BEACON_STARTMONITORING:
+            checkiBeaconStartMonitoring( command: command )
+            break;
+        case .BEACON_STARTRANGINGBEACON:
+            checkiBeaconRangingScanner( command: command )
+            break;
+        case .BEACON_INIT:
+            checkiBeaconInit( command: command )
+            break;
+        case .BEACON_STOPRANGINGBEACON:
+            checkiBeaconStopRangingScanner( command: command )
+            break;
+        case .BEACON_STOPMONITORINGBEACON:
+            checkiBeaconStopMonitoring( command: command )
+            break;
+        case .BEACON_STOPALLSCAN:
+            checkiBeaconStopAllScan( command: command )
+            break;
+        case .BEACON_GETBEACONS:
+            checkiBeaconGetAllBeacons( command: command )
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -1748,6 +1794,7 @@ class CommandProcessor {
         }
     }
     
+    
     private class func checkScreenEdgeSwiped( command: Command ) {
 		var found = false
 		var count = 0
@@ -1772,13 +1819,13 @@ class CommandProcessor {
 			gestureRecognizer.numberOfTouchesRequired = touchesRequired!
 			switch touchesRequired! {
 			case 2:
-				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedTwoFingers))
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedTwoFingers(_:)))
 				break
 			case 3:
-				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedThreeFingers))
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedThreeFingers(_:)))
 				break
 			default:
-				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedOneFinger))
+				gestureRecognizer.addTarget(Shared.shared.ViewController, action: #selector( Shared.shared.ViewController.screenEdgeSwipedOneFinger(_:)))
 				break
 			}
 

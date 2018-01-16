@@ -1,3 +1,6 @@
+//https://stackoverflow.com/questions/36249684/simple-way-to-implement-server-sent-events-in-node-js
+//SERVER SENT EVENTS
+
 (function( $window, $document, $parent ) {
     "use strict";
     
@@ -133,7 +136,25 @@
         SF_SERVICESOS_DIDCONNECT    : 78,
         SF_SERVICESOS_STOP          : 79,
         SF_SERVICELIVEA_INIT        : 80,
-        SF_SERVICELIVEA_START       : 81
+        SF_SERVICELIVEA_START       : 81,
+        LOGACCESS                   : 82,
+        SF_SERVICELIVEA_ADDPREOBJ   : 83,
+        SF_SERVICELIVEA_CLEARPREOBJ : 84,
+        SF_SERVICELIVEA_STATECHANGE : 85,
+        SF_SERVICELIVEA_DIDEND      : 86,
+        SF_SERVICELIVEA_CHECKAVAIL  : 87,
+        BEACON_TRANSMIT             : 88,
+        BEACON_STOP                 : 89,
+        BEACON_DIDUPDATE            : 90,
+        BEACON_STARTMONITORING      : 91,
+        BEACON_ONRANGE              : 92,
+        BEACON_STARTRANGINGBEACON   : 93,
+        BEACON_INIT                 : 94,
+        BEACON_ONMONITOR            : 95,
+        BEACON_STOPRANGINGBEACON    : 96,
+        BEACON_STOPMONITORINGBEACON : 97,
+        BEACON_STOPALLSCAN          : 98,
+        BEACON_GETBEACONS           : 99
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -310,6 +331,16 @@
             }
             return _addEventListener( command_code, event_name, callback, parameter );
         };
+
+        luna.logAccess = function() {
+            var command = new Command({
+                command_code:   COMMAND.LOGACCESS
+            });
+            // command.onResolve( function( result ) {
+            //     return true;
+            // });
+            return CommandProcessor.queue( command );
+        }
 
         luna.getFileCollection = function( parameter ) {
             var command = new Command({
@@ -520,6 +551,7 @@
         luna.changeIcon = function( parameter ) {
             var command = new Command({
                 command_code:   COMMAND.CHANGE_ICON,
+                priority:       CommandPriority.CRITICAL,
                 parameter:      parameter
             });
             return CommandProcessor.queue( command );
@@ -536,9 +568,10 @@
             return CommandProcessor.queue( command );
         };
 
-        luna.getServiceLiveAgent = function() {
+        luna.getServiceLiveAgent = function( param ) {
             var command = new Command({
                 command_code    : COMMAND.SF_SERVICELIVEA_INIT,
+                parameter       : param,
                 priority        : CommandPriority.CRITICAL
             });
             command.onResolve( function( ) {
@@ -614,6 +647,17 @@
             return false;
         };
 
+        luna.ibeacon = function() {
+            var command = new Command({
+                command_code    : COMMAND.BEACON_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( result ) {
+                return new iBeacon();
+            });
+            return CommandProcessor.queue( command );
+        };
+
         luna.httpPost = function(params) {
             var command = new Command({
                 command_code    : COMMAND.HTTP_POST,
@@ -675,6 +719,133 @@
         /************************
             PRIVATE FUNCTIONS
         ************************/
+        function iBeacon() {
+            var ibeacon = {};
+
+            function init() {};
+
+            init();
+
+            ibeacon.addEventListener = function( event_name, callback ) {
+                var command_code = getEventName( event_name );
+                if( !command_code ) {
+                    return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback );
+            };
+
+            ibeacon.removeEventListener = function( event_name, event_id ) {
+                var command_code = getEventName( event_name );
+                if( !command_code ) {
+                    return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( command_code, event_id )
+            };
+
+            function getEventName( event_name ) {
+                switch( event_name ) {
+                    case "didUpdate":
+                        return COMMAND.BEACON_DIDUPDATE;
+                    case "onRange":
+                        return COMMAND.BEACON_ONRANGE;
+                    case "onMonitor":
+                        return COMMAND.BEACON_ONMONITOR;
+                    default:
+                        return undefined
+                }
+            };
+
+            ibeacon.transmit = function( param ){
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_TRANSMIT,
+                    parameter               : {
+                        region              : param
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            ibeacon.stop = function( ){
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STOP
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            ibeacon.getMonitoredBeacons = function(){
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_GETBEACONS,
+                    priority                : CommandPriority.CRITICAL,
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            ibeacon.startRangingScan = function( param ){
+                if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
+                    param = [param]
+                }
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STARTRANGINGBEACON,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : {
+                        regions             : param
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+            ibeacon.stopRangingScan = function( param ){
+                if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
+                    param = [param]
+                }
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STOPRANGINGBEACON,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : {
+                        regions             : param
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+            
+
+            ibeacon.startMonitoringScan = function( param ){
+                if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
+                    param = [param]
+                }
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STARTMONITORING,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : {
+                        regions             : param
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+            ibeacon.stopMonitoringScan = function( param ){
+                if ( Object.prototype.toString.call( param ) !== "[object Array]" ) {
+                    param = [param]
+                }
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STOPMONITORINGBEACON,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : {
+                        regions             : param
+                    }
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            ibeacon.stopAllScan = function(){
+                var command = new Command({
+                    command_code            : COMMAND.BEACON_STOPALLSCAN,
+                    priority                : CommandPriority.CRITICAL,
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return ibeacon;
+        };
+
         function ServiceLiveAgent() {
             var servicela = {};
 
@@ -682,8 +853,58 @@
 
             init();
 
-            servicela.greet = function(){
-                console.log("HELLO");
+            servicela.addEventListener = function( event_name, callback ) {
+                var command_code;
+                switch( event_name ) {
+                    case "stateDidChange":
+                        command_code = COMMAND.SF_SERVICELIVEA_STATECHANGE;
+                        break;
+                    case "didEnd":
+                        command_code = COMMAND.SF_SERVICELIVEA_DIDEND;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _addEventListener( command_code, event_name, callback );
+            };
+
+            servicela.removeEventListener = function( event_name, event_id ) {
+                var evt_command_code;
+                switch( event_name ) {
+                    case "stateDidChange":
+                        evt_command_code = COMMAND.SF_SERVICELIVEA_STATECHANGE;
+                        break;
+                    case "didEnd":
+                        evt_command_code = COMMAND.SF_SERVICELIVEA_DIDEND;
+                        break;
+                    default:
+                        return new Promise.reject("Invalid eventname: " + event_name);
+                }
+                return _removeEventListener( evt_command_code, event_id )
+            };
+
+            servicela.checkAvailability = function() {
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICELIVEA_CHECKAVAIL
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            servicela.clearPrechatObject = function( ){
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICELIVEA_CLEARPREOBJ
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            servicela.addPrechatObject = function( param ){
+                var command = new Command({
+                    command_code            : COMMAND.SF_SERVICELIVEA_ADDPREOBJ,
+                    parameter               : {
+                        prechatObject       : param
+                    }
+                });
+                return CommandProcessor.queue( command );
             };
 
             servicela.chat = function( param ){

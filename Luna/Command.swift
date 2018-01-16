@@ -96,6 +96,24 @@ enum CommandCode:Int {
 	case SF_SERVICESOS_STOP			= 79
     case SF_SERVICELIVEA_INIT       = 80
     case SF_SERVICELIVEA_START      = 81
+    case LOGACCESS                  = 82
+    case SF_SERVICELIVEA_ADDPREOBJ  = 83
+    case SF_SERVICELIVEA_CLEARPREOBJ = 84
+    case SF_SERVICELIVEA_STATECHANGE = 85
+    case SF_SERVICELIVEA_DIDEND     = 86
+    case SF_SERVICELIVEA_CHECKAVAIL = 87
+    case BEACON_TRANSMIT            = 88
+    case BEACON_STOP                = 89
+    case BEACON_DIDUPDATE           = 90
+    case BEACON_STARTMONITORING     = 91
+    case BEACON_ONRANGE             = 92
+    case BEACON_STARTRANGINGBEACON  = 93
+    case BEACON_INIT                = 94
+    case BEACON_ONMONITOR           = 95
+    case BEACON_STOPRANGINGBEACON   = 96
+    case BEACON_STOPMONITORINGBEACON = 97
+    case BEACON_STOPALLSCAN         = 98
+    case BEACON_GETBEACONS          = 99
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

@@ -83,9 +83,9 @@ class UserSettings {
         return FilePathType(rawValue: (get(key:"startup_type") as! String).lowercased())!
     }
     func setPathType( pathType:String ) {
-        if let ptype = FilePathType(rawValue: pathType) {
-            self.set(key: "startup_type", value: ptype.rawValue)
-        }
+        //if let ptype = FilePathType(rawValue: pathType) {
+            self.set(key: "startup_type", value: pathType)
+        //}
     }
     
     func getStartupHtmlFile() -> HtmlFile? {

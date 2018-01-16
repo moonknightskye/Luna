@@ -47,7 +47,9 @@ extension WKWebView {
     }
     
     func load( bundlefilePath:URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ){
-        self.load( NSURLRequest(url: bundlefilePath) as URLRequest )
+        DispatchQueue.main.async {
+            self.load( NSURLRequest(url: bundlefilePath) as URLRequest )
+        }
         if onSuccess != nil {
             onSuccess!()
         }
@@ -61,10 +63,12 @@ extension WKWebView {
     }
     
     func load( url:URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ){
-        self.load( URLRequest( url: url ) )
-        if onSuccess != nil {
-            onSuccess!()
-        }
+		DispatchQueue.main.async {
+			self.load( URLRequest( url: url ) )
+			if onSuccess != nil {
+				onSuccess!()
+			}
+		}
     }
     
     private class func appendJavascript( script:String, contentController:WKUserContentController ) {
@@ -87,8 +91,10 @@ extension WKWebView {
     }
     
     func runJSCommand( commandName:String, params: NSDictionary, onComplete:((Any?, Error?)->Void)?=nil ) {
-        let script = WKWebView.generateJavaScript( commandName: commandName, params: params )
-        self.evaluateJavaScript( script, completionHandler: onComplete )
+        DispatchQueue.main.async {
+            let script = WKWebView.generateJavaScript( commandName: commandName, params: params )
+            self.evaluateJavaScript( script, completionHandler: onComplete )
+        }
     }
     
 
@@ -179,10 +185,12 @@ extension WKWebView {
                     }
                 }
             case "estimatedProgress":
-                wkmanager.onLoading(progress: self.estimatedProgress * 100)
-                if self.estimatedProgress == 1 {
-                    //self.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
-                }
+				DispatchQueue.main.async {
+					wkmanager.onLoading(progress: self.estimatedProgress * 100)
+					if self.estimatedProgress == 1 {
+						//self.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
+					}
+				}
             default:
                 break
             }

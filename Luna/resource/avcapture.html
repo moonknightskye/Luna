@@ -95,7 +95,9 @@
                             });
                         });
 
-                        avcapture.addEventListener( "scancode", function( result ){                            value.innerText     = result[0].value;
+                        avcapture.addEventListener( "scancode", function( result ){
+                            console.log("scancode:", result)                       
+                            value.innerText     = result[0].value;
                             rotation.innerText  = rotate( result[0].corners[0], result[0].corners[1] );
                             point_1.style.top   = result[0].corners[0].Y;
                             point_1.style.left  = result[0].corners[0].X;
@@ -106,7 +108,7 @@
                             point_4.style.top   = result[0].corners[3].Y;
                             point_4.style.left  = result[0].corners[3].X;
                         });
-
+                        console.log("scancode: STARTING")
 
                     });
 

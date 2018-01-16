@@ -48,12 +48,12 @@ class AVCaptureManager {
     public init( mode:[AVCaptureType] ) throws {
         captureMode = mode
         captureSession = AVCaptureSession()
-        captureSession.sessionPreset = AVCaptureSessionPresetHigh //AVCaptureSessionPreset1920x1080
+        captureSession.sessionPreset = AVCaptureSession.Preset.high //AVCaptureSessionPreset1920x1080
         
-        let videoCaptureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        let videoCaptureDevice = AVCaptureDevice.default(for: AVMediaType.video)
         let videoInput: AVCaptureDeviceInput
         do {
-            videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
+            videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice!)
         } catch {
             throw AVCaptureError.UNKNOWN_ERROR
         }
@@ -72,16 +72,20 @@ class AVCaptureManager {
                     captureSession.addOutput(metadataOutput)
                     metadataOutput.setMetadataObjectsDelegate( Shared.shared.ViewController, queue: DispatchQueue.main )
                     metadataOutput.metadataObjectTypes = [
-                        AVMetadataObjectTypeUPCECode,
-                        AVMetadataObjectTypeCode39Code,
-                        AVMetadataObjectTypeCode39Mod43Code,
-                        AVMetadataObjectTypeCode93Code,
-                        AVMetadataObjectTypeCode128Code,
-                        AVMetadataObjectTypeEAN8Code,
-                        AVMetadataObjectTypeEAN13Code,
-                        AVMetadataObjectTypeAztecCode,
-                        AVMetadataObjectTypePDF417Code,
-                        AVMetadataObjectTypeQRCode
+                        AVMetadataObject.ObjectType.aztec,
+                        AVMetadataObject.ObjectType.code128,
+                        AVMetadataObject.ObjectType.code39,
+                        AVMetadataObject.ObjectType.code39Mod43,
+                        AVMetadataObject.ObjectType.code93,
+                        AVMetadataObject.ObjectType.dataMatrix,
+                        AVMetadataObject.ObjectType.ean13,
+                        AVMetadataObject.ObjectType.ean8,
+                        AVMetadataObject.ObjectType.face,
+                        AVMetadataObject.ObjectType.interleaved2of5,
+                        AVMetadataObject.ObjectType.itf14,
+                        AVMetadataObject.ObjectType.pdf417,
+                        AVMetadataObject.ObjectType.qr,
+                        AVMetadataObject.ObjectType.upce
                     ]
                 } else {
                     throw AVCaptureError.UNKNOWN_ERROR
@@ -100,7 +104,7 @@ class AVCaptureManager {
                 if( captureSession.canAddOutput( photoSilentOutput ) ) {
                     captureSession.addOutput( photoSilentOutput )
                     photoSilentOutput.alwaysDiscardsLateVideoFrames = true
-                    photoSilentOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable : Int(kCVPixelFormatType_32BGRA)]
+                    photoSilentOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as AnyHashable as! String : Int(kCVPixelFormatType_32BGRA)]
                     photoSilentOutput.setSampleBufferDelegate( Shared.shared.ViewController, queue: DispatchQueue.main )
                 } else {
                     throw FileError.UNKNOWN_ERROR
@@ -111,7 +115,7 @@ class AVCaptureManager {
             }
         }
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+        previewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill;
         setToBack()
         
         AVCaptureManager.LIST.append( self )
@@ -311,9 +315,12 @@ class AVCaptureManager {
 	func processPoints( points: [Any] ) -> [CFDictionary] {
 		var pPoints = [CFDictionary]()
 		for point in points {
-			if let ppoint = point as? NSDictionary {
-				pPoints.append(Utility.shared.getAspectRatioCoordinates(origin: CGPoint(dictionaryRepresentation: ppoint)!, originalDimention: self.avScaledDimention, resizedDimention: self.previewLayer.bounds).dictionaryRepresentation)
-			}
+			if let ppoint = point as? NSValue {
+				if let cgpt = ppoint as? CGPoint {
+					pPoints.append(Utility.shared.getAspectRatioCoordinates(origin: cgpt, originalDimention: self.avScaledDimention, resizedDimention: self.previewLayer.bounds).dictionaryRepresentation)
+				}
+
+			} 
 		}
 		return pPoints
 	}

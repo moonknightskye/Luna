@@ -113,13 +113,13 @@ class AVPlayerManager {
     }
     
     public func setResizeAsAspectFill(){
-        self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        self.playerLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
     }
     public func setResizeAsHeightFill() {
-        self.playerLayer.videoGravity = AVLayerVideoGravityResize
+        self.playerLayer.videoGravity = AVLayerVideoGravity.resize
     }
     public func setResizeAsWidthFill() {
-        self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
+        self.playerLayer.videoGravity = AVLayerVideoGravity.resizeAspect
     }
     
     public func setToBack() {

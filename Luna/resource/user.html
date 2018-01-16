@@ -91,6 +91,8 @@
                                                             loadPage( html_file, "File does not exists." );
                                                         });
                                                     });
+
+                                                    luna.logAccess();
                                                 });
                                             };
 
@@ -112,6 +114,7 @@
                                                 data: JSON.stringify(devdata)
                                             }).then(function(result){
                                                 console.log(result)
+                                                syssettings.set({key:"mobile_id", value:result.deviceid});
                                                 loadSettings();
                                             },function(error){
                                                 console.log(error);
@@ -713,6 +716,10 @@
 
             .successmsg {
                 margin: 0px 10px;
+            }
+
+            .user-registry .moon {
+                background-image: url(img/luna-large.png);
             }
 
         </style>

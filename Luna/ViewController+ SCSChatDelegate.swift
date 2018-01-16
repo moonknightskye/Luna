@@ -23,8 +23,31 @@ extension ViewController: SCSChatDelegate {
      @see `SCSChatEndReason`
      */
     func chat(_ chat: SCSChat!, didEndWith reason: SCSChatEndReason, error: Error!) {
-        print( "CHAT ENDED" )
-        print( reason.rawValue )
-        print(error)
+        var code = 0
+        var label = ""
+        if (error != nil) {
+            code = (error as NSError).code
+            print("ERROR")
+            print(error)
+            print(code)
+            print(error.localizedDescription)
+        } else {
+            code = reason.rawValue
+        }
+        label = SFServiceLiveAgent.instance.getErrorLabel(reason: reason)
+        
+        let value = NSMutableDictionary()
+        value.setValue( code, forKey: "code")
+        value.setValue( label, forKey: "label")
+        CommandProcessor.processSFServiceLiveAgentDidend( value: value )
+    }
+    
+    
+    func chat(_ chat: SCSChat!, stateDidChange current: SCSChatSessionState,
+              previous: SCSChatSessionState) {
+        let value = NSMutableDictionary()
+        value.setValue( current.rawValue, forKey: "code")
+        value.setValue( SFServiceLiveAgent.instance.getState(state: current), forKey: "label")
+        CommandProcessor.processSFServiceLiveAgentstateChange(value: value)
     }
 }

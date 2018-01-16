@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import CoreMotion
 
 final class Shared: NSObject {
     static let shared = Shared() //lazy init, and it only runs once
@@ -17,5 +16,6 @@ final class Shared: NSObject {
     var DeviceID = UIDevice.current.identifierForVendor!.uuidString
 	var iCloudAvailable = false
 	var allowsCellularAccess = true
-
+    var customURLScheme:URL?
+    var isAppLoaded = false
 }

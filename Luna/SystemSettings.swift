@@ -42,6 +42,9 @@ class SystemSettings {
         }
         
         //DEVICE SPECIFIC
+        if self.get(key: "mobile_id") == nil {
+            self.set(key: "mobile_id", value: -1)
+        }
         if self.get(key: "mobile_locale") == nil {
             self.set(key: "mobile_locale", value: Locale.current.description)
         }
