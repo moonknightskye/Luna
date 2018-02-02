@@ -21,6 +21,11 @@ class Utility: NSObject {
         UIApplication.shared.isStatusBarHidden = true
     }
     
+    func statusBarHeight() -> CGFloat {
+        let statusBarSize = UIApplication.shared.statusBarFrame.size
+        return Swift.min(statusBarSize.width, statusBarSize.height)
+    }
+    
     func getContext () -> NSManagedObjectContext {
         return (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     }

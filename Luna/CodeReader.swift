@@ -175,7 +175,7 @@ class CodeReader {
     }
     
     func takeSilentPhoto() {
-        if var _:AVCaptureConnection? = stillVideoOutput.connection( with: AVMediaType.video ) {
+        if var _:AVCaptureConnection = stillVideoOutput.connection( with: AVMediaType.video ) {
             didTakeSilentPhoto = true
         }
     }

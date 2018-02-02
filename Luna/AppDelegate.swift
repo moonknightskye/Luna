@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Shared.shared.UIApplication = application
         
-        UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
+        //UIApplication.shared.statusBarStyle = .lightContent
         
         UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
         application.registerForRemoteNotifications()

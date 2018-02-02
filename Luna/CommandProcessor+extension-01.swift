@@ -29,6 +29,60 @@ extension CommandProcessor {
 //        }
 //    }
     
+    public class func proccessToggleStatusBar(command: Command) {
+        if let isHide = (command.getParameter() as AnyObject).value(forKeyPath: "value") as? Bool {
+            Shared.shared.statusBarShouldBeHidden = isHide
+            
+            if let animation = (command.getParameter() as AnyObject).value(forKeyPath: "animation") as? String {
+                var statusBarAnimation:UIStatusBarAnimation;
+                switch( animation ) {
+                case "slide":
+                    statusBarAnimation = .slide
+                    break
+                case "fade":
+                    statusBarAnimation = .fade
+                    break
+                default:
+                    statusBarAnimation = .none
+                }
+                Shared.shared.statusBarAnimation = statusBarAnimation
+            }
+            var duration = 0.0
+            if let _duration = (command.getParameter() as AnyObject).value(forKeyPath: "duration") as? Double {
+                duration = _duration
+            }
+            
+            if let color = (command.getParameter() as AnyObject).value(forKeyPath: "color") as? String {
+                if color == "white" {
+                    Shared.shared.statusBarStyle = .lightContent
+                } else {
+                    Shared.shared.statusBarStyle = .default
+                }
+            }
+
+            //https://stackoverflow.com/questions/45421548/ios-wkwebview-status-bar-padding
+            //https://ayogo.com/blog/ios11-viewport/
+            
+            UIView.animate(withDuration: duration) {
+                Shared.shared.ViewController.setNeedsStatusBarAppearanceUpdate()
+//                print(Utility.shared.statusBarHeight())
+//                print(UIScreen.main.bounds.height)
+                command.resolve(value: true)
+            }
+        } else {
+            command.reject(errorMessage: "Value is parameter is not specified")
+        }
+    }
+    
+    public class func processToggleAutoSleep(command: Command) {
+        if let value = (command.getParameter() as AnyObject).value(forKeyPath: "value") as? Bool {
+            UIApplication.shared.isIdleTimerDisabled = value
+            command.resolve(value: true)
+        } else {
+            command.reject(errorMessage: "Value is parameter is not specified")
+        }
+    }
+    
     public class func checkiBeaconInit( command: Command ) {
         processiBeaconInit( command: command, onSuccess: { result in
             command.resolve( value: result )
@@ -39,12 +93,17 @@ extension CommandProcessor {
     public class func processiBeaconInit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
         iBeacon.instance.checkPermissionAction = { isPermitted in
             if isPermitted {
+                iBeacon.instance.isAccessPermitted = true
                 onSuccess( true )
             } else {
                 onFail("Scanning denied")
             }
         }
-        iBeacon.instance.requestAuthorization(status: .authorizedAlways)
+        if( !iBeacon.instance.isAccessPermitted ) {
+            iBeacon.instance.requestAuthorization(status: .authorizedAlways)
+        } else {
+            iBeacon.instance.checkPermissionAction?(true)
+        }
     }
 
     public class func checkiBeaconTransmit( command: Command ) {
@@ -54,7 +113,7 @@ extension CommandProcessor {
             command.reject( errorMessage: errorMessage )
         })
     }
-    public class func processiBeaconTransmit( command: Command, onSuccess: @escaping((Bool)->()), onFail: @escaping((String)->()) ) {
+    public class func processiBeaconTransmit( command: Command, onSuccess: @escaping((NSDictionary)->()), onFail: @escaping((String)->()) ) {
         if let regiondict = (command.getParameter() as AnyObject).value(forKeyPath: "region") as? NSDictionary {
             if let region = iBeacon.instance.getBeaconRegion(from: regiondict) {
                 iBeacon.instance.transmitiBeacon(region: region, onSuccess: onSuccess, onFail: onFail)
@@ -160,7 +219,7 @@ extension CommandProcessor {
             command.update(value: value)
         }
     }
-    public class func processiBeaconOnRange( value: NSMutableDictionary) {
+    public class func processiBeaconOnRange( value: [NSDictionary]) {
         getCommand(commandCode: .BEACON_ONRANGE) { (command) in
             command.update(value: value)
         }

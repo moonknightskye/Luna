@@ -15,7 +15,7 @@ import AVFoundation
 
 class ViewController: UIViewController, UINavigationControllerDelegate  {
     
-    private let isTest = true
+    private let isTest = false
     
     private func loadTest() {
         let parameter = NSMutableDictionary()
@@ -296,19 +296,32 @@ class ViewController: UIViewController, UINavigationControllerDelegate  {
         CommandProcessor.queue(command: command)
     }
     
-    func screenEdgeSwipedOneFinger(_ recognizer: UIGestureRecognizer) {
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return Shared.shared.statusBarStyle
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return Shared.shared.statusBarShouldBeHidden
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return Shared.shared.statusBarAnimation
+    }
+    
+    @objc func screenEdgeSwipedOneFinger(_ recognizer: UIGestureRecognizer) {
         if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
             CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 1)
         }
     }
 
-    func screenEdgeSwipedTwoFingers(_ recognizer: UIGestureRecognizer) {
+    
+    @objc func screenEdgeSwipedTwoFingers(_ recognizer: UIGestureRecognizer) {
         if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
             CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 2)
         }
     }
 
-    func screenEdgeSwipedThreeFingers(_ recognizer: UIGestureRecognizer) {
+    @objc func screenEdgeSwipedThreeFingers(_ recognizer: UIGestureRecognizer) {
         if let swipeGesture = recognizer as? UISwipeGestureRecognizer {
             CommandProcessor.processSwipeGesture(swipeDirection: swipeGesture.direction, touchesRequired: 3)
         }

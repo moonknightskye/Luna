@@ -111,12 +111,12 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Luna is requesting access Camera on this device</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Luna is requesting access Location service on this device</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Luna is requesting access Location Always Usage service on this device</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Luna is requesting access Location Always and When in Use service on this device</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Luna is requesting access Location Always Usage service on this device</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Luna is requesting access Location service on this device</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Luna is requesting access Microphone on this device</string>
 	<key>NSMotionUsageDescription</key>
@@ -134,11 +134,9 @@
 		<string>armv7</string>
 	</array>
 	<key>UIRequiresFullScreen</key>
-	<true/>
+	<false/>
 	<key>UIStatusBarHidden</key>
 	<true/>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleBlackTranslucent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -151,6 +149,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<true/>
 </dict>
 </plist>

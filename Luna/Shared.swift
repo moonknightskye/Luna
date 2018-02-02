@@ -18,4 +18,7 @@ final class Shared: NSObject {
 	var allowsCellularAccess = true
     var customURLScheme:URL?
     var isAppLoaded = false
+    var statusBarShouldBeHidden = true
+    var statusBarAnimation:UIStatusBarAnimation = .slide
+    var statusBarStyle:UIStatusBarStyle = .lightContent
 }

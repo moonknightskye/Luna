@@ -287,6 +287,13 @@ class CommandProcessor {
         case .BEACON_GETBEACONS:
             checkiBeaconGetAllBeacons( command: command )
             break
+        case .TOGGLE_AUTOSLEEP:
+            processToggleAutoSleep(command: command)
+            break
+        case .TOGGLE_STATUSBAR:
+            //http://tobiashelmri.ch/swift,/ios/2016/12/08/hiding-the-status-bar-smoothly-in-ios-10.html
+            proccessToggleStatusBar(command: command)
+            break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
@@ -563,6 +570,7 @@ class CommandProcessor {
                         switch pickerType {
                         case PickerType.PHOTO_LIBRARY:
                             do {
+                                //if let imageURL = media![UIImagePickerControllerPHAsset] as? URL {
                                 if let imageURL = media![UIImagePickerControllerReferenceURL] as? URL {
                                     let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL)
                                     command.resolve(value: imageFile.toDictionary(), raw: imageFile)

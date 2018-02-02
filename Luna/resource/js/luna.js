@@ -154,7 +154,9 @@
         BEACON_STOPRANGINGBEACON    : 96,
         BEACON_STOPMONITORINGBEACON : 97,
         BEACON_STOPALLSCAN          : 98,
-        BEACON_GETBEACONS           : 99
+        BEACON_GETBEACONS           : 99,
+        TOGGLE_AUTOSLEEP            : 100,
+        TOGGLE_STATUSBAR            : 101
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -334,13 +336,34 @@
 
         luna.logAccess = function() {
             var command = new Command({
-                command_code:   COMMAND.LOGACCESS
+                command_code    : COMMAND.LOGACCESS,
+                priority        : CommandPriority.CRITICAL
             });
             // command.onResolve( function( result ) {
             //     return true;
             // });
             return CommandProcessor.queue( command );
-        }
+        };
+
+        luna.toggleAutoSleep = function( value ) {
+            var command = new Command({
+                command_code    : COMMAND.TOGGLE_AUTOSLEEP,
+                priority        : CommandPriority.CRITICAL,
+                parameter:      {
+                    value: !((!apollo11.isUndefined(value)) ? value : false)
+                }
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.toggleStatusBar = function( param ) {
+            var command = new Command({
+                command_code    : COMMAND.TOGGLE_STATUSBAR,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : param
+            });
+            return CommandProcessor.queue( command );
+        };
 
         luna.getFileCollection = function( parameter ) {
             var command = new Command({
@@ -751,18 +774,36 @@
                     case "onMonitor":
                         return COMMAND.BEACON_ONMONITOR;
                     default:
-                        return undefined
+                        return undefined;
                 }
             };
 
-            ibeacon.transmit = function( param ){
-                var command = new Command({
-                    command_code            : COMMAND.BEACON_TRANSMIT,
-                    parameter               : {
-                        region              : param
-                    }
-                });
-                return CommandProcessor.queue( command );
+            ibeacon.transmit = function( param ) {
+                var _transmit = function( param ){
+                    var command = new Command({
+                        command_code            : COMMAND.BEACON_TRANSMIT,
+                        parameter               : {
+                            region              : param
+                        }
+                    });
+                    return CommandProcessor.queue( command );
+                };
+
+                if( apollo11.isUndefined(param) ) {
+                    return new Promise( function ( resolve, reject ) {
+                        luna.systemSettings().then(function(syssettings){
+                            _transmit({uiid: syssettings.getDefaults().mobile_uuid}).then(function(success){
+                                resolve(success);
+                            }, function(reject){
+                                reject(error);
+                            });
+                        }, function(error){
+                            reject(error);
+                        });
+                    });
+                } else {
+                    return _transmit( param );
+                }
             };
 
             ibeacon.stop = function( ){

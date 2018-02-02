@@ -14,6 +14,7 @@ class iBeacon {
 
     static let instance:iBeacon = iBeacon()
     private var isiBeaconScannerInit = false
+    var isAccessPermitted = false
     var beaconPeripheralData: NSDictionary?
     var peripheralManager: CBPeripheralManager?
     var locationManager: CLLocationManager?
@@ -51,23 +52,32 @@ class iBeacon {
     
     func getBeaconRegion( from: NSDictionary ) -> CLBeaconRegion? {
         if let uiid = from.value(forKeyPath: "uiid") as? String {
-            let major = from.value(forKeyPath: "major") as? UInt16 ?? 1
-            let minor = from.value(forKeyPath: "minor") as? UInt16 ?? 1
+            let major = from.value(forKeyPath: "major") as? UInt16
+            let minor = from.value(forKeyPath: "minor") as? UInt16
             let identifier = from.value(forKeyPath: "identifier") as? String ?? "com.salesforce.Luna"
-
-            return CLBeaconRegion(proximityUUID: UUID(uuidString: uiid)!, major: major, minor: minor, identifier: identifier)
+            
+            if( major == nil && minor == nil) {
+                return CLBeaconRegion(proximityUUID: UUID(uuidString: uiid)!, identifier: identifier)
+            } else if( major != nil && minor == nil ) {
+                return CLBeaconRegion(proximityUUID: UUID(uuidString: uiid)!, major: major!, identifier: identifier)
+            } else {
+                return CLBeaconRegion(proximityUUID: UUID(uuidString: uiid)!, major: major!, minor: minor!, identifier: identifier)
+            }
         }
         return nil
     }
     
+    func beaconRegionToDictionary( from:CLBeaconRegion ) -> NSMutableDictionary {
+        let value = NSMutableDictionary()
+        value.setValue( from.proximityUUID.uuidString, forKey: "uiid")
+        value.setValue( from.major, forKey: "major")
+        value.setValue( from.minor, forKey: "minor")
+        value.setValue( from.identifier, forKey: "identifier")
+        return value
+    }
     func beaconRegionToDictionary( from:CLRegion ) -> NSMutableDictionary {
         let region = from as! CLBeaconRegion
-        let value = NSMutableDictionary()
-        value.setValue( region.proximityUUID.uuidString, forKey: "uiid")
-        value.setValue( region.major, forKey: "major")
-        value.setValue( region.minor, forKey: "minor")
-        value.setValue( region.identifier, forKey: "identifier")
-        return value
+        return beaconRegionToDictionary( from:region  )
     }
     func beaconRegionToDictionary( from:Set<CLRegion> ) -> [NSMutableDictionary] {
         var values = [NSMutableDictionary]()
@@ -178,14 +188,14 @@ class iBeacon {
         onSuccess?(true)
     }
     
-    func transmitiBeacon( region:CLBeaconRegion, onSuccess: (Bool)->(), onFail: (String)->() ) {
+    func transmitiBeacon( region:CLBeaconRegion, onSuccess: (NSDictionary)->(), onFail: (String)->() ) {
         if peripheralManager != nil {
             onFail("iBeacon already trasmitting")
             return
         }
-        beaconPeripheralData = region.peripheralData(withMeasuredPower: nil)
+        beaconPeripheralData = region.peripheralData(withMeasuredPower: -59)
         peripheralManager = CBPeripheralManager(delegate: Shared.shared.ViewController, queue: nil, options: nil)
-        onSuccess(true)
+        onSuccess( beaconRegionToDictionary(from:region ) )
     }
     
     func stopiBeacon( onSuccess: (Bool)->(), onFail: (String)->() ) {
@@ -199,4 +209,5 @@ class iBeacon {
         
         onSuccess(true)
     }
+    
 }

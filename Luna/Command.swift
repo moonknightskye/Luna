@@ -114,6 +114,8 @@ enum CommandCode:Int {
     case BEACON_STOPMONITORINGBEACON = 97
     case BEACON_STOPALLSCAN         = 98
     case BEACON_GETBEACONS          = 99
+    case TOGGLE_AUTOSLEEP           = 100
+    case TOGGLE_STATUSBAR           = 101
 }
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution

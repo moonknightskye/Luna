@@ -20,23 +20,22 @@ extension ViewController: CLLocationManagerDelegate {
         value.setValue( beaconRegion.minor, forKey: "minor")
         value.setValue( beaconRegion.identifier, forKey: "identifier")
         
-        var stateLbel = ""
+        var stateLbl = ""
         switch (state) {
         case .inside:
-            stateLbel = "inside"
+            stateLbl = "inside"
             break;
         case .outside:
-            stateLbel = "outside"
+            stateLbl = "outside"
             break;
         case .unknown:
-            stateLbel = "unknown"
+            stateLbl = "unknown"
             break;
         }
         let stateDict = NSMutableDictionary()
         stateDict.setValue( state.rawValue, forKey: "code")
-        stateDict.setValue( stateLbel, forKey: "label")
+        stateDict.setValue( stateLbl, forKey: "label")
         value.setValue( stateDict, forKey: "state")
-        print("STATE " + beaconRegion.proximityUUID.uuidString, state.rawValue)
         CommandProcessor.processiBeaconOnMonitor(value: value)
     }
     
@@ -53,6 +52,7 @@ extension ViewController: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        var beacondict = [NSDictionary]()
         for beacon in beacons {
             let value = NSMutableDictionary()
             value.setValue( region.proximityUUID.uuidString, forKey: "uiid")
@@ -76,10 +76,14 @@ extension ViewController: CLLocationManagerDelegate {
                 break;
             }
             range.setValue( beacon.accuracy, forKey: "accuracy")
+            range.setValue( beacon.rssi, forKey: "rssi")
             range.setValue( beacon.proximity.rawValue, forKey: "code")
             range.setValue( proximityLbel, forKey: "label")
             value.setValue( range, forKey: "proximity")
-            CommandProcessor.processiBeaconOnRange(value: value)
+            beacondict.append(value)
         }
+        CommandProcessor.processiBeaconOnRange(value: beacondict)
     }
+    
+    
 }

@@ -44,6 +44,11 @@ extension WKWebView {
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.loading), options: .new, context: nil)
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         self.isOpaque = false
+        
+        //self.translatesAutoresizingMaskIntoConstraints = false
+        //Prevents some weird space when showing/hiding status bars
+        self.scrollView.contentInsetAdjustmentBehavior = .never;
+        self.scrollView.bounces = false
     }
     
     func load( bundlefilePath:URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ){
