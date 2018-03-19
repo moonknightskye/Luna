@@ -34,7 +34,7 @@ class Utility: NSObject {
         var allInfoJSONString: String?
         do {
             let allInfoJSON = try JSONSerialization.data(withJSONObject: dictonary, options: JSONSerialization.WritingOptions(rawValue: 0))
-            allInfoJSONString = NSString(data: allInfoJSON, encoding: String.Encoding.utf8.rawValue)! as String
+            allInfoJSONString = (NSString(data: allInfoJSON, encoding: String.Encoding.utf8.rawValue)! as String).replacingOccurrences(of: "\'", with: "%27")
         } catch let error as NSError {
             print(error)
         }
@@ -48,6 +48,29 @@ class Utility: NSObject {
             } catch {}
         }
         return nil
+    }
+    
+    func executeOnFullPermission( execute:@escaping ((Bool)->()) ) {
+        UserNotification.instance.requestAuthorization { (isNotifPermitted) in
+            if( isNotifPermitted ) {
+                DispatchQueue.main.async {
+                    Location.instance.checkPermissionAction = { isLocPermitted in
+                        if isLocPermitted {
+                            execute(true)
+                        } else {
+                            execute(false)
+                        }
+                    }
+                    if( !Location.instance.isAccessPermitted ) {
+                        Location.instance.requestAuthorization(status: .authorizedAlways)
+                    } else {
+                        Location.instance.checkPermissionAction?(true)
+                    }
+                }
+            } else {
+                execute(false)
+            }
+        }
     }
     
     func splitDataToChunks( file:Data, onSplit:((Data)->()), onSuccess:((Bool)->()) ) {

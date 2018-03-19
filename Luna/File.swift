@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Zip
 
 public enum FileError: Error {
     case INEXISTENT
@@ -79,13 +78,10 @@ public enum SystemFilePath:String {
 public enum FileExtention:String {
     case PNG            = "png"
     case JPG            = "jpg"
+    case HEIC           = "heic"
     case JPEG           = "jpeg"
     case GIF            = "gif"
     case HTML           = "html"
-    case ZIP            = "zip"
-    case MP4            = "mp4"
-    case MOV            = "mov"
-    case M4V            = "m4v"
     case JS             = "js"
     case CSS            = "css"
     case TXT            = "txt"
@@ -97,15 +93,12 @@ public enum FilePathType:String {
     case BUNDLE_TYPE    = "bundle"
     case URL_TYPE       = "url"
     case ASSET_TYPE     = "asset"
-	case ICLOUD_TYPE	= "icloud"
 }
 
 public enum FileType:String {
     case FILE           = "File"
     case HTML_FILE      = "HtmlFile"
     case IMAGE_FILE     = "ImageFile"
-    case VIDEO_FILE     = "VideoFile"
-	case ZIP_FILE       = "ZipFile"
 }
 
 class File {
@@ -117,7 +110,6 @@ class File {
     private var filePath:URL!
     private var fileExtension:FileExtention?
     static var counter = 0;
-    static var ZIPLIST:[File] = [File]()
     
     
     init(){}
@@ -243,9 +235,6 @@ class File {
 			self.setFilePath(filePath: filePath)
 			self.setPathType(pathType: FilePathType.URL_TYPE)
 			return
-		case .ICLOUD_TYPE:
-			print("IMPLELEMNT THIS")
-			break
 		default:
 			break
 		}
@@ -424,7 +413,7 @@ class File {
             if let filePath = self.getFilePath() {
                 return filePath.absoluteString.isValidURL()
             }
-        case .BUNDLE_TYPE, .DOCUMENT_TYPE, .ICLOUD_TYPE:
+        case .BUNDLE_TYPE, .DOCUMENT_TYPE:
             if isFolderExists() {
                 if let filePath = self.getFilePath() {
                     return FileManager.isExists(url: filePath)
@@ -503,14 +492,10 @@ class File {
     
     public class func getFileType( fileExt: FileExtention ) -> FileType {
         switch fileExt {
-        case .GIF, .JPEG, .JPG, .PNG:
+        case .GIF, .JPEG, .JPG, .PNG, .HEIC:
             return .IMAGE_FILE
-        case .M4V, .MP4, .MOV:
-            return .VIDEO_FILE
         case .HTML:
             return .HTML_FILE
-        case .ZIP:
-            return .ZIP_FILE
         default:
             return .FILE
         }
@@ -535,6 +520,7 @@ class File {
 		case .BUNDLE_TYPE, .DOCUMENT_TYPE:
 			if let file = self.getFile() {
 				onSuccess( Utility.shared.DataToBase64(data: file) )
+                return
 			}
 			onFail( FileError.INVALID_FORMAT.localizedDescription + ":  \(self.getFileExtension())" )
 			break
@@ -543,22 +529,6 @@ class File {
 			break
 		}
 	}
-
-    public class func getFileObject( url:URL ) {
-        //file:///var/mobile/Containers/Data/Application/11A53667-B394-4175-9BE0-7667B666D3B7/Documents/sample.mp4
-        //file:///var/containers/Bundle/Application/4EB9C028-2932-473D-A0D2-DDD915F2C3F0/Luna.app/resource/index.html
-        //file:///private/var/mobile/Containers/Data/Application/A2B7116C-796D-493A-B0A1-B04F1AD26CD5/tmp/51316933297__C7247589-153A-4F6A-BCFA-73A9518ED50E.MOV
-        //assets-library://asset/asset.MOV?id=B49A35C0-9DF0-418B-ADD4-9D5B8A33C1D4&ext=MOV
-        
-        
-//        if let fileName = url.path.getFilenameFromURL() {
-//            if let fileExt = FileExtention(rawValue: fileName.substring(from: fileName.indexOf(target: ".")! + 1).lowercased() ) {
-//                let fileType = File.getFileType(fileExt: fileExt)
-//
-//            }
-//        }
-        
-    }
     
     public func copy( relative:String?="", onSuccess:((URL)->())?=nil, onFail:((String)->())?=nil ) -> Bool {
         if self.getPathType() == .URL_TYPE {
@@ -673,105 +643,5 @@ class File {
             onFail!(FileError.CANNOT_DELETE.localizedDescription)
         }
         return false
-    }
-
-	public func share( onSuccess:@escaping((Bool)->()), onFail:@escaping ((String)->()) ) {
-		if let filePath = self.getFilePath() {
-			FileManager.share(filePaths: [filePath], onSuccess: onSuccess )
-		} else {
-			onFail( FileError.INVALID_PARAMETERS.localizedDescription )
-		}
-	}
-
-	public func download( to:String?=nil, isOverwrite:Bool?=false, onSuccess:@escaping((Int)->()), onFail:((String)->()) ) {
-		do {
-			let manager = try DownloadManager(file: self, savePath: to, isOverwrite:isOverwrite)
-			onSuccess( manager.getID() )
-			manager.onDownload()
-		} catch let error as NSError {
-			onFail( error.localizedDescription )
-		}
-	}
-    
-    private func add() {
-        if let _ = File.getToBeZippedFile( fileId: self.getID() ) {
-            print("File to be zipped already in queue")
-            return
-        }
-        File.ZIPLIST.append( self )
-    }
-    
-    public class func getToBeZippedFile( fileId:Int ) -> File? {
-        for (_, file) in File.ZIPLIST.enumerated() {
-            if  file.getID() == fileId{
-                return file
-            }
-        }
-        return nil
-    }
-    
-    private func remove() {
-        File.remove( file: self )
-        print("Removed file from to be zipped list \(self.getID())")
-    }
-    
-    public class func remove( file: File ) {
-        for ( index, zfile) in File.ZIPLIST.enumerated() {
-            if zfile === file {
-                File.ZIPLIST.remove(at: index)
-            }
-        }
-    }
-    
-    func zip( fileName:String, to:String?=nil, isOverwrite:Bool, password:String?=nil, onProgress:@escaping((Double)->()), onSuccess:@escaping((Bool)->()), onFail:@escaping((String)->())) {
-        
-        if let relativeURL = FileManager.getDocumentsDirectoryPath(pathType: .DOCUMENT_TYPE, relative: to ?? self.getPath()) {
-            if !FileManager.isExists(url: relativeURL) {
-                if !FileManager.createDirectory(absolutePath: relativeURL.path) {
-                    onFail( FileError.CANNOT_CREATE.localizedDescription )
-                    return
-                }
-            }
-            
-            let resultFilePath = relativeURL.appendingPathComponent( fileName )
-            if FileManager.isExists(url: resultFilePath ) {
-                if isOverwrite {
-                    if !FileManager.deleteFile(filePath: resultFilePath) {
-                        onFail( FileError.CANNOT_DELETE.localizedDescription )
-                        return
-                    }
-                } else {
-                    onFail( FileError.ALREADY_EXISTS.localizedDescription )
-                    return
-                }
-            }
-            
-            FileManager.zip(filePaths: [self.getFilePath()!], resultFilePath: resultFilePath, password: password, onProgress: { (progress) in
-                self.onZipping( progress: progress )
-            }, onSuccess: { (result) in
-                self.add()
-                onSuccess( result )
-                self.onZip()
-            }, onFail: { (error) in
-                onFail( error )
-                self.remove()
-            }, onFinished: { (zippedFilePath) in
-                self.onZipped( fileName:fileName, zippedFilePath: zippedFilePath )
-                self.remove()
-            })
-        }
-        
-    }
-    
-    func onZip() {
-        CommandProcessor.processOnZip(file: self)
-    }
-    
-    func onZipped( fileName:String, zippedFilePath:URL ) {
-        CommandProcessor.processOnZipped(fileName:fileName, file: self, zippedFilePath:zippedFilePath)
-    }
-    
-    func onZipping( progress: Double ) {
-        CommandProcessor.processOnZipping(file: self, progress: progress)
     }
 }

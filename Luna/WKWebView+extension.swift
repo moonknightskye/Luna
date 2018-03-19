@@ -5,6 +5,9 @@
 //  Created by Mart Civil on 2017/02/21.
 //  Copyright © 2017年 salesforce.com. All rights reserved.
 //
+//【swift3】WKWebViewでUIGestureRecognizerを使う
+//https://qiita.com/KOH_TA/items/769fda8b9c7d19e991e0
+
 
 import Foundation
 import WebKit
@@ -31,6 +34,7 @@ extension WKWebView {
 		let params:NSMutableDictionary = NSMutableDictionary()
 		params.setValue( webview_id, forKey: "webview_id" );
 		params.setValue( "all", forKey: "source_global_id" );
+        params.setValue( APP_VERSION, forKey: "app_version" );
         jsScript.append( WKWebView.generateJavaScript(commandName: "init", params: params) )
 
         WKWebView.appendJavascript( script: jsScript, contentController: contentController )
@@ -44,17 +48,12 @@ extension WKWebView {
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.loading), options: .new, context: nil)
         self.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         self.isOpaque = false
-        
-        //self.translatesAutoresizingMaskIntoConstraints = false
-        //Prevents some weird space when showing/hiding status bars
         self.scrollView.contentInsetAdjustmentBehavior = .never;
         self.scrollView.bounces = false
     }
-    
+
     func load( bundlefilePath:URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ){
-        DispatchQueue.main.async {
-            self.load( NSURLRequest(url: bundlefilePath) as URLRequest )
-        }
+        self.load( NSURLRequest(url: bundlefilePath) as URLRequest )
         if onSuccess != nil {
             onSuccess!()
         }
@@ -68,12 +67,10 @@ extension WKWebView {
     }
     
     func load( url:URL, onSuccess:(()->())?=nil, onFail:((String)->())?=nil ){
-		DispatchQueue.main.async {
-			self.load( URLRequest( url: url ) )
-			if onSuccess != nil {
-				onSuccess!()
-			}
-		}
+        self.load( URLRequest( url: url ) )
+        if onSuccess != nil {
+            onSuccess!()
+        }
     }
     
     private class func appendJavascript( script:String, contentController:WKUserContentController ) {
@@ -190,12 +187,12 @@ extension WKWebView {
                     }
                 }
             case "estimatedProgress":
-				DispatchQueue.main.async {
+				//DispatchQueue.main.async {
 					wkmanager.onLoading(progress: self.estimatedProgress * 100)
 					if self.estimatedProgress == 1 {
 						//self.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress))
 					}
-				}
+				//}
             default:
                 break
             }

@@ -1,13 +1,13 @@
 .phobos .back {
-	transform: translateX(-25%);
+    transform: translateX(-25%);
     filter: blur(5px);
 }
 
 .phobos .input-select {
-	position: absolute !important;
+    position: absolute !important;
     top: 0px;
     left: 0px;
-	width: 100%;
+    width: 100%;
     height: 100%;
     margin: auto;
     background-color: transparent;
@@ -16,7 +16,7 @@
 }
 
 .phobos .input-select .select-body {
-	width: 100%;
+    width: 100%;
 }
 
 .phobos .content-label {
@@ -36,7 +36,7 @@
     color: white;
 }
 .phobos .input-select ul li div {
-	transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
     padding: 0 8pt;
     transform: scaleY(0.1) translateX(10%);
     opacity: 0;
@@ -48,25 +48,26 @@
     opacity: 1;
 }
 .phobos .input-select[data-active] {
-	transition: all 0.2s 0s ease-in-out;
+    transition: all 0.2s 0s ease-in-out;
 }
 .phobos .input-select[data-active="1"] {
-	transform: translateX(0%);
-	z-index: 100;
+    transform: translateX(0%);
+    background: linear-gradient(#21212126, #212121);
+    z-index: 100;
 }
 .phobos .input-select[data-active="0"] {
-	transform: translateX(50%);
+    transform: translateX(50%);
 }
 .phobos .input-select[data-selected]:not([data-selected=""]) {
-	transition: all 0.2s 0.4s ease-in-out !important;
+    transition: all 0.2s 0.4s ease-in-out !important;
     opacity: 0;
 }
 .phobos .input-select[data-selected]:not([data-selected=""]) li div[data-selected="1"] {
-	transition: all 0.2s 0s ease-out !important;
+    transition: all 0.2s 0s ease-out !important;
     color: #FAFAFA;
 }
 .phobos .input-select[data-selected]:not([data-selected=""]) li div[data-selected="0"] {
-	transition: all 0.2s ease-in-out !important;
+    transition: all 0.2s ease-in-out !important;
     transform: translateX(10%);
     opacity: 0;
 }
@@ -188,6 +189,10 @@
     overflow: hidden;
     animation: showclose 0.4s forwards ease-in-out;
 }
+
+.phobos-input.input-textarea .input-text-clear {
+    right: 10px;
+}
 .input-text-clear.hidden {
     animation: showclosehide 0.4s forwards ease-in-out;
 }
@@ -282,6 +287,10 @@
     color: #757575;
     opacity: 0.5 !important;
     transform: scale(0.94);
+}
+
+.phobos-input.input-textarea {
+    display: block;
 }
 
 

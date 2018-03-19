@@ -29,9 +29,11 @@
 
             function removeInactive() {
                 apollo11.forEvery( get(), function(luna_instance){
-                    if( luna_instance.getLightningComponent() && !luna_instance.getLightningComponent().isValid()) {
-                        remove( luna_instance );
-                    }
+                    $window.setTimeout( function() {
+                        if( luna_instance.getLightningComponent() && !luna_instance.getLightningComponent().isValid()) {
+                            remove( luna_instance );
+                        }
+                    }, 0 );
                 });
             };
             
@@ -49,7 +51,7 @@
         })();
     }
        
-    if ( typeof $window.luna !== "undefined" ) {
+    if ( typeof $window.Luna !== "undefined" ) {
         console.error( "luna.js has already been initialized", "ERROR" );
         return;
     }
@@ -156,7 +158,22 @@
         BEACON_STOPALLSCAN          : 98,
         BEACON_GETBEACONS           : 99,
         TOGGLE_AUTOSLEEP            : 100,
-        TOGGLE_STATUSBAR            : 101
+        TOGGLE_STATUSBAR            : 101,
+        HAPTIC_INIT                 : 102,
+        HAPTIC_FEEDBACK             : 103,
+        NFC_INIT                    : 104,
+        NFC_SCAN                    : 105,
+        NFC_ONERROR                 : 106,
+        HOTSPOT_INIT                : 107,
+        HOTSPOT_CONNECT             : 108,
+        HOTSPOT_DISCONNECT          : 109,
+        EINSTEIN_VISION_INIT        : 110,
+        EINSTEIN_VISION_PREDICT     : 111,
+        GENERATE_PDF417_BARCODE     : 112,
+        BETA_SHOWEINSTEIN_AR        : 113,
+        OPEN_APP_SETTINGS           : 114,
+        EINSTEIN_VISION_DATASETS    : 115,
+        EINSTEIN_VISION_MODELS      : 116
     };
     var CommandPriority = {
         CRITICAL                    : 0,
@@ -207,8 +224,10 @@
             if( lightning_component ) {
                 _INTERNAL_DATA.component = lightning_component;
                 _INTERNAL_DATA.global_id = lightning_component.getGlobalId();
-                _INTERNAL_DATA.element = $document.querySelector( "[data-global-id='" + lightning_component.getGlobalId() + "']" );
-                _INTERNAL_DATA.element.classList.add("luna-ready");
+                $window.setTimeout($window.$A.getCallback(function() {
+                    _INTERNAL_DATA.element = $document.querySelector( "[data-global-id='" + lightning_component.getGlobalId() + "']" );
+                    _INTERNAL_DATA.element.classList.add("luna-ready");
+                }),0);
             } else {
                 _INTERNAL_DATA.element = $document.body;
             }
@@ -216,6 +235,10 @@
             if( $window.$A ) {
                 _INTERNAL_DATA.isLightning = true;
             }
+        };
+
+        luna.getVersion = function() {
+            return _INTERNAL_DATA.app_version;
         };
         
         luna.setProbe = function( param ) {
@@ -237,6 +260,7 @@
 
         luna.init = function( param ) {
             if( _INTERNAL_DATA.status == STATUS.IOS_INIT ) {
+                _INTERNAL_DATA.app_version = param.app_version;
                 _INTERNAL_DATA.webview = new Webview({
                     parent_webview_id:  STATUS.SYSTEM,
                     webview_id:         param.webview_id
@@ -644,7 +668,8 @@
 
         luna.notification = function() {
             var command = new Command({
-                command_code    : COMMAND.USER_NOTIFICATION
+                command_code    : COMMAND.USER_NOTIFICATION,
+                priority        : CommandPriority.CRITICAL
             });
             command.onResolve( function( result ) {
                 return new UserNotification();
@@ -670,6 +695,28 @@
             return false;
         };
 
+        luna.hotspot = function() {
+            var command = new Command({
+                command_code    : COMMAND.HOTSPOT_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( result ) {
+                return new HotSpot();
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.nfc = function() {
+            var command = new Command({
+                command_code    : COMMAND.NFC_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( result ) {
+                return new NFCReader();
+            });
+            return CommandProcessor.queue( command );
+        };
+
         luna.ibeacon = function() {
             var command = new Command({
                 command_code    : COMMAND.BEACON_INIT,
@@ -677,6 +724,38 @@
             });
             command.onResolve( function( result ) {
                 return new iBeacon();
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.vision = function( param ) {
+            var command = new Command({
+                command_code    : COMMAND.EINSTEIN_VISION_INIT,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : param
+            });
+            command.onResolve( function( token ) {
+                return new EinsteinVision( token );
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.showBetaAR = function( param ){
+            var command = new Command({
+                command_code    : COMMAND.BETA_SHOWEINSTEIN_AR,
+                priority        : CommandPriority.CRITICAL,
+                parameter       : param
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.hapticFeedback = function(){
+            var command = new Command({
+                command_code    : COMMAND.HAPTIC_INIT,
+                priority        : CommandPriority.CRITICAL
+            });
+            command.onResolve( function( result ) {
+                return new HapticFeedback();
             });
             return CommandProcessor.queue( command );
         };
@@ -689,7 +768,21 @@
             return CommandProcessor.queue( command );
         };
 
-        
+        luna.generatePDF417Barcode = function(params) {
+            var command = new Command({
+                command_code    : COMMAND.GENERATE_PDF417_BARCODE,
+                parameter       : params
+            });
+            return CommandProcessor.queue( command );
+        };
+
+        luna.openAppSettings = function() {
+            var command = new Command({
+                command_code    : COMMAND.OPEN_APP_SETTINGS
+            });
+            return CommandProcessor.queue( command );
+        };
+
         var _INTERNAL_DATA = {
             status              : STATUS.IOS_INIT,
             initFns             : [],
@@ -742,6 +835,131 @@
         /************************
             PRIVATE FUNCTIONS
         ************************/
+        function EinsteinVision( token ) {
+            var vision = {};
+            
+            vision.predict = function( param ) {
+                param.token = _INTERNAL_DATA.access_token;
+                // if( param.constructor === String ) {
+                //     parameter.base64 = param;
+                // } else {
+                //     parameter.imageFile = param;
+                // }
+                var command = new Command({
+                    command_code            : COMMAND.EINSTEIN_VISION_PREDICT,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            vision.datasets = function() {
+                var parameter = {
+                    token: _INTERNAL_DATA.access_token
+                }
+                var command = new Command({
+                    command_code            : COMMAND.EINSTEIN_VISION_DATASETS,
+                    parameter               : parameter
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            vision.models = function(param) {
+                param.token = _INTERNAL_DATA.access_token;
+                var command = new Command({
+                    command_code            : COMMAND.EINSTEIN_VISION_MODELS,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            var _INTERNAL_DATA = {
+                access_token: token
+            }
+
+            return vision;
+        }
+
+        function HotSpot() {
+            var hotspot = {};
+
+            var _INTERNAL_DATA;
+
+            hotspot.connect = function( param ) {
+                _INTERNAL_DATA = param;
+                var command = new Command({
+                    command_code            : COMMAND.HOTSPOT_CONNECT,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            hotspot.disconnect = function( ) {
+                var command = new Command({
+                    command_code            : COMMAND.HOTSPOT_DISCONNECT,
+                    parameter               : _INTERNAL_DATA
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return hotspot;
+        }
+
+        function NFCReader() {
+            var nfc = {};
+
+            nfc.scan = function( param ) {
+                var command = new Command({
+                    command_code            : COMMAND.NFC_SCAN,
+                    parameter               : {message:param}
+                });
+                command.onResolve( function( results ) {
+                    var promises = [];
+                    apollo11.forEvery(results, function(result){
+                        promises.push(new Promise(function(resolve, reject){
+                            var fr = new FileReader();
+                            fr.onload = function() {
+                                if( result.type === "application/vnd.wfa.wsc" || result.type === "application/json") {
+                                    result.value = JSON.parse( this.result );
+                                } else {
+                                    result.value = this.result;
+                                }
+                                resolve(true);
+                            };
+                            fr.onerror = function() {
+                                reject(this);
+                            };
+                            fr.readAsText(apollo11.base64ToBlob(result.payload));
+                        }));
+                    });
+                    return Promise.all(promises).then(function(result){
+                        return results;
+                    });
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return nfc;
+        }
+
+        function HapticFeedback() {
+            var haptic = {};
+
+            haptic.feedback = function( param ) {
+                if( apollo11.isUndefined(param) ) {
+                    param = {type:"select"};
+                }
+                var command = new Command({
+                    command_code            : COMMAND.HAPTIC_FEEDBACK,
+                    priority                : CommandPriority.CRITICAL,
+                    parameter               : param
+                });
+                return CommandProcessor.queue( command );
+            };
+
+            return haptic;
+        }
+
         function iBeacon() {
             var ibeacon = {};
 
@@ -1317,9 +1535,9 @@
 
             webview.load = function() {
                 var command = new Command({
-                    command_code:       COMMAND.LOAD_WEB_VIEW,
-                    priority            : CommandPriority.BACKGROUND,
-                    target_webview_id:  this.getID()
+                    command_code        : COMMAND.LOAD_WEB_VIEW,
+                    priority            : CommandPriority.CRITICAL,
+                    target_webview_id   : this.getID()
                 });
                 this.setStatus( STATUS.WEBVIEW_LOAD )
                 return CommandProcessor.queue( command );
@@ -1327,9 +1545,9 @@
 
             webview.close = function() {
                 var command = new Command({
-                    command_code:       COMMAND.CLOSE_WEB_VIEW,
+                    command_code        : COMMAND.CLOSE_WEB_VIEW,
                     priority            : CommandPriority.CRITICAL,
-                    target_webview_id:  this.getID()
+                    target_webview_id   : this.getID()
                 });
                 return CommandProcessor.queue( command );
             };
@@ -1573,6 +1791,7 @@
             file.openWithSafari = function(){
                 var command = new Command({
                     command_code    : COMMAND.OPEN_WITH_SAFARI,
+                    priority        : CommandPriority.CRITICAL,
                     parameter       : {
                         file        : this.toJSON()
                     }
@@ -1655,6 +1874,7 @@
             var file = {};
 
             var _INTERNAL_DATA = {
+                localIdentifier: param.localIdentifier
             };
 
             function init(){
@@ -1679,6 +1899,13 @@
                     src: apollo11.base64ToObjectURL( base64, contentType )
                 };
                 return apollo11.JSONtoDOM( DOM );
+            };
+
+            file.getLocalIdentifier = function() {
+                return _INTERNAL_DATA.localIdentifier;
+            };
+            file.setLocalIdentifier = function( param ) {
+                _INTERNAL_DATA.localIdentifier = param;
             };
 
             file.getFullResolutionDOM = function() {
@@ -1716,6 +1943,19 @@
             file.greet = function(){
                 this.greet__super();
                 luna.debug("HELLO2");
+            };
+
+            file.toJSON = function(){
+                return {
+                    filename        : this.getFilename(),
+                    file_id         : this.getID(),
+                    path            : this.getPath(),
+                    path_type       : this.getPathType(),
+                    file_path       : this.getFilePath(),
+                    file_extension  : this.getFileExtension(),
+                    object_type     : this.objectType(),
+                    localIdentifier : this.getLocalIdentifier()
+                };
             };
 
             file = apollo11.mergeJSON( file, new File(param), true );
@@ -1848,6 +2088,7 @@
                 company            : undefined,
                 created            : undefined,
                 lastlogin          : new Date(),
+                logaccess          : true,
                 isactivated        : false,
                 mobile_locale      : undefined,
                 mobile_added_date  : undefined,
@@ -1999,6 +2240,7 @@
             userntf.show = function( param ) {
                 var command = new Command({
                     command_code    : COMMAND.USER_NOTIFICATION_SHOWMSG,
+                    priority        : CommandPriority.CRITICAL,
                     parameter       : param
                 });
                 return CommandProcessor.queue( command );

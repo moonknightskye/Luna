@@ -53,7 +53,7 @@ class SFServiceLiveAgent {
             var entity:SCSPrechatEntity?
             if let entityName = prechatObject.value(forKeyPath: "entityName") as? String {
                 entity = SCSPrechatEntity(entityName: entityName)
-
+                
                 if let saveToTranscript = prechatObject.value(forKeyPath: "saveToTranscript") as? String {
                     entity!.saveToTranscript = saveToTranscript
                 }
@@ -73,7 +73,7 @@ class SFServiceLiveAgent {
                 for ( _, field) in fields.enumerated() {
                     if let label = field.value(forKeyPath: "label") as? String,
                         let value = field.value(forKeyPath: "value") as? String {
-
+                        
                         chatConfig!.prechatFields.add(SCSPrechatObject(label: label, value: value))
                         
                         isAdded = true
@@ -204,3 +204,4 @@ class SFServiceLiveAgent {
         }
     }
 }
+

@@ -7,14 +7,17 @@
         <link href="css/phobosstyles.css" rel="newer stylesheet" type="text/css" />
         <script type="text/javascript" src="../apollo11.js"></script>
         <script type="text/javascript" src="js/explorer.js"></script>
-        <script type="text/javascript" src="js/phobos.js" ></script>
         <script type="text/javascript" src="js/luna.js" ></script>
+        <script type="text/javascript" src="js/phobos.js" ></script>
         <script>
         (function(){
             var luna = new Luna();
 
-            window.addEventListener("load", function(){
+            luna.addEventListener("ready", function(){
+                phobos.initHapticFeedback(luna);
+            });
 
+            window.addEventListener("load", function(){
                 var phoboselem = apollo11.getElement(".phobos", "SELECT");
                 var modeelem = apollo11.getElement(".user-setting", "SELECT");      
 
@@ -28,8 +31,6 @@
                     //cloud_six.classList.add("smove");
                     modeelem.dataset.mode = "login";
                 },300);
-
-                
 
                 apollo11.forEvery( apollo11.getElement("loginbtn"), function(button){
                     button.addEventListener("click", function(e){
@@ -73,6 +74,7 @@
                                         console.log( devicedata )
                                         Promise.all([
                                             syssettings.set({key:"id", value:logindata.id}),
+                                            syssettings.set({key:"logaccess", value:logindata.logaccess}),
                                             syssettings.set({key:"username", value:logindata.username}),
                                             syssettings.set({key:"isactivated", value:logindata.isactivated}),
                                             syssettings.set({key:"password", value:logindata.password}),
@@ -89,10 +91,17 @@
                                                         settings.getSettingsHtmlFile().then(function( html_file ){
                                                             loading.classList.remove("show");
                                                             loadPage( html_file, "File does not exists." );
+                                                            phobos.playFeedback("error");
                                                         });
                                                     });
 
-                                                    luna.logAccess();
+                                                    if( logindata.logaccess ) {
+                                                        luna.logAccess().then(function(success){
+                                                            phobos.playFeedback("success");
+                                                        });
+                                                    } else {
+                                                        phobos.playFeedback("error");
+                                                    }
                                                 });
                                             };
 
@@ -113,11 +122,11 @@
                                                 responseType: 'json',
                                                 data: JSON.stringify(devdata)
                                             }).then(function(result){
-                                                console.log(result)
+                                                console.log("registerdevice OK", result)
                                                 syssettings.set({key:"mobile_id", value:result.deviceid});
                                                 loadSettings();
                                             },function(error){
-                                                console.log(error);
+                                                console.log("registerdevice ERROR", error);
                                                 loadSettings();
                                             });
                                         });
@@ -134,7 +143,8 @@
                                     }, true);
                                     phoboselem.classList.add("fail");
 
-                                    loading.classList.remove("show")
+                                    loading.classList.remove("show");
+                                    phobos.playFeedback("error");
                                 });
                             break;
 
@@ -173,7 +183,7 @@
                                     
                                     successmsg.innerText = "Please check your email to activate your account"
                                     modeelem.dataset.mode = "success"
-
+                                    phobos.playFeedback("success");
                                     apollo11.forEvery( apollo11.getElement({src:"username"},"DATA"), function(elem){
                                         var inpt = apollo11.getElement("INPUT","TAG",elem)[0]
                                         if( inpt ) {
@@ -195,6 +205,7 @@
                                     }, true);
                                     phoboselem.classList.add("fail");
                                     loading.classList.remove("show")
+                                    phobos.playFeedback("error");
                                 });
                             break;
 
@@ -230,6 +241,7 @@
                                     loading.classList.remove("show")
                                     successmsg.innerText = "Please check your email to activate your account"
                                     modeelem.dataset.mode = "success"
+                                    phobos.playFeedback("success");
                                 },function(error){
                                     console.log(error)
                                     errormsg.innerText = error.message;
@@ -238,7 +250,8 @@
                                         phoboselem.classList.remove("fail")
                                     }, true);
                                     phoboselem.classList.add("fail");
-                                    loading.classList.remove("show")
+                                    loading.classList.remove("show");
+                                    phobos.playFeedback("error");
                                 });
                             break;
 
@@ -272,6 +285,7 @@
                                     loading.classList.remove("show")
                                     successmsg.innerText = "Password changed"
                                     modeelem.dataset.mode = "success"
+                                    phobos.playFeedback("success");
                                 },function(error){
                                     console.log(error)
                                     errormsg.innerText = error.message;
@@ -282,7 +296,8 @@
                                     }, true);
                                     phoboselem.classList.add("fail");
 
-                                    loading.classList.remove("show")
+                                    loading.classList.remove("show");
+                                    phobos.playFeedback("error");
                                 });
                             break;
                         }

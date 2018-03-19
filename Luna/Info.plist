@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Luna</string>
+	<string>Luna EV</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIcons</key>
@@ -19,32 +19,11 @@
 					<string>bluemoon</string>
 				</array>
 			</dict>
-			<key>electra</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>electra</string>
-				</array>
-			</dict>
-			<key>jppost</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>jppost</string>
-				</array>
-			</dict>
 			<key>redmoon</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
 					<string>redmoon</string>
-				</array>
-			</dict>
-			<key>tamarun</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>tamarun</string>
 				</array>
 			</dict>
 		</dict>
@@ -65,31 +44,19 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.salesforce.Luna</string>
+			<string>com.salesforce.LunaEinsteinVision</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>luna</string>
+				<string>lunaev</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>Fabric</key>
-	<dict>
-		<key>APIKey</key>
-		<string>246dfe64d8bb683f7ba9d13b5360af7c3aa6b684</string>
-		<key>Kits</key>
-		<array>
-			<dict>
-				<key>KitInfo</key>
-				<dict/>
-				<key>KitName</key>
-				<string>Crashlytics</string>
-			</dict>
-		</array>
-	</dict>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Luna is requesting access NFC on this device</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -98,7 +65,25 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>api.einstein.ai</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+			</dict>
 			<key>luna-10.herokuapp.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSTemporaryExceptionMinimumTLSVersion</key>
+				<string>TLSv1.1</string>
+			</dict>
+			<key>luna-vision.herokuapp.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
@@ -134,7 +119,7 @@
 		<string>armv7</string>
 	</array>
 	<key>UIRequiresFullScreen</key>
-	<false/>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>

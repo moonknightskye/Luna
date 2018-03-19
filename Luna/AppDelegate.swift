@@ -8,8 +8,6 @@
 
 import UIKit
 import CoreData
-//import Fabric
-//import Crashlytics
 import UserNotifications
 
 
@@ -20,19 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-
-        //Fabric.with([Crashlytics.self])
-
         let _ = FileManager.deleteDocumentFolder(relative: "CACHE")
-		FileManager.initiCloudDirectory()
         
         Shared.shared.UIApplication = application
-        
-        //UIApplication.shared.statusBarStyle = .lightContent
-        
-        UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in }
-        application.registerForRemoteNotifications()
-        
         return true
     }
     
@@ -59,6 +47,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        Utility.shared.executeOnFullPermission { (isPermitted) in
+            Shared.shared.checkAppPermissionsAction?( isPermitted )
+            if( isPermitted ) {
+                if let id = SystemSettings.instance.get(key: "id") as? Int, let logaccess = SystemSettings.instance.get(key: "logaccess") as? Bool {
+                    if id != -1 && logaccess {
+                        CommandProcessor.queue(command: Command( commandCode: CommandCode.LOGACCESS ))
+                    }
+                }
+            }
+        }
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -79,17 +77,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let token = SystemSettings.instance.get(key: "mobile_token") as? String {
             if token != deviceTokenString {
                 SystemSettings.instance.set(key: "mobile_token", value: deviceTokenString)
-            } else {
-                print(token)
             }
         }
-        
-        print( SystemSettings.instance.getSystemSettings() )
-        
-        //EE4598975B9D3A205E9AE62AA01B98EE728862535A2C3EDBFB1541BF05214FAB ip7
-        //D8BADA3155BAE7DFB675898F71A49C1E1AB1AF3270F8A3542CD57F18E49D1EDF ip6plus
-        
-        // Persist it in your backend in case it's new
     }
     
     // Called when APNs failed to register the device for push notifications

@@ -238,6 +238,12 @@
               z-index: 10001;
             }
 
+            .focus-holder {
+                height: 0px;
+                opacity: 0;
+                z-index: -99;
+            }
+
         </style>
         <script>
             var luna = new Luna();
@@ -255,16 +261,21 @@
                     },300);
 
                     menu.addEventListener("click", function(){
+                        phobos.playFeedback("heavy");
                         menu.classList.toggle("open")
                         apollo11.getElement(".active", "SELECT").classList.toggle("open-menu")
                     })
                 });
 
                 luna.addEventListener( "ready", function(){
+                    phobos.initHapticFeedback(luna);
+
                     luna.systemSettings().then(function(syssettings){
                         var devicedata = syssettings.getDefaults();
                         logout_btn.innerText = "Logout " + devicedata.username;
                         logout_btn.addEventListener("click", function(){
+                            //phobos.playFeedback("error");
+
                             var userid = devicedata.id;
                             Promise.all([
                                 syssettings.set({key:"id", value:-1}),
@@ -344,85 +355,26 @@
                         });
 
                         samplecode_btn.addEventListener("click", function(){
-                            showPage("https://luna-10.herokuapp.com/html/samplecodes.html");
+                            showPage("https://luna-10.herokuapp.com/html/samplecodes_lunaev.html");
                         });
                     });
-                    // luna.httpPost({
-                    //     method       : "POST",
-                    //     url          : "https://api.recaius.jp/auth/v2/tokens",
-                    //     headers      : { 
-                    //         "Content-Type"  : "application/json",
-                    //         "Accept"        : "application/json"
-                    //     },
-                    //     data : { 
-                    //         speech_recog_jaJP : { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9', 
-                    //             password: 'sfdc1234' 
-                    //         },
-                    //         speech_recog_enUS: { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_enUS',
-                    //             password: 'sfdc1234' 
-                    //         },
-                    //         speech_recog_zhCN: { 
-                    //             service_id: 'sfdcjpdemo01_MA9N7kF3h9_zhCN',
-                    //             password: 'sfdc1234' 
-                    //         }, 
-                    //         expiry_sec: 3600 
-                    //     }
-                    // }).then(function(result){
-                    //     window.setTimeout(function(){
-                    //         luna.httpPost({
-                    //             method      : "POST",
-                    //             url         : "https://api.recaius.jp/asr/v2/voices",
-                    //             headers      : { 
-                    //                 "X-Token"       : result.token,
-                    //                 "Content-Type"  : "application/json",
-                    //                 "Accept"        : "application/json"
-                    //             },
-                    //             data : { 
-                    //                 energy_threshold    : 300,
-                    //                 model_id            : 1,
-                    //                 audio_type          : "audio/x-linear",
-                    //                 push_to_talk        : false,
-                    //                 result_type         : "nbest",
-                    //                 result_count        : 1
-                    //             }
-                    //         }).then(function(result){
-                    //             alert(JSON.stringify(result))
-                    //         });
-                    //     },0);
-                    // });
+
 
                     luna.getMainWebview().addEventListener("message", function( message ) {
                         if( !message.startsWith("[ERROR]") ) {
                             return;
                         }
                         luna.notification().then(function(userNotification){
+                            window.setTimeout(function(){
+                                phobos.playFeedback("error");
+                            },500);
                             userNotification.show({title:"Failed to load Startup Page", badge:0, body:message.substring(8, message.length), timeInterval:0.5, repeat:false
-                               // ,choices:[
-                               //  {title:"Penx", value:"Penx", action: function(){ alert("Pen") }},
-                               //  {title:"Pineapplex", value:"Pineapplex", action: function(){ alert("Pineapple") }},
-                               //  {title:"Applex", value:"Applex", action: function(){ alert("Applex") }}
-                               //  ]
                             });
                         });
-
-                        // window.setTimeout(function(){
-                        //     luna.notification().then(function(userNotification){
-                        //         userNotification.show({title:"TEST", badge:0, body:message, timeInterval:0.5, repeat:false
-                        //            ,choices:[
-                        //             {title:"XXXX", value:"XXXX", action: function(){ alert("Pen") }},
-                        //             {title:"YYYY", value:"YYYY", action: function(){ alert("Pineapple") }},
-                        //             {title:"ZZZZ", value:"ZZZZ", action: function(){ alert("Applex") }}
-                        //             ]
-                        //         });
-                        //     });
-                        // },5000);
 
                         window.setTimeout(function(){
                             apollo11.getElement(".info-message", "SELECT").innerText = message;
                             apollo11.getElement(".content-error", "SELECT").classList.remove("content-hide");
-
                             var inputelem = apollo11.getElement(".input-text input", "SELECT");
                             inputelem.classList.add("error");
                         },0);
@@ -443,11 +395,6 @@
                                 } else if( input.classList.contains("input-text") ) {
                                     var inputelem = apollo11.getElement("input", "SELECT", input);
                                     inputelem.value = value;
-                                    if( inputelem.value.length > 0 ) {
-                                        window.setTimeout(function(){
-                                            inputelem.focus();
-                                        },300);
-                                    }
                                 } else if( input.classList.contains("input-select-btn") ) {
                                     input.dataset.value = value;
                                     apollo11.getElement("SPAN", "SELECT", input).innerText = value;
@@ -568,7 +515,11 @@
                               </div>
                         </div>
 
-                        <div class="header">LUNA SETTINGS</div> 
+                        <div class="header">LUNA SETTINGS</div>
+
+                        <div class="focus-holder">
+                            <input type="text" />
+                        </div>
 
                         <div class="section-content">
                             <ul class="flex-box">

@@ -14,6 +14,137 @@
 
               $window.URL = $window.URL || $window.webkitURL;
 
+              var _hotspot;
+
+              var vision;
+              luna.vision().then(function(_vision){
+                vision = _vision;
+              });
+              einstein.addEventListener("click", function(){
+                if( vision ) {
+                  luna.takePhoto({from:"PHOTO_LIBRARY"}).then( function(imageFile){
+
+                    // console.log("imageFile", imageFile)
+                    // imageFile.getFullResolutionDOM().then( function( DOM ){
+                    //     console.log(DOM)
+                    // })
+                    // return
+                    // imageFile.getResizedDOM({quality:100}).then( function( DOM ){
+                    //   luna.debug( "imageFile.getResizedDOM: YAY" );
+                    //   debug.appendChild( DOM );
+                    // }, function(error){
+                    //   luna.debug( "imageFile.getResizedDOM: " + error );
+                    // });
+
+                    // return;
+
+                    vision.predict(imageFile).then(function(result){
+                      console.log(result)
+                      var result1 = result.probabilities[0];
+                      alert(result1.probability + "% " + result1.label)
+                    }, function(error){
+                        console.log(error)
+                    })
+                  }, function(error){
+                    console.log(error)
+                  })
+                } else {
+                  console.log("no vision instance")
+                }
+
+                // luna.takePhoto({from:"CAMERA"}).then( function(imageFile){
+                //   luna.vision().then(function(vision){
+                //     vision.predict(imageFile).then(function(result){
+                //       console.log(result)
+                //     }, function(error){
+                //       console.log(error)
+                //     })
+                //   }, function(error){
+                //     console.log(error);
+                //   });
+                // })
+
+                // luna.vision().then(function(vision){
+
+                //   var predict = function(filename) {
+                //     luna.getImageFile({
+                //       filename: filename, //horse photo bigimage verybig
+                //       path_type: "document"
+                //     }).then(function(imageFile){
+                //       vision.predict(imageFile).then(function(result){
+                //         console.log(result)
+                //         var result1 = result.probabilities[0];
+                //         alert(result1.probability + "% " + result1.label)
+                //       }, function(error){
+                //         console.log(error)
+                //       })
+                //     })
+                //   };
+
+                //   // predict("horse.jpg")
+                //   // predict("photo.jpg")
+                //   // predict("bigimage.jpg")
+                //   // predict("verybig.png")
+
+                // }, function(error){
+                //     console.log(error);
+                // });
+
+
+
+              });
+
+              luna.hotspot().then(function(hotspot){
+                hotspotconnect.addEventListener("click", function(){
+                  if(_hotspot) {
+                    hotspot.connect(_hotspot).then(function(success){
+                      console.log(success)
+                    }, function(error){
+                      console.log(error)
+                    })
+                  } else {
+                    alert("no hotspot value")
+                  }
+                });
+                hotspotdisconnect.addEventListener("click", function(){
+                  if(_hotspot) {
+                    hotspot.disconnect().then(function(success){
+                      console.log(success)
+                    }, function(error){
+                      console.log(error)
+                    })
+                  } else {
+                    alert("no hotspot value")
+                  }
+                });
+              });
+
+
+              nfc.addEventListener("click", function(){
+                luna.toggleStatusBar({value:false, animation: "slide", duration: 0.25, color:"white"});
+
+                luna.nfc().then(function(nfc){
+                  
+                  nfc.scan().then(function(results){
+                    apollo11.forEvery(results, function(result){
+                      console.log(result);
+                      luna.debug( "nfc scan: " + result.payload);
+
+                      if(result.type === "application/vnd.wfa.wsc") {
+                        _hotspot = JSON.parse(result.value);
+                      }
+
+                    })
+                  }, function(error){
+                    console.log(error)
+                  })
+
+                }, function(error){
+                  luna.debug( "nfc init: " + error);
+                })
+              });
+
+
               ibeacon.addEventListener("click", function(){
                 luna.ibeacon().then(function(ibeacon){
                   luna.debug( "ibeacon init: OK");
@@ -265,17 +396,17 @@
                         luna.debug( "webview.load: " + result );
                       });
 
-                      webview.onLoad().then(function(result){
+                      webview.addEventListener( "load", function(result){
                         luna.debug( "webview.onLoad: " + result );
                       });
 
-                      webview.onLoading(function(progress){
+                      webview.addEventListener( "loading", function(result){
                         luna.debug( "Loading: " + progress + "%" );
                       }).then(function(result){
                         luna.debug( "webview.onLoading: " + result );
                       });
 
-                      webview.onLoaded().then(function(result){
+                      webview.addEventListener( "loaded", function(result){
                         luna.debug( "webview.onLoaded: " + result );
 
                         webview.setProperty( {
@@ -340,17 +471,17 @@
                         luna.debug( "webview.load: " + result );
                       });
 
-                      webview.onLoad().then(function(result){
+                      webview.addEventListener( "load", function(result){
                         luna.debug( "webview.onLoad: " + result );
                       });
 
-                      webview.onLoading(function(progress){
+                      webview.addEventListener( "loading", function(result){
                         luna.debug( "Loading: " + progress + "%" );
                       }).then(function(result){
                         luna.debug( "webview.onLoading: " + result );
                       });
 
-                      webview.onLoaded().then(function(result){
+                      webview.addEventListener( "loaded", function(result){
                         luna.debug( "webview.onLoaded: " + result );
 
                         webview.setProperty( {frame: {
@@ -523,17 +654,17 @@
                         luna.debug( "webview.load: " + result );
                       });
 
-                      webview.onLoad().then(function(result){
+                      webview.addEventListener( "load", function(result){
                         luna.debug( "webview.onLoad: " + result );
                       });
 
-                      webview.onLoading(function(progress){
+                      webview.addEventListener( "loading", function(result){
                         luna.debug( "Loading: " + progress + "%" );
                       }).then(function(result){
                         luna.debug( "webview.onLoading: " + result );
                       });
 
-                      webview.onLoaded().then(function(result){
+                      webview.addEventListener( "loaded", function(result){
                         luna.debug( "webview.onLoaded: " + result );
 
                         webview.setProperty( {frame: {
@@ -1110,17 +1241,17 @@
                         luna.debug( "webview.load: " + result );
                       });
 
-                      webview.onLoad().then(function(result){
+                      webview.addEventListener( "load", function(result){
                         luna.debug( "webview.onLoad: " + result );
                       });
 
-                      webview.onLoading(function(progress){
+                      webview.addEventListener( "loading", function(result){
                         luna.debug( "Loading: " + progress + "%" );
                       }).then(function(result){
                         luna.debug( "webview.onLoading: " + result );
                       });
 
-                      webview.onLoaded().then(function(result){
+                      webview.addEventListener( "loaded", function(result){
                         luna.debug( "webview.onLoaded: " + result );
 
                         webview.setProperty( {frame: {

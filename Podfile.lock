@@ -1,24 +1,14 @@
 PODS:
-  - Crashlytics (3.9.3):
-    - Fabric (~> 1.7.2)
-  - Fabric (1.7.2)
-  - ServiceSDK (210.2.0):
-    - ServiceSDK/All (= 210.2.0)
-  - ServiceSDK/All (210.2.0)
-  - Zip (1.1.0)
+  - ServiceSDK (212.0.1):
+    - ServiceSDK/All (= 212.0.1)
+  - ServiceSDK/All (212.0.1)
 
 DEPENDENCIES:
-  - Crashlytics
-  - Fabric
   - ServiceSDK
-  - Zip
 
 SPEC CHECKSUMS:
-  Crashlytics: dbb07d01876c171c5ccbdf7826410380189e452c
-  Fabric: 9cd6a848efcf1b8b07497e0b6a2e7d336353ba15
-  ServiceSDK: 0af38ef92caff34bf89c033bbab9e37775c42c43
-  Zip: 8877eede3dda76bcac281225c20e71c25270774c
+  ServiceSDK: 33a079c0cf7c6882b1c3d9a8e8f867e574100137
 
-PODFILE CHECKSUM: 46dc4498b6b531ac74235c8967935d2e338ccb4d
+PODFILE CHECKSUM: 21fe07ca95d876078c0822c0cb1ac6bf01bffd67
 
-COCOAPODS: 1.4.0.rc.1
+COCOAPODS: 1.4.0

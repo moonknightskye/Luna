@@ -72,36 +72,6 @@ class WebViewManager {
         return self.htmlFile
     }
     
-    public func appendAVPlayer( avmanager: AVPlayerManager, isFixed:Bool?=false ) {
-        if isFixed! {
-            self.getWebview().layer.addSublayer( avmanager.getAVPlayer() )
-        } else {
-            self.getWebview().scrollView.layer.addSublayer( avmanager.getAVPlayer() )
-        }
-        
-        
-        if avmanager.isAutoplay(), let player = avmanager.getAVPlayer().player {
-            player.play()
-        }
-    }
-    
-    public func appendAVCapture( avCapture: AVCaptureManager, isFixed:Bool?=false) {
-        if isFixed! {
-            self.getWebview().layer.addSublayer( avCapture.getPreviewLayer() )
-        } else {
-            self.getWebview().scrollView.layer.addSublayer( avCapture.getPreviewLayer() )
-        }
-        avCapture.inheritParentFrame(isFixed: isFixed!)
-    }
-    
-//    public func appendCodeReader( codeReader: CodeReader, isFixed:Bool?=false) {
-//        if isFixed! {
-//            self.getWebview().layer.addSublayer( codeReader.getPreviewLayer() )
-//        } else {
-//            self.getWebview().scrollView.layer.addSublayer( codeReader.getPreviewLayer() )
-//        }
-//    }
-    
     public class func getManager( webview_id:Int?=nil, webview:WKWebView?=nil ) -> WebViewManager? {
         for (_, manager) in WebViewManager.LIST.enumerated() {
             if webview_id != nil && manager.getID() == webview_id {
@@ -181,10 +151,8 @@ class WebViewManager {
     func close( onSuccess: (()->())?=nil) {
         self.getWebview().removeFromSuperview( onSuccess: {
             self.remove()
-            if onSuccess != nil {
-                onSuccess!()
-            }
-        } )
+            onSuccess?()
+        })
     }
 }
 

@@ -10,11 +10,12 @@ import Foundation
 import UIKit
 import Photos
 
+
 class CommandProcessor {
     
     private static var QUEUE:[Command] = [Command]();
     
-    public class func queue( command: Command ) {
+    private class func _queue( command: Command ) {
         CommandProcessor.QUEUE.append( command )
         
         switch command.getCommandCode() {
@@ -35,9 +36,6 @@ class CommandProcessor {
         case .CLOSE_WEB_VIEW:
             processCloseWebView( command: command )
             break
-        case .TAKE_PHOTO:
-            checkTakePhoto( command: command )
-            break
         case .GET_FILE:
             processGetFile( command: command )
             break
@@ -47,38 +45,11 @@ class CommandProcessor {
         case .GET_IMAGE_FILE:
             processGetImageFile( command: command )
             break
-        case .GET_EXIF_IMAGE:
-            processGetExifImage( command: command )
-            break
         case .GET_BASE64_BINARY:
             processGetBase64Binary( command: command )
             break
         case .GET_BASE64_RESIZED:
             processGetBase64Resized( command: command )
-            break
-        case .GET_VIDEO_BASE64_BINARY:
-            processGetVideoBase64Binary( command: command )
-            break
-        case .GET_VIDEO:
-            processGetVideo( command: command )
-            break
-        case .NEW_AV_PLAYER:
-            processNewAVPlayer( command: command )
-            break
-        case .APPEND_AV_PLAYER:
-            processAppendAVPlayer( command: command )
-            break
-        case .AV_PLAYER_PLAY:
-            processAVPlayerPlay( command: command )
-            break
-        case .AV_PLAYER_PAUSE:
-            processAVPlayerPause( command: command )
-            break
-        case .AV_PLAYER_SEEK:
-            processAVPlayerSeek( command: command )
-            break
-        case .TAKE_VIDEO:
-            checkTakeVideo( command: command )
             break
         case .MEDIA_PICKER:
             checkMediaPicker( command: command )
@@ -86,56 +57,11 @@ class CommandProcessor {
         case .CHANGE_ICON:
             proccessChangeIcon(command: command)
             break
-        case .GET_VIDEO_FILE:
-            processGetVideoFile( command: command )
-            break
-		case .DOWNLOAD:
-			processDownloadFile( command: command )
-			break
-        case .GET_ZIP_FILE:
-            processGetZipFile( command: command )
-            break
-        case .ONDOWNLOAD,
-             .ONDOWNLOADING,
-             .ONDOWNLOADED:
-            checkDownloadEvent( command: command )
-            break
         case .MOVE_FILE:
             processMoveFile( command: command )
             break
         case .RENAME_FILE:
             processRenameFile( command: command )
-            break
-        case .COPY_FILE:
-            processCopyFile( command: command )
-            break
-        case .DELETE_FILE:
-            processDeleteFile( command: command )
-            break
-        case .UNZIP:
-            processUnzip( command: command )
-            break
-        case .ON_UNZIP,
-             .ON_UNZIPPING,
-             .ON_UNZIPPED:
-            checkUnzipEvent( command: command )
-            break
-        case .GET_FILE_COL:
-            checkGetFileCollection( command: command )
-            break
-		case .SHARE_FILE:
-			checkShareFile( command: command )
-			break
-        case .ZIP:
-            checkZip( command: command )
-            break
-        case .ON_ZIP,
-             .ON_ZIPPING,
-             .ON_ZIPPED:
-            checkZipEvent( command: command )
-            break
-		case .CODE_READER:
-			checkCodeReader(command: command)
             break
         case .SHAKE_BEGIN:
             //checkShakeBegin(command: command)
@@ -143,22 +69,14 @@ class CommandProcessor {
         case .SHAKE_END:
             //checkShakeEnd(command: command)
             break
+        case .COPY_FILE:
+            processCopyFile( command: command )
+            break
+        case .DELETE_FILE:
+            processDeleteFile( command: command )
+            break
         case .REMOVE_EVENT_LISTENER:
             checkRemoveEventListener(command: command)
-            break
-        case .GET_AV_CAPTURE:
-            checkGetAVCapture( command: command )
-            break
-        case .APPEND_AV_CAPTURE:
-            checkAppendAVCapture( command: command )
-            break
-        case .AV_CAPTURE_CONTROL:
-            checkAVCaptureControl( command: command )
-            break
-        case .AV_CAPTURE_SCANCODE:
-            checkAVCaptureScancode( command: command )
-            break
-        case .AV_CAPTURE_SHOOT_IMAGE:
             break
         case .OPEN_WITH_SAFARI:
             checkOpenWithSafari( command: command )
@@ -169,9 +87,6 @@ class CommandProcessor {
         case .USER_SETTINGS_STARTUP_HTML:
             checkUserSettingsStartupHtml( command: command )
             break
-//        case .USER_SETTINGS_ADD:
-//            checkUserSettingsAdd( command: command )
-//            break
         case .USER_SETTINGS_DELETE:
             checkUserSettingsDelete( command: command )
             break
@@ -202,26 +117,15 @@ class CommandProcessor {
         case .HTTP_POST:
             checkHttpPost( command: command )
             break
-		case .AVAUDIO_RECORDER_INIT:
-			checkAVAudioRecorderInit( command: command )
-			break
-		case .AVAUDIO_RECORDER_RECORD:
-			checkAVAudioRecorderRecord( command: command )
-			break
-		case .AVAUDIO_RECORDER_STOP:
-			checkAVAudioRecorderStop( command: command )
-			break
-		case .AUDIO_CONVERT_WAV:
-			checkAVAudioConvertToWav( command: command )
-			break
-        case .AVAUDIO_RECORDER_RECORDING:
-            break
 		case .SYSTEM_SETTINGS:
 			checkSystemSettings( command: command )
 			break
 		case .SYSTEM_SETTINGS_SET:
 			checkSystemSettingsSet( command: command )
 			break
+        case .LOGACCESS:
+            checkLogAccess( command: command )
+            break
         case .SF_SERVICESOS_INIT:
             checkSFServiceSOSInit( command: command )
             break
@@ -232,17 +136,14 @@ class CommandProcessor {
              .SF_SERVICESOS_DIDSTOP,
              .SF_SERVICESOS_DIDCONNECT:
             break
-		case .SF_SERVICESOS_STOP:
-			checkSFServiceSOSStop( command: command )
-			break
+        case .SF_SERVICESOS_STOP:
+            checkSFServiceSOSStop( command: command )
+            break
         case .SF_SERVICELIVEA_INIT:
             checkSFServiceLiveAgentInit( command: command )
             break
         case .SF_SERVICELIVEA_START:
             checkSFServiceLiveAgentStart( command: command )
-            break
-        case .LOGACCESS:
-            checkLogAccess( command: command )
             break
         case .SF_SERVICELIVEA_ADDPREOBJ:
             checkSFServiceLiveAgentAddPrechatObject( command: command )
@@ -256,49 +157,63 @@ class CommandProcessor {
         case .SF_SERVICELIVEA_CHECKAVAIL:
             checkSFServiceLiveAgentCheckAvailability( command: command )
             break
-        case .BEACON_TRANSMIT:
-            checkiBeaconTransmit( command: command )
+        case .HAPTIC_INIT:
+            processHapticFeedbackInit(command: command)
             break
-        case .BEACON_STOP:
-            checkiBeaconStop( command: command )
+        case .HAPTIC_FEEDBACK:
+            processHapticFeedbackExecute(command: command)
             break
-        case .BEACON_ONRANGE,
-             .BEACON_ONMONITOR,
-             .BEACON_DIDUPDATE:
+        case .EINSTEIN_VISION_INIT:
+            proccessEinsteinAuth(command: command)
             break
-        case .BEACON_STARTMONITORING:
-            checkiBeaconStartMonitoring( command: command )
-            break;
-        case .BEACON_STARTRANGINGBEACON:
-            checkiBeaconRangingScanner( command: command )
-            break;
-        case .BEACON_INIT:
-            checkiBeaconInit( command: command )
-            break;
-        case .BEACON_STOPRANGINGBEACON:
-            checkiBeaconStopRangingScanner( command: command )
-            break;
-        case .BEACON_STOPMONITORINGBEACON:
-            checkiBeaconStopMonitoring( command: command )
-            break;
-        case .BEACON_STOPALLSCAN:
-            checkiBeaconStopAllScan( command: command )
-            break;
-        case .BEACON_GETBEACONS:
-            checkiBeaconGetAllBeacons( command: command )
+        case .EINSTEIN_VISION_PREDICT:
+            proccessEinsteinVisionPredict(command: command)
             break
-        case .TOGGLE_AUTOSLEEP:
-            processToggleAutoSleep(command: command)
+        case .BETA_SHOWEINSTEIN_AR:
+            processShowEinsteinARBeta(command: command)
             break
-        case .TOGGLE_STATUSBAR:
-            //http://tobiashelmri.ch/swift,/ios/2016/12/08/hiding-the-status-bar-smoothly-in-ios-10.html
-            proccessToggleStatusBar(command: command)
+        case .OPEN_APP_SETTINGS:
+            processOpenAppSettings(command: command)
+            break
+        case .EINSTEIN_VISION_DATASETS:
+            proccessEinsteinVisionDatasets(command: command)
+            break
+        case .EINSTEIN_VISION_MODELS:
+            proccessEinsteinVisionModels(command: command)
             break
         default:
             print( "[ERROR] Invalid Command Code: \(command.getCommandCode())" )
             command.reject(errorMessage: "Invalid Command Code: \(command.getCommandCode())")
             return
         }
+    }
+    
+    public class func queue( command: Command ) {
+        var dispatchQos = DispatchQoS.default
+        switch command.getPriority() {
+        case .CRITICAL:
+            DispatchQueue.global(qos: .userInteractive).async(execute: {
+                DispatchQueue.main.async {
+                    _queue( command: command )
+                }
+            })
+            return
+        case .HIGH:
+            dispatchQos = DispatchQoS.userInteractive
+            break
+        case .NORMAL:
+            dispatchQos = DispatchQoS.userInitiated
+            break
+        case .LOW:
+            dispatchQos = DispatchQoS.utility
+            break
+        case .BACKGROUND:
+            dispatchQos = DispatchQoS.background
+            break
+        }
+        DispatchQueue.global(qos: dispatchQos.qosClass).async(execute: {
+            _queue( command: command )
+        })
     }
     
     public class func getWebViewManager( command: Command ) -> WebViewManager? {
@@ -309,66 +224,7 @@ class CommandProcessor {
         }
         return nil
     }
-  
-    public class func getToBeZippedFile( command: Command ) -> File? {
-        if let fileId = (command.getParameter() as AnyObject).value(forKeyPath: "file_id") as? Int {
-            return File.getToBeZippedFile(fileId: fileId)
-        }
-        return nil
-    }
     
-    public class func getZipFile( command: Command ) -> ZipFile? {
-        if let fileId = (command.getParameter() as AnyObject).value(forKeyPath: "file_id") as? Int {
-            return ZipFile.getZipFile(fileId: fileId)
-        }
-        return nil
-    }
-    
-    public class func getAVPlayerManager( command: Command ) -> AVPlayerManager? {
-        if let avplayerID = (command.getParameter() as AnyObject).value(forKeyPath: "avplayer_id") as? Int {
-            if let avmanager = AVPlayerManager.getManager(avplayer_id: avplayerID) {
-                return avmanager
-            } else {
-                command.reject( errorMessage: "[ERROR] No avplayer with ID of \(avplayerID) found." )
-                return nil
-            }
-        }
-        command.reject( errorMessage: "[ERROR] avplayer_id is not existent" )
-        return nil
-    }
-    
-    public class func getAVCaptureManager( command: Command ) -> AVCaptureManager? {
-        if let avcaptureID = (command.getParameter() as AnyObject).value(forKeyPath: "avcapture_id") as? Int {
-            if let avmanager = AVCaptureManager.getManager(avcapture_id: avcaptureID) {
-                return avmanager
-            } else {
-                command.reject( errorMessage: "[ERROR] No avcapture with ID of \(avcaptureID) found." )
-                return nil
-            }
-        }
-        command.reject( errorMessage: "[ERROR] avcapture_id is not existent" )
-        return nil
-    }
-    
-    public class func getDownloadManager( command: Command ) -> DownloadManager? {
-        if let id = (command.getParameter() as AnyObject).value(forKeyPath: "id") as? Int {
-            if let manager = DownloadManager.getManager( download_id: id ) {
-                return manager
-            }
-        }
-        command.reject( errorMessage: "[ERROR] Download Manager does not exists" )
-        return nil
-    }
-    
-//    public class func getDownloadManager( command: Command ) -> DownloadManager? {
-//        if let downloadID = (command.getParameter() as AnyObject).value(forKeyPath: "download_id") as? Int {
-//            if let manager = DownloadManager.getManager(download_id: downloadID) {
-//                return manager
-//            }
-//        }
-//        command.reject( errorMessage: "[ERROR] Download Manager does not exists" )
-//        return nil
-//    }
     
     public class func getQueue() -> [Command] {
         return CommandProcessor.QUEUE
@@ -468,16 +324,6 @@ class CommandProcessor {
         let _ = CommandProcessor.getWebViewManager(command: command)
     }
     
-    private class func checkDownloadEvent( command: Command) {
-        //let _ = CommandProcessor.getDownloadManager(command: command)
-    }
-    
-    private class func checkUnzipEvent( command: Command) {
-        //let _ = CommandProcessor.getZipFile(command: command)
-    }
-    private class func checkZipEvent( command: Command) {
-        //let _ = CommandProcessor.getZipFile(command: command)
-    }
     
     public class func processWebViewOnload( wkmanager: WebViewManager ) {
         getCommand(commandCode: CommandCode.WEB_VIEW_ONLOAD) { (command) in
@@ -486,10 +332,6 @@ class CommandProcessor {
                     command.update(value: true)
                 }
             }
-//            if command.getTargetWebViewID() == wkmanager.getID() {
-//                //command.resolve(value: true)
-//                command.update(value: true)
-//            }
         }
     }
     
@@ -507,10 +349,6 @@ class CommandProcessor {
                     }
                 }
             }
-//            if command.getTargetWebViewID() == wkmanager.getID() {
-//                //command.resolve(value: true)
-//                command.update(value: true)
-//            }
         }
     }
     
@@ -521,12 +359,6 @@ class CommandProcessor {
                     command.update(value:progress)
                 }
             }
-//            if command.getTargetWebViewID() == wkmanager.getID() {
-//                command.update(value:progress)
-////                if( progress >= 100.0 ) {
-////                    command.resolve(value: true)
-////                }
-//            }
         }
     }
     
@@ -553,8 +385,28 @@ class CommandProcessor {
         if !isDuplicated {
             if let type = (command.getParameter() as AnyObject).value(forKeyPath: "from") as? String {
                 if let pickerType = PickerType(rawValue: type) {
-                    if !Photos.getMediaPickerController(view: Shared.shared.ViewController, type: pickerType) {
-                        command.reject( errorMessage: "[ERROR] Photos.app is not available" )
+                    let getPickerController = { (command: Command) -> () in
+                        if !Photos.getMediaPickerController(view: Shared.shared.ViewController, type: pickerType) {
+                            command.reject( errorMessage: "[ERROR] Photos.app is not available" )
+                        }
+                    }
+                    let requestAuthorization = { (command: Command, isRequestAuth: Bool) -> () in
+                        if( isRequestAuth ) {
+                            PHPhotoLibrary.requestAuthorization({(newStatus) in
+                                if newStatus ==  PHAuthorizationStatus.authorized {
+                                    getPickerController( command )
+                                } else {
+                                    command.reject(errorMessage: "Not authorized to access Photos app")
+                                }
+                            })
+                        } else {
+                            getPickerController( command )
+                        }
+                    }
+                    if pickerType == .PHOTO_LIBRARY {
+                        requestAuthorization( command, true)
+                    } else {
+                        requestAuthorization( command, false)
                     }
                 }
             }
@@ -562,21 +414,24 @@ class CommandProcessor {
             command.reject( errorMessage: "[ERROR] The process is being used by another command" )
         }
     }
-    public class func processMediaPicker( media:[String : Any]?=nil ) {
+    public class func processMediaPicker( media:[String : Any]?=nil, isAllowed:Bool?=true ) {
         getCommand(commandCode: CommandCode.MEDIA_PICKER) { (command) in
             if media != nil {
                 if let type = (command.getParameter() as AnyObject).value(forKeyPath: "from") as? String {
                     if let pickerType = PickerType(rawValue: type) {
                         switch pickerType {
                         case PickerType.PHOTO_LIBRARY:
-                            do {
-                                //if let imageURL = media![UIImagePickerControllerPHAsset] as? URL {
-                                if let imageURL = media![UIImagePickerControllerReferenceURL] as? URL {
-                                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL)
-                                    command.resolve(value: imageFile.toDictionary(), raw: imageFile)
+                            if( isAllowed == true ) {
+                                do {
+                                    if let imageURL = media![UIImagePickerControllerImageURL] as? URL, let phasset = media![UIImagePickerControllerPHAsset] as? PHAsset {
+                                        let imageFile = try ImageFile( fileId:File.generateID(), localIdentifier:phasset.localIdentifier, assetURL: imageURL)
+                                        command.resolve(value: imageFile.toDictionary(), raw: imageFile)
+                                    }
+                                } catch let error as NSError {
+                                    command.reject(errorMessage: error.localizedDescription)
                                 }
-                            } catch let error as NSError {
-                                command.reject(errorMessage: error.localizedDescription)
+                            } else {
+                                command.reject(errorMessage: "Not authorized to access Photos App")
                             }
                             break
                         case PickerType.CAMERA:
@@ -593,26 +448,6 @@ class CommandProcessor {
                                 command.reject( errorMessage: "Cannot obtain photo" )
                             }
                             break
-                        case PickerType.VIDEO_LIBRARY:
-                            do {
-                                if let videoURL = media![UIImagePickerControllerMediaURL] as? URL {
-                                    print( videoURL )
-                                    let videoFile = try VideoFile(fileId: File.generateID(), assetURL: videoURL)
-                                    command.resolve(value: videoFile.toDictionary(), raw: videoFile)
-                                }
-                            } catch let error as NSError {
-                                print(error)
-                                command.reject(errorMessage: error.localizedDescription)
-                            }
-                            break
-                        case PickerType.CAMCORDER:
-                            if let videoURL = media![UIImagePickerControllerMediaURL] as? URL {
-                                let videoFile = VideoFile(fileId: File.generateID(), document:"TEMP_VIDEO.MOV",filePath: videoURL)
-                                command.resolve(value: videoFile.toDictionary(), raw: videoFile)
-                            } else {
-                                command.reject(errorMessage: FileError.INEXISTENT.localizedDescription)
-                            }
-                            break
                         }
                     }
                 }
@@ -620,77 +455,6 @@ class CommandProcessor {
                 command.reject(errorMessage: "User cancelled operation")
             }
             
-        }
-    }
-    
-    
-    
-    
-    private class func checkTakePhoto( command: Command ) {
-        var isDuplicated = false
-        getCommand(commandCode: CommandCode.TAKE_PHOTO) { (cmd) in
-            if cmd !== command {
-                isDuplicated = true
-            }
-        }
-        if !isDuplicated {
-            if let type = (command.getParameter() as AnyObject).value(forKeyPath: "from") as? String {
-                if let pickerType = PickerType(rawValue: type) {
-                    if !Photos.getMediaPickerController(view: Shared.shared.ViewController, type: pickerType) {
-                        command.reject( errorMessage: "[ERROR] Photos.app is not available" )
-                    }
-                }
-            }
-        } else {
-            command.reject( errorMessage: "[ERROR] The process is being used by another command" )
-        }
-    }
-    public class func processTakePhoto( imageURL:URL?=nil ) {
-        CommandProcessor.getCommand(commandCode: CommandCode.TAKE_PHOTO) { (command) in
-            if imageURL != nil {
-                do {
-                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL!)
-                    command.resolve(value: imageFile.toDictionary(), raw: imageFile)
-                } catch let error as NSError {
-                    command.reject(errorMessage: error.localizedDescription)
-                }
-            } else {
-                command.reject(errorMessage: "User cancelled operation")
-            }
-        }
-    }
-    
-    private class func checkTakeVideo( command: Command ) {
-        var isDuplicated = false
-        getCommand(commandCode: CommandCode.TAKE_VIDEO) { (cmd) in
-            if cmd !== command {
-                isDuplicated = true
-            }
-        }
-        if !isDuplicated {
-            if let type = (command.getParameter() as AnyObject).value(forKeyPath: "from") as? String {
-                if let pickerType = PickerType(rawValue: type) {
-                    if !Photos.getMediaPickerController(view: Shared.shared.ViewController, type: pickerType) {
-                        command.reject( errorMessage: "[ERROR] Photos.app is not available" )
-                    }
-                }
-            }
-        } else {
-            command.reject( errorMessage: "[ERROR] The process is being used by another command" )
-        }
-    }
-    public class func processTakeVideo( imageURL:URL?=nil ) {
-        CommandProcessor.getCommand(commandCode: CommandCode.TAKE_VIDEO) { (command) in
-            if imageURL != nil {
-                do {
-                    let imageFile = try ImageFile( fileId:File.generateID(), assetURL: imageURL!)
-                    command.resolve(value: imageFile.toDictionary(), raw: imageFile)
-                } catch let error as NSError {
-                    command.reject(errorMessage: error.localizedDescription)
-                }
-            } else {
-                command.reject(errorMessage: "User cancelled operation")
-            }
         }
     }
     
@@ -740,99 +504,6 @@ class CommandProcessor {
         }
     }
 
-	private class func processDownloadFile( command: Command ) {
-		CommandProcessor.checkDownloadFile( command: command, onSuccess: { result in
-			command.resolve( value: result )
-		}, onFail: { errorMessage in
-			command.reject( errorMessage: errorMessage )
-		})
-	}
-	private class func checkDownloadFile( command:Command, onSuccess:@escaping ((Int)->()), onFail:@escaping ((String)->()) ) {
-        do {
-            if let fileparam = (command.getParameter() as AnyObject).value(forKeyPath: "file") as? NSDictionary {
-                let file = try File( file: fileparam )
-                file.download(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String,
-                              isOverwrite: (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool,
-                              onSuccess: { (result) in
-                                onSuccess( result )
-                }, onFail: { (error) in
-                    onFail( error )
-                })
-                return
-            } else {
-                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
-            }
-        } catch let error as NSError {
-            onFail( error.localizedDescription )
-        }
-	}
-
-    private class func processGetZipFile( command: Command ) {
-        checkGetZipFile( command: command, onSuccess: { result, raw in
-            command.resolve( value: result, raw: raw )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkGetZipFile( command: Command, onSuccess:@escaping ((NSDictionary, ZipFile)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = command.getParameter()
-        var zipFile:ZipFile?
-        switch( parameter ) {
-        case is ZipFile:
-            zipFile = parameter as? ZipFile
-            break
-        case is NSDictionary:
-            do {
-                zipFile = try ZipFile( file: parameter as! NSDictionary )
-            } catch  let error as NSError {
-                print("SOME ERRORS HERE: \(error.localizedDescription)")
-            }
-            break
-        default:
-            break;
-        }
-        if zipFile != nil {
-            onSuccess(zipFile!.toDictionary(), zipFile!)
-        } else {
-            command.reject( errorMessage: FileError.INEXISTENT.errorDescription )
-        }
-    }
-    
-    private class func processUnzip( command: Command ) {
-        checkUnzip( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkUnzip( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
-        var zipFile:ZipFile?
-        switch( parameter ) {
-        case is ZipFile:
-            zipFile = parameter as? ZipFile
-            break
-        case is NSDictionary:
-            do {
-                zipFile = try ZipFile( file: parameter as! NSDictionary )
-            } catch  let error as NSError {
-                onFail( error.localizedDescription )
-            }
-            break
-        default:
-            break;
-        }
-        if zipFile != nil {
-            zipFile!.unzip(to: (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
-                , isOverwrite: (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool
-                , password: (command.getParameter() as AnyObject).value(forKeyPath: "password") as? String
-                , onSuccess: { result in onSuccess(result) }
-                , onFail: { error in onFail( error ) }
-            )
-        }
-    }
-    
-
     private class func processGetFile( command: Command ) {
         checkGetFile( command: command, onSuccess: { result, raw in
             command.resolve( value: result, raw: raw )
@@ -846,53 +517,6 @@ class CommandProcessor {
             onSuccess(file.toDictionary(), file)
         } catch let error as NSError {
             onFail( error.localizedDescription )
-        }
-    }
-    
-    private class func processGetVideoFile( command: Command ) {
-        checkGetVideoFile( command: command, onSuccess: { result, raw in
-            command.resolve( value: result, raw: raw )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkGetVideoFile( command:Command, onSuccess:@escaping ((NSDictionary, VideoFile)->()), onFail:@escaping ((String)->()) ) {
-        do {
-            let videoFile = try VideoFile( file: command.getParameter() as! NSDictionary)
-            onSuccess(videoFile.toDictionary(), videoFile)
-        } catch let error as NSError {
-            onFail( error.localizedDescription )
-        }
-    }
-    
-    private class func processGetExifImage( command: Command ) {
-        checkGetExifImage( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkGetExifImage( command:Command, onSuccess:@escaping ((NSDictionary)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = command.getParameter()
-        var imageFile:ImageFile?
-        switch( parameter ) {
-        case is ImageFile:
-            imageFile = parameter as? ImageFile
-            break
-        case is NSDictionary:
-            imageFile = ImageFile( imageFile: parameter as! NSDictionary )
-            break
-        default:
-            break;
-        }
-        if imageFile != nil {
-            imageFile!.getEXIFInfo(onSuccess: { (exif) in
-                onSuccess( exif )
-            }, onFail: { (error) in
-                onFail( error )
-            })
-        } else {
-            onFail( "Failed to get Image" )
         }
     }
     
@@ -912,7 +536,16 @@ class CommandProcessor {
 			file = parameter as? File
 			break
 		case is NSDictionary:
-			file = File( filedict: parameter as! NSDictionary )
+            if let object_type = (parameter as! NSDictionary).value(forKeyPath: "object_type") as? String {
+                switch( object_type ) {
+                case "ImageFile":
+                    file = ImageFile( imageFile: parameter as! NSDictionary )
+                    break
+                default:
+                    file = File( filedict: parameter as! NSDictionary )
+                    break
+                }
+            }
 			break
 		default:
 			break;
@@ -926,26 +559,6 @@ class CommandProcessor {
 		} else {
 			command.reject( errorMessage: "Failed to get Image" )
 		}
-//        var imageFile:ImageFile?
-//        switch( parameter ) {
-//        case is ImageFile:
-//            imageFile = parameter as? ImageFile
-//            break
-//        case is NSDictionary:
-//            imageFile = ImageFile( imageFile: parameter as! NSDictionary )
-//            break
-//        default:
-//            break;
-//        }
-//        if imageFile != nil {
-//            imageFile!.getBase64Value(onSuccess: { (base64) in
-//                command.resolve(value: base64)
-//            }, onFail: { (error) in
-//                command.reject( errorMessage: error )
-//            })
-//        } else {
-//            command.reject( errorMessage: "Failed to get Image" )
-//        }
     }
     
     private class func processGetBase64Resized( command: Command ) {
@@ -979,173 +592,7 @@ class CommandProcessor {
             command.reject( errorMessage: "Failed to get Image" )
         }
     }
-    
-    
-    private class func processGetVideoBase64Binary( command: Command ) {
-        checkGetVideoBase64Binary( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkGetVideoBase64Binary( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = command.getParameter()
-        var videoFile:VideoFile?
-        switch( parameter ) {
-        case is VideoFile:
-            videoFile = parameter as? VideoFile
-            break
-        case is NSObject:
-            print( parameter )
-            videoFile = VideoFile( videoFile: parameter as! NSDictionary )
-            break
-        default:
-            break;
-        }
-        if videoFile != nil {
-            //onSuccess( Utility.shared.DataToBase64(data: videoFile!.getFile()!) )
-            videoFile!.getBase64Value(onSplit: { (chunk) in
-                command.update(value: chunk.base64EncodedString())
-            }, onSuccess: { (result) in
-                onSuccess(result)
-            }, onFail: { (error) in
-                onFail(error)
-            })
-        } else {
-            onFail( "Video does not exist" )
-        }
-    }
-    
-    
-    
-    private class func processGetVideo( command: Command ) {
-        checkGetVideo( command: command, onSuccess: { result, raw in
-            command.resolve( value: result, raw: raw )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkGetVideo( command: Command, onSuccess:@escaping ((String, VideoFile)->()), onFail:@escaping ((String)->()) ) {
-        do {
-            let videoFile = try VideoFile( file: command.getParameter() as! NSDictionary)
-            if let filePath = videoFile.getFilePath() {
-                onSuccess(filePath.absoluteString, videoFile)
-            } else {
-                onFail( "File is not available" )
-            }
-        } catch let error as NSError {
-            onFail( error.localizedDescription )
-        }
-        
-        
-    }
-    
-    
-    private class func processNewAVPlayer( command: Command ) {
-        checkNewAVPlayer( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkNewAVPlayer( command: Command, onSuccess:@escaping ((Int)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "video_file")
-        var videoFile:VideoFile?
-        switch( parameter ) {
-        case is VideoFile:
-            videoFile = parameter as? VideoFile
-            break
-        case is NSDictionary:
-            videoFile = VideoFile( videoFile: parameter as! NSDictionary )
-            break
-        default:
-            break;
-        }
-        if videoFile != nil {
-            let avplayermanager = AVPlayerManager( videoFile: videoFile! )
-            if let properties = (command.getParameter() as AnyObject).value(forKeyPath: "property") as? NSDictionary {
-                avplayermanager.setProperty(property: properties)
-            }
-            onSuccess( avplayermanager.getID() )
-        } else {
-            onFail( "Please set HTML File" )
-        }
-    }
-    
-    private class func processAppendAVPlayer( command: Command ) {
-        checkAppendAVPlayer( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkAppendAVPlayer( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let wkmanager =  CommandProcessor.getWebViewManager(command: command) {
-            if let avmanager = CommandProcessor.getAVPlayerManager(command: command) {
-                let isFixed = (command.getParameter() as AnyObject).value(forKeyPath: "isFixed") as? Bool
-                wkmanager.appendAVPlayer(avmanager: avmanager, isFixed:isFixed )
-                onSuccess( true )
-                return
-            }
-        }
-    }
-    
-    private class func processAVPlayerPlay( command: Command ) {
-        checkAVPlayerPlay( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkAVPlayerPlay( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let avmanager = CommandProcessor.getAVPlayerManager(command: command) {
-            if let player = avmanager.getAVPlayer().player {
-                player.play()
-                onSuccess( true )
-                return
-            }
-        }
-    }
-    
-    private class func processAVPlayerPause( command: Command ) {
-        checkAVPlayerPause( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkAVPlayerPause( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let avmanager = CommandProcessor.getAVPlayerManager(command: command) {
-            if let player = avmanager.getAVPlayer().player {
-                player.pause()
-                onSuccess( true )
-                return
-            }
-        }
-    }
-    
-    private class func processAVPlayerSeek( command: Command ) {
-        checkAVPlayerSeek( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func checkAVPlayerSeek( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let avmanager = CommandProcessor.getAVPlayerManager(command: command) {
-            if let seconds = (command.getParameter() as AnyObject).value(forKeyPath: "seconds") as? Double {
-                avmanager.seek(seconds: seconds, onSuccess: { (result) in
-                    onSuccess( result )
-                })
-                return
-            }
-            onFail( "please set seconds" )
-        }
-    }
-    
-    
-    //PLEASE NOTE THAT THIS PROCCESS WONT RUN ON ITS OWN WITHOUT USER INTERACTION
-    //DOESNT WORK PROPERLY ON iPad, update or delete Contents.json in Assets catalog
+
     private class func proccessChangeIcon( command: Command ) {
         checkChangeIcon( command: command, onSuccess: { result in
             command.resolve( value: result )
@@ -1175,60 +622,6 @@ class CommandProcessor {
             onFail("Device doesn't support alternate icons")
         }
     }
-    
-    public class func processOnDownload( manager: DownloadManager ) {
-        getCommand(commandCode: CommandCode.ONDOWNLOAD) { (command) in
-			if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
-                if manager === dlmanager {
-                    command.resolve(value: true)
-                }
-			}
-        }
-    }
-	public class func processOnDownloaded( manager: DownloadManager, result:NSDictionary?=nil, errorMessage:String?=nil ) {
-		getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-			if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
-				if manager === dlmanager {
-					if result != nil {
-						command.resolve(value: result!)
-					} else if errorMessage != nil {
-						command.reject(errorMessage: errorMessage!)
-					}
-				}
-			}
-		}
-	}
-	public class func processOnDownloaded( manager: DownloadManager, downloadedFilePath:URL ) {
-        getCommand(commandCode: CommandCode.ONDOWNLOADED) { (command) in
-            if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
-				if manager === dlmanager {
-					manager.processDownloadedFile( onSuccess: { (result) in command.resolve(value: result) },
-							onFail: { (error) in command.reject(errorMessage: error)})
-				}
-			}
-        }
-    }
-    public class func processOnDownloading( manager: DownloadManager, progress: Double ) {
-        getCommand(commandCode: CommandCode.ONDOWNLOADING) { (command) in
-            if let dlmanager = CommandProcessor.getDownloadManager(command: command) {
-				if manager === dlmanager {
-					command.update(value:progress)
-					if( progress >= 100.0 ) {
-						command.resolve(value: true)
-					}
-				}
-            }
-        }
-    }
-	public class func processDownloadOnError( manager:DownloadManager, commandCode:CommandCode, errorMessage:String ) {
-		getCommand(commandCode: commandCode) { (command) in
-			if let dmanager = getDownloadManager(command: command) {
-				if manager === dmanager {
-					command.reject(errorMessage: errorMessage)
-				}
-			}
-		}
-	}
 
     private class func processMoveFile( command: Command ) {
         checkMoveFile( command: command, onSuccess: { result in
@@ -1383,242 +776,18 @@ class CommandProcessor {
             onFail( "Failed to initialize File" )
         }
     }
-    
-    
-    public class func processOnUnzip( file: ZipFile ) {
-        getCommand(commandCode: .ON_UNZIP) { (command) in
-            if let zipFile = getZipFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    command.resolve(value: true)
-                }
-            }
-        }
-    }
-    public class func processOnUnzipped( file: ZipFile, unzippedFilePath:URL ) {
-        getCommand(commandCode: .ON_UNZIPPED) { (command) in
-            if let zipFile = getZipFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    command.resolve(value: unzippedFilePath.absoluteString)
-                }
-            }
-        }
-    }
-    public class func processOnUnzipping( file: ZipFile, progress:Double ) {
-        getCommand(commandCode: .ON_UNZIPPING) { (command) in
-            if let zipFile = getZipFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    command.update(value: progress)
-                    if progress >= 100.0 {
-                        command.resolve(value: true)
-                    }
-                }
-            }
-        }
-    }
-    
-    private class func checkGetFileCollection( command: Command ) {
-        processGetFileCollection( command: command, onSuccess: { result, raw in
-            command.resolve( value: result, raw: raw )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    
-    private class func processGetFileCollection( command: Command, onSuccess:@escaping ((NSDictionary, FileCollection)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = command.getParameter() as! NSDictionary
-        do {
-            let fileCol = try FileCollection(fileCol: parameter)
-            onSuccess( fileCol.toDictionary(), fileCol )
-        } catch let error as NSError {
-            onFail( error.localizedDescription )
-        }
-    }
 
-	private class func checkShareFile( command: Command ) {
-		processShareFile( command: command, onSuccess: { result in
-			command.resolve( value: result )
-		}, onFail: { errorMessage in
-			command.reject( errorMessage: errorMessage )
-		})
-	}
-
-	private class func processShareFile( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        if let fileObj = (command.getParameter() as AnyObject).value(forKeyPath: "file") {
-            var file:File?
-            switch( fileObj ) {
-            case is File:
-                file = fileObj as? File
-                break
-            case is NSDictionary:
-                do {
-                    file = try File( file: fileObj as! NSDictionary )
-                } catch let error as NSError {
-                    onFail( error.localizedDescription )
-                    return
-                }
-                break
-            default:
-                break;
-            }
-            if file != nil {
-                let _ = file!.share( onSuccess: { result in
-                    onSuccess( result )
-                }, onFail: { (error) in
-                    onFail( error )
-                })
-            } else {
-                onFail( "Failed to initialize File" )
-            }
-        } else if let fileColObj = (command.getParameter() as AnyObject).value(forKeyPath: "file_collection") {
-            let includeSubdirectoryFiles = (command.getParameter() as AnyObject).value(forKeyPath: "includeSubdirectoryFiles") as? Bool ?? false
-			var fileCol:FileCollection?
-			switch( fileColObj ) {
-			case is FileCollection:
-				fileCol = fileColObj as? FileCollection
-				break
-			case is NSDictionary:
-				do {
-					fileCol = try FileCollection( fileCol: fileColObj as! NSDictionary )
-                    let _ = fileCol!.share( includeSubdirectoryFiles:includeSubdirectoryFiles, onSuccess: { result in
-						onSuccess( result )
-					}, onFail: { (error) in
-						onFail( error )
-					})
-				} catch let error as NSError {
-					onFail( error.localizedDescription )
-					return
-				}
-				break
-			default:
-				break;
-			}
-			if fileCol != nil {
-				print(fileCol!)
-			}
-
-        } else {
-            onFail( FileError.INEXISTENT.localizedDescription )
-        }
-	}
-
-    private class func checkZip( command: Command ) {
-        processZip( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    
-    private class func processZip( command: Command, onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->()) ) {
-        let parameter = (command.getParameter() as AnyObject).value(forKeyPath: "file")
-        var file:File?
-        switch( parameter ) {
-        case is File:
-            file = parameter as? File
-            break
-        case is NSDictionary:
-            do {
-                file = try File( file: parameter as! NSDictionary )
-            } catch let error as NSError {
-                onFail( error.localizedDescription )
-                return
-            }
-            break
-        default:
-            break;
-        }
-        if file != nil {
-            if let fileName = (command.getParameter() as AnyObject).value(forKeyPath: "filename") as? String {
-                let to = (command.getParameter() as AnyObject).value(forKeyPath: "to") as? String
-                let isOverwrite = (command.getParameter() as AnyObject).value(forKeyPath: "isOverwrite") as? Bool ?? false
-                let password = (command.getParameter() as AnyObject).value(forKeyPath: "password") as? String
-                
-                file!.zip(fileName: fileName, to: to, isOverwrite: isOverwrite, password: password, onProgress: { (progress) in
-                    print(progress)
-                }, onSuccess: { (result) in
-                    onSuccess( result )
-                }, onFail: { (error) in
-                    onFail( error )
-                })
-            } else {
-                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
-            }
-            
-        }
-    }
-    
-    public class func processOnZip( file: File ) {
-        getCommand(commandCode: .ON_ZIP) { (command) in
-            if let zipFile = getToBeZippedFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    command.resolve(value: true)
-                }
-            }
-        }
-    }
-    public class func processOnZipped( fileName:String, file: File, zippedFilePath:URL ) {
-        getCommand(commandCode: .ON_ZIPPED) { (command) in
-            if let zipFile = getToBeZippedFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    let zipFile = ZipFile(fileId: File.generateID(), document: fileName, filePath: zippedFilePath)
-                    command.resolve(value: zipFile.toDictionary(), raw: zipFile)
-                }
-            }
-        }
-    }
-    public class func processOnZipping( file: File, progress:Double ) {
-        getCommand(commandCode: .ON_ZIPPING) { (command) in
-            if let zipFile = getToBeZippedFile(command: command) {
-                if zipFile.getID() == file.getID() {
-                    command.update(value: progress)
-                    if progress >= 100.0 {
-                        command.resolve(value: true)
-                    }
-                }
-            }
-        }
-    }
-
-	private class func checkCodeReader( command: Command ) {
-		processCodeReader( command: command, onSuccess: { result in
-			command.resolve( value: result )
-		}, onFail: { errorMessage in
-			command.reject( errorMessage: errorMessage )
-		})
-	}
-
-	private class func processCodeReader( command: Command, onSuccess:@escaping ((String)->()), onFail: ((String)->()) ) {
-
-		if let wkmanager =  CommandProcessor.getWebViewManager(command: command) {
-			if let instance = CodeReader.getInstance() {
-				instance.embed(webview: wkmanager.getWebview(), onFound: onSuccess)
-				instance.start(onSuccess: { (_) in}, onFail: { (errorMessage) in
-					onFail(errorMessage)
-				})
-			} else {
-				
-			}
-		}
-	}
     
     public class func processShakeBegin( ) {
         getCommand(commandCode: .SHAKE_BEGIN) { (command) in
-            //command.resolve(value: true, raw: true)
             command.update(value: true)
         }
     }
     
     public class func processShakeEnd( ) {
         getCommand(commandCode: .SHAKE_END) { (command) in
-            //command.resolve(value: true, raw: true)
             command.update(value: true)
         }
-    }
-    
-    public class func processShakeCancelled( ) {
-//        getCommand(commandCode: .SHAKE_END) { (command) in
-//            command.reject(errorMessage: "Shake timeout")
-//        }
     }
     
     private class func checkRemoveEventListener( command: Command ) {
@@ -1631,16 +800,6 @@ class CommandProcessor {
     private class func processRemoveEventListener( command: Command, onSuccess: ((Int)->()), onFail: ((String)->()) ) {
         if let commandCodeVal = (command.getParameter() as! NSDictionary).value(forKey: "evt_command_code") as? Int {
             if let evtCommandCode = CommandCode(rawValue: commandCodeVal) {
-//                switch evtCommandCode {
-//                case .SHAKE_BEGIN:
-//                    commandCode = CommandCode.SHAKE_BEGIN
-//                    break
-//                case .SHAKE_END:
-//                    commandCode = CommandCode.SHAKE_END
-//                    break
-//                default:
-//                    break
-//                }
                 var count = 0
                 if let commandID = (command.getParameter() as! NSDictionary).value(forKey: "event_id") as? Int {
                     getCommand(commandID: commandID) { (evtcommand) in
@@ -1669,83 +828,9 @@ class CommandProcessor {
             }
             
         }
-
-        
-
     }
 
-    private class func checkGetAVCapture( command: Command ) {
-        processGetAVCapture( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func processGetAVCapture( command: Command, onSuccess: ((NSDictionary)->()), onFail: ((String)->()) ) {
-        if let captureMode = (command.getParameter() as! NSDictionary).value(forKey: "mode") as? [String] {
-            var captureTypes = [AVCaptureType]()
-            for mode in captureMode {
-                if let cMode = AVCaptureType(rawValue: mode ) {
-                    captureTypes.append( cMode )
-                }
-            }
-            do {
-                let avCapture = try AVCaptureManager(mode: captureTypes)
-                if let properties = (command.getParameter() as AnyObject).value(forKeyPath: "property") as? NSDictionary {
-                    avCapture.setProperty(property: properties)
-                }
-                onSuccess( avCapture.toDictionary() )
-            } catch let error as NSError {
-                onFail( error.localizedDescription )
-            }
-        } else {
-            onFail( AVCaptureError.INVALID_MODE.localizedDescription )
-        }
-    }
-    
-    private class func checkAppendAVCapture( command: Command ) {
-        processAppendAVCapture( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func processAppendAVCapture( command: Command, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
-        if let wkmanager =  CommandProcessor.getWebViewManager(command: command) {
-            if let avmanager = CommandProcessor.getAVCaptureManager(command: command) {
-                let isFixed = (command.getParameter() as AnyObject).value(forKeyPath: "isFixed") as? Bool
-                wkmanager.appendAVCapture(avCapture: avmanager, isFixed: isFixed)
-                onSuccess( true )
-                return
-            }
-        }
-    }
-    
-    private class func checkAVCaptureControl( command: Command ) {
-        processAVCaptureControl( command: command, onSuccess: { result in
-            command.resolve( value: result )
-        }, onFail: { errorMessage in
-            command.reject( errorMessage: errorMessage )
-        })
-    }
-    private class func processAVCaptureControl( command: Command, onSuccess: @escaping ((Bool)->()), onFail: @escaping ((String)->()) ) {
-        if let avmanager = CommandProcessor.getAVCaptureManager(command: command) {
-            if let isRun = (command.getParameter() as AnyObject).value(forKeyPath: "isRun") as? Bool {
-                if isRun {
-                    avmanager.start(onSuccess: onSuccess, onFail: onFail)
-                } else {
-                    avmanager.stop(onSuccess: onSuccess, onFail: onFail)
-                }
-            } else {
-                onFail( FileError.INVALID_PARAMETERS.localizedDescription )
-            }
-        }
-    }
-    
-    private class func checkAVCaptureScancode( command: Command) {
-        let _ = CommandProcessor.getAVCaptureManager(command: command)
-    }
-    
+
     private class func checkOpenWithSafari( command: Command ) {
         processOpenWithSafari( command: command, onSuccess: { result in
             command.resolve( value: result )

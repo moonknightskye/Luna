@@ -27,22 +27,22 @@ extension ViewController: SOSDelegate {
      *  @see `SOSErrorCode`
      */
     func sos(_ sos: SOSSessionManager!, didStopWith reason: SOSStopReason, error: Error!) {
-		var code = 0
-		var label = ""
+        var code = 0
+        var label = ""
         if (error != nil) {
-			code = (error as NSError).code
-			label = error.localizedDescription
+            code = (error as NSError).code
+            label = error.localizedDescription
         } else {
-			code = reason.rawValue
-			label = SFServiceSOS.instance.getErrorLabel(reason: reason)
+            code = reason.rawValue
+            label = SFServiceSOS.instance.getErrorLabel(reason: reason)
         }
-
-		let value = NSMutableDictionary()
-		value.setValue( code, forKey: "code")
-		value.setValue( label, forKey: "label")
-		CommandProcessor.processSFServiceSOSdidStop( value: value )
+        
+        let value = NSMutableDictionary()
+        value.setValue( code, forKey: "code")
+        value.setValue( label, forKey: "label")
+        CommandProcessor.processSFServiceSOSdidStop( value: value )
     }
-
+    
     /**
      *  Calls the delegate when the SOS session has connected. The session is now fully active.
      *
@@ -63,9 +63,10 @@ extension ViewController: SOSDelegate {
      *  @see `SOSSessionState`
      */
     func sos(_ sos: SOSSessionManager!, stateDidChange current: SOSSessionState, previous: SOSSessionState) {
-		let value = NSMutableDictionary()
-		value.setValue( current.rawValue, forKey: "code")
-		value.setValue( SFServiceSOS.instance.getState(state: current), forKey: "label")
+        let value = NSMutableDictionary()
+        value.setValue( current.rawValue, forKey: "code")
+        value.setValue( SFServiceSOS.instance.getState(state: current), forKey: "label")
         CommandProcessor.processSFServiceSOSstateChange(value: value)
     }
 }
+

@@ -10,9 +10,9 @@ import Foundation
 import Photos
 
 class ImageFile: File {
-    
-    private var asset:PHAsset?
 
+    private var localIdentifier:String?
+    
 	override init(){
 		super.init()
 	}
@@ -35,11 +35,7 @@ class ImageFile: File {
             }
         }
         
-        var file:Any = uiimage
-        if exif != nil {
-            file = Photos.appendEXIFtoImageBinary(uiimage: uiimage, exif: exif!)
-        }
-        
+        let file:Any = uiimage        
         
         FileManager.saveDocument(file: file, filename: self.getFileName()!, relative: self.getPath(), onSuccess: { (filePath) in
             self.setFilePath(filePath: filePath)
@@ -51,25 +47,26 @@ class ImageFile: File {
         }
     }
     
-    public init( fileId:Int, assetURL:URL ) throws {
+    //( fileId:File.generateID(), phasset:phasset, assetURL: imageURL)
+    public init( fileId:Int, localIdentifier:String, assetURL:URL ) throws {
         super.init()
-        if let asset = Photos.getAsset(fileURL: assetURL) {
-            self.asset = asset
-            
-            self.setID(fileId: fileId)
-            self.setFileName(fileName: asset.value(forKey: "filename") as! String)
-            self.setPathType(pathType: FilePathType.ASSET_TYPE)
-            self.setFilePath(filePath: assetURL )
-        } else {
-            throw FileError.INEXISTENT
+        self.setID(fileId: fileId)
+        
+        self.setPathType(pathType: FilePathType.ASSET_TYPE)
+        self.setFilePath(filePath: assetURL )
+        self.setLocalIdentifier(localIdentifier: localIdentifier)
+        
+        let results = PHAsset.fetchAssets(withLocalIdentifiers: [localIdentifier], options: nil)
+        if results.count > 0 {
+            self.setFileName(fileName: results.firstObject?.value(forKey: "filename") as! String)
         }
     }
     
     override init( fileId:Int, asset:String, filePath:URL ) {
         super.init( fileId:fileId, asset:asset, filePath:filePath)
-        if let asset = Photos.getAsset(fileURL: filePath) {
-            self.asset = asset
-        }
+//        if let asset = Photos.getAsset(fileURL: filePath) {
+//            self.asset = asset
+//        }
     }
     
     
@@ -118,14 +115,10 @@ class ImageFile: File {
             return
         case .ASSET_TYPE:
             let fileName:String = imageFile.value(forKeyPath: "filename") as! String
+            let localIdentifier:String = imageFile.value(forKeyPath: "localIdentifier") as! String
             super.init( fileId:fileId, asset:fileName, filePath:filePath )
-            if let asset = Photos.getAsset(fileURL: filePath) {
-                self.asset = asset
-            }
+            self.setLocalIdentifier(localIdentifier: localIdentifier)
             return
-		case .ICLOUD_TYPE:
-			print("IMPLELEMNT THIS")
-			break
         }
         super.init()
     }
@@ -167,21 +160,14 @@ class ImageFile: File {
 				case .ASSET_TYPE:
 					if fileName != nil {
 						let filePath:URL = URL( string: file.value(forKeyPath: "file_path") as! String )!
+                        let localIdentifier:String = file.value(forKeyPath: "localIdentifier") as! String
 						self.init( fileId:fileId, asset: fileName!, filePath:filePath)
-						if let asset = Photos.getAsset(fileURL: filePath) {
-							self.asset = asset
-						}
+                        self.setLocalIdentifier(localIdentifier: localIdentifier)
 						return
 					} else {
 						isValid = false
 					}
 					break
-				case .ICLOUD_TYPE:
-					print("implement this")
-					break
-//				default:
-//					isValid = false
-//					break
 				}
 
 			} else {
@@ -200,17 +186,21 @@ class ImageFile: File {
     public override func getBase64Value( onSuccess:@escaping ((String)->()), onFail:@escaping ((String)->()) ) {
         switch self.getPathType()! {
         case .ASSET_TYPE:
-            Photos.getBinaryImage(asset: self.asset!, onSuccess: { (binaryData) in
-                onSuccess( Utility.shared.DataToBase64(data: binaryData) )
-            }, onFail: { (error) in
-                onFail( error )
-            })
+            let results = PHAsset.fetchAssets(withLocalIdentifiers: [self.getLocalIdentifier()!], options: nil)
+            if results.count > 0 {
+                Photos.getBinaryImage(asset: results.firstObject!, onSuccess: { (binaryData) in
+                    onSuccess( Utility.shared.DataToBase64(data: binaryData) )
+                }, onFail: { (error) in
+                    onFail( error )
+                })
+            }
             break
         case .BUNDLE_TYPE, .DOCUMENT_TYPE:
             if let file = self.getFile() {
                 onSuccess( Utility.shared.DataToBase64(data: file) )
+            } else {
+                onFail( FileError.INVALID_FORMAT.localizedDescription + ":  \(self.getFileExtension())" )
             }
-            onFail( FileError.INVALID_FORMAT.localizedDescription + ":  \(self.getFileExtension())" )
             break
         default:
             onFail( FileError.UNKNOWN_ERROR.localizedDescription )
@@ -224,24 +214,27 @@ class ImageFile: File {
         let compression:CGFloat = CGFloat( quality/100 )
         switch self.getPathType()! {
         case .ASSET_TYPE:
-            Photos.getBinaryImage(asset: self.asset!, onSuccess: { (binaryData) in
-                if let fullImage = ImageFile.binaryToUIImage(binary: binaryData) {
-                    let resizedImage = ImageFile.resizeUIImage(image: fullImage, targetSize: size)
-                    if quality >= 100 {
-                        if let resizedBinary = ImageFile.pngToBase64(image: resizedImage) {
-                            onSuccess( resizedBinary )
+            let results = PHAsset.fetchAssets(withLocalIdentifiers: [self.getLocalIdentifier()!], options: nil)
+            if results.count > 0 {
+                Photos.getBinaryImage(asset: results.firstObject!, onSuccess: { (binaryData) in
+                    if let fullImage = ImageFile.binaryToUIImage(binary: binaryData) {
+                        let resizedImage = ImageFile.resizeUIImage(image: fullImage, targetSize: size)
+                        if quality >= 100 {
+                            if let resizedBinary = ImageFile.pngToBase64(image: resizedImage) {
+                                onSuccess( resizedBinary )
+                            }
+                        } else {
+                            if let resizedBinary = ImageFile.jpgToBase64(image: resizedImage, compressionQuality: compression) {
+                                onSuccess( resizedBinary )
+                            }
                         }
                     } else {
-                        if let resizedBinary = ImageFile.jpgToBase64(image: resizedImage, compressionQuality: compression) {
-                            onSuccess( resizedBinary )
-                        }
+                        onFail( FileError.UNKNOWN_ERROR.localizedDescription )
                     }
-				} else {
-					onFail( FileError.UNKNOWN_ERROR.localizedDescription )
-				}
-            }, onFail: { (error) in
-                onFail( error )
-            })
+                }, onFail: { (error) in
+                    onFail( error )
+                })
+            }
             break
         case .BUNDLE_TYPE, .DOCUMENT_TYPE:
             if let file = self.getFile() {
@@ -257,9 +250,6 @@ class ImageFile: File {
                         }
                     }
 				} else {
-					print("=================================================================")
-					print(self.getFileName() as Any)
-					print(self.getFilePath() as Any)
 					onFail( FileError.UNKNOWN_ERROR.localizedDescription + " 1" )
 				}
 			} else {
@@ -270,6 +260,13 @@ class ImageFile: File {
             onFail( FileError.UNKNOWN_ERROR.localizedDescription )
             break
         }
+    }
+    
+    public func setLocalIdentifier( localIdentifier: String ) {
+        self.localIdentifier = localIdentifier
+    }
+    public func getLocalIdentifier() -> String? {
+        return self.localIdentifier
     }
     
     
@@ -299,56 +296,6 @@ class ImageFile: File {
         return newImage!
     }
     
-//    public class func UIImageToBase64( uiimage:UIImage, fileExtention: FileExtention ) -> String? {
-//        switch fileExtention {
-//        case FileExtention.JPG, FileExtention.JPEG:
-//            return ImageFile.jpgToBase64(image: uiimage)
-//        case FileExtention.PNG, FileExtention.GIF:
-//            return ImageFile.pngToBase64(image: uiimage)
-//        default:
-//            break
-//        }
-//        return nil
-//    }
-    
-    public func getEXIFInfo(onSuccess:@escaping ((NSDictionary)->()), onFail:@escaping ((String)->())) {
-        switch self.getPathType()! {
-        case .ASSET_TYPE:
-            let options = PHContentEditingInputRequestOptions()
-            options.isNetworkAccessAllowed = true
-            
-            self.asset!.requestContentEditingInput(with: options) { (contentEditingInput: PHContentEditingInput?, _) -> Void in
-                if let fullImage = CIImage(contentsOf: contentEditingInput!.fullSizeImageURL!) {
-                    onSuccess( self.generateEXIFInfo( info: fullImage.properties as NSDictionary) )
-                } else {
-                    onFail( FileError.NO_DATA.localizedDescription )
-                }
-            }
-            break
-        case .BUNDLE_TYPE, .DOCUMENT_TYPE:
-            let fileURL = self.getFilePath()
-            if let imageSource = CGImageSourceCreateWithURL(fileURL! as CFURL, nil) {
-                let imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil)
-                if let dict = imageProperties as? [String: Any] {
-                    onSuccess( self.generateEXIFInfo( info: dict as NSDictionary) )
-                } else {
-                    onFail( FileError.NO_DATA.localizedDescription )
-                }
-            }
-            break
-        default:
-            onFail( FileError.NO_DATA.localizedDescription )
-            break
-        }
-    }
-    
-    private func generateEXIFInfo( info: NSDictionary ) -> NSDictionary {
-        let exif = extractTextFromDictionary( dictionary: info )
-        print(info)
-        print("==============")
-        print(exif)
-        return exif
-    }
     
     private func extractTextFromDictionary( dictionary:NSDictionary ) -> NSDictionary {
         let dict = NSMutableDictionary()
@@ -368,12 +315,6 @@ class ImageFile: File {
         return dict
     }
     
-//    public func base64ToUImage() -> UIImage? {
-//        if let base64value = self.getBase64Value() {
-//            return ImageFile.base64ToUImage(base64: base64value)
-//        }
-//        return nil
-//    }
     public class func base64ToUImage( base64: String ) -> UIImage? {
         if let decodedData = NSData(base64Encoded: base64, options: NSData.Base64DecodingOptions(rawValue: 0) ) {
             if let uiimage = UIImage(data: decodedData as Data) {
@@ -403,6 +344,27 @@ class ImageFile: File {
             return jpgImage.base64EncodedString()
         }
         return nil
+    }
+    
+    public override func toDictionary() -> NSDictionary {
+        let dict = NSMutableDictionary()
+        if let filename = self.getFileName() {
+            dict.setValue(filename, forKey: "filename")
+        }
+        if let path = self.getPath() {
+            dict.setValue(path, forKey: "path")
+        }
+        if let pathType = self.getPathType() {
+            dict.setValue(pathType.rawValue, forKey: "path_type")
+        }
+        if let filePath = self.getFilePath() {
+            dict.setValue(filePath.absoluteString, forKey: "file_path")
+        }
+        dict.setValue(self.getFileExtension().rawValue, forKey: "file_extension")
+        dict.setValue(self.getID(), forKey: "file_id")
+        dict.setValue(self.getFileType().rawValue, forKey: "object_type")
+        dict.setValue(self.getLocalIdentifier(), forKey: "localIdentifier")
+        return dict
     }
     
 }

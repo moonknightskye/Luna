@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0900"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "70D76E4A1E2F6A4F0089B903"
-               BuildableName = "Luna.app"
-               BlueprintName = "Luna"
-               ReferencedContainer = "container:Luna.xcodeproj">
+               BuildableName = "LunaEinsteinVision.app"
+               BlueprintName = "LunaEinsteinVision"
+               ReferencedContainer = "container:LunaEinsteinVision.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,9 +34,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70D76E4A1E2F6A4F0089B903"
-            BuildableName = "Luna.app"
-            BlueprintName = "Luna"
-            ReferencedContainer = "container:Luna.xcodeproj">
+            BuildableName = "LunaEinsteinVision.app"
+            BlueprintName = "LunaEinsteinVision"
+            ReferencedContainer = "container:LunaEinsteinVision.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,9 +58,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70D76E4A1E2F6A4F0089B903"
-            BuildableName = "Luna.app"
-            BlueprintName = "Luna"
-            ReferencedContainer = "container:Luna.xcodeproj">
+            BuildableName = "LunaEinsteinVision.app"
+            BlueprintName = "LunaEinsteinVision"
+            ReferencedContainer = "container:LunaEinsteinVision.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,9 +77,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "70D76E4A1E2F6A4F0089B903"
-            BuildableName = "Luna.app"
-            BlueprintName = "Luna"
-            ReferencedContainer = "container:Luna.xcodeproj">
+            BuildableName = "LunaEinsteinVision.app"
+            BlueprintName = "LunaEinsteinVision"
+            ReferencedContainer = "container:LunaEinsteinVision.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

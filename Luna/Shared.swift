@@ -14,11 +14,10 @@ final class Shared: NSObject {
     var UIApplication:UIApplication!
     var ViewController:ViewController!
     var DeviceID = UIDevice.current.identifierForVendor!.uuidString
-	var iCloudAvailable = false
-	var allowsCellularAccess = true
     var customURLScheme:URL?
     var isAppLoaded = false
     var statusBarShouldBeHidden = true
     var statusBarAnimation:UIStatusBarAnimation = .slide
     var statusBarStyle:UIStatusBarStyle = .lightContent
+    var checkAppPermissionsAction:((Bool)->())?
 }

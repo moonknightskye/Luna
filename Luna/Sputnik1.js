@@ -1,7 +1,7 @@
 /**
     Author: Mart Civil
     Email: mcivil@salesforce.com
-    Date: April 21, 2017    Updated: XXX XX, XXXX
+    Date: April 21, 2017    Updated: Feb 9, 2018
     Sputnik Javascript Utility
     v 1.0.0  
 **/
@@ -34,9 +34,11 @@
 
             function removeInactive() {
             	apollo11.forEvery( get(), function(luna_instance){
-            		if( luna_instance.getLightningComponent() && !luna_instance.getLightningComponent().isValid()) {
-            			remove( luna_instance );
-            		}
+            		$window.setTimeout( function() {
+	            		if( luna_instance.getLightningComponent() && !luna_instance.getLightningComponent().isValid()) {
+	            			remove( luna_instance );
+	            		}
+            		}, 0 );
             	});
             };
             
@@ -112,17 +114,20 @@
 				//check if lightning component
 				var scanForLunaOnPageNavigate = function(node, isPulltoRefresh) {
 					if( node && Object.prototype.toString.call(node) === "[object HTMLDivElement]" ) {
+						//console.log("OBSERVE THIS NODE:", node)
 						var observer = new MutationObserver( function( mutations ) {
 			              mutations.forEach( function( mutation ) {
 			                if ( mutation.type === "childList" ) {
-			                    if( mutation.addedNodes && mutation.addedNodes.length > 0 ) {
+			                    if( mutation.addedNodes.length ) {
 			                    	var isSet = false;
 			                    	apollo11.forEvery( mutation.addedNodes, function( _node ) {
+			                    		//console.log("NODE ADDED", _node);
 		                    			if( Object.prototype.toString.call(_node) === "[object HTMLDivElement]" ) {
 		                    				findLightningLuna( _node );
 
 		                    				 if( isPulltoRefresh && !isSet) {
-		                    				 	var oneContent = apollo11.getElement(".oneContent", "SELECT", node);
+		                    				 	isSet = true;
+		                    				 	var oneContent = apollo11.getElement(".oneContent.active", "SELECT", node);
 		                    				 	if( oneContent ) {
 		                    				 		scanForLunaOnPageNavigate( oneContent );
 		                    				 	}
@@ -130,18 +135,31 @@
 		                    			}
 			                    	});
 			                    }
-			                    if( mutation.removedNodes && mutation.removedNodes.length > 0 ) {
+			                    if( mutation.removedNodes.length ) {
 			                    	$window.__Luna.removeInactive();
 			                    }
+			                } else if( mutation.type === "attributes" && mutation.attributeName === "class") {
+			                	//NEW! 2018.2.9 check if oneContent turned inactive
+			                	//console.log("DISCONNECT:", node)
+			                	if( !node.classList.contains("active") ) {
+			                		observer.disconnect();
+			                		var oneContent = apollo11.getElement(".oneContent.active", "SELECT");
+			                		if( oneContent ) {
+		        				 		scanForLunaOnPageNavigate( oneContent );
+		        				 		findLightningLuna( oneContent );
+		        				 	}
+		        				 	$window.__Luna.removeInactive();
+			                	}
 			                }
 			              });    
 			            });
-			            observer.observe( node, { attributes: false, childList: true, characterData: false } );
+			            observer.observe( node, { attributes: true, childList: true, characterData: false } );
 			            if( isPulltoRefresh) {
-        				 	var oneContent = apollo11.getElement(".oneContent", "SELECT", node);
-        				 	if( oneContent ) {
-        				 		scanForLunaOnPageNavigate( oneContent );
-        				 	}
+			            	apollo11.waitUntilDOMReady({SELECT:".oneContent.active"}, node, 5).then( function(oneContent){
+			            		scanForLunaOnPageNavigate( oneContent );
+			            	}, function(error){
+								console.log( error );
+							});
         				 }
 					} else {
 						//2.b If it is not luna, check if the current window is top window
@@ -180,16 +198,20 @@
 				};
 
 				var findLightningLuna = function( node ) {
-					apollo11.waitUntilDOMReady({class:"lightning-luna luna-ready"}, node, 3).then( function(result){
+					apollo11.waitUntilDOMReady({class:"lightning-luna luna-ready"}, node, 5).then( function(result){
 						$window.apollo11.forEvery( result, function( element ) {
-							var _window = $window.$A.getComponent( element.dataset.globalId ).controller.getWindow();
-                    		var _instance = _window[ 'lightning-luna_' + element.dataset.globalId ];
-                    		if( !_window.webkit ) {
-                    			_window.webkit = $window.webkit;
-                    		}
-                            if( _instance.runJSCommand( _INTERNAL_DATA.initMessage ) ) {
-                            	$window.__Luna.add( _instance );
-                            }
+							// NEW!! 2018.2.19 check if luna has been initialized already
+							if( !element.classList.contains("luna-init") ) {
+								var _window = $window.$A.getComponent( element.dataset.globalId ).controller.getWindow();
+	                    		var _instance = _window[ 'lightning-luna_' + element.dataset.globalId ];
+	                    		if( !_window.webkit ) {
+	                    			_window.webkit = $window.webkit;
+	                    		}
+	                            if( _instance.runJSCommand( _INTERNAL_DATA.initMessage ) ) {
+	                            	$window.__Luna.add( _instance );
+	                            	element.classList.add("luna-init")
+	                            }
+							}
                        	}); 
 					}, function(error){
 						console.log( error );
@@ -198,12 +220,12 @@
 
 				(function( title, aura ) {
 					//NOTE: force is available only for s1mobile
-					if( title !== "Salesforce1" && aura ) {
+					if( title !== "Salesforce" && aura ) {
 						console.info("Running on Napili Communities");
 						function checkIfFinishInit() {
 							if( aura.finishedInit && aura.getRoot().isRendered() && $A.getRoot().isValid()) {
 								findLightningLuna( $document );
-								apollo11.waitUntilDOMReady({id:"NapiliCommunityTemplate"}, $document, 1).then( function(result){
+								apollo11.waitUntilDOMReady({id:"ServiceCommunityTemplate"}, $document, 1).then( function(result){
 									scanForLunaOnPageNavigate( apollo11.getElement(".cCenterPanel", "SELECT", result) );
 								}, function(error){
 									console.log( error );
@@ -213,11 +235,11 @@
 							}
 						};
 						$window.requestAnimationFrame( checkIfFinishInit );
-					} else if( title === "Salesforce1" && aura ){
+					} else if( title === "Salesforce" && aura ){
 						console.info("Running on Salesforce1");
 						scanForLunaOnPageNavigate( false );
 
-						apollo11.waitUntilDOMReady({select:".stage .content"}, $document, 10).then( function(result){
+						apollo11.waitUntilDOMReady({select:".stage .oneCenterStage"}, $document, 20).then( function(result){
 							findLightningLuna( result );
 							scanForLunaOnPageNavigate( result, true );
 						}, function(error){

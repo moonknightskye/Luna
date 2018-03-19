@@ -7,6 +7,7 @@
 //
 
 import Foundation
+
 enum CommandStatus:Int {
     case RESOLVE    = 1
     case REJECT     = 0
@@ -116,7 +117,25 @@ enum CommandCode:Int {
     case BEACON_GETBEACONS          = 99
     case TOGGLE_AUTOSLEEP           = 100
     case TOGGLE_STATUSBAR           = 101
+    case HAPTIC_INIT                = 102
+    case HAPTIC_FEEDBACK            = 103
+    case NFC_INIT                   = 104
+    case NFC_SCAN                   = 105
+    case NFC_ONERROR                = 106
+    case HOTSPOT_INIT               = 107
+    case HOTSPOT_CONNECT            = 108
+    case HOTSPOT_DISCONNECT         = 109
+    case EINSTEIN_VISION_INIT       = 110
+    case EINSTEIN_VISION_PREDICT    = 111
+    case GENERATE_PDF417_BARCODE    = 112
+    case BETA_SHOWEINSTEIN_AR       = 113
+    case OPEN_APP_SETTINGS          = 114
+    case EINSTEIN_VISION_DATASETS   = 115
+    case EINSTEIN_VISION_MODELS     = 116
 }
+let FIX_VERSION = 0.1
+let APP_VERSION = Double(CommandCode.EINSTEIN_VISION_MODELS.rawValue) + FIX_VERSION
+
 enum CommandPriority:Int {
     case CRITICAL                   = 0         //sync Instant execution
     case HIGH                       = 1         //async instantenious (animations, ui change)
@@ -154,13 +173,14 @@ class Command {
         setCallbackMethod( callbackMethod: command.value(forKey: "callback_method") as! String )
     }
 
-    public init( commandCode:CommandCode, targetWebViewID:Int?=nil, parameter:NSObject?=nil ) {
+    public init( commandCode:CommandCode, targetWebViewID:Int?=nil, parameter:NSObject?=nil, priority:CommandPriority?=CommandPriority.NORMAL) {
         print(commandCode)
         print(parameter ?? "[NO PARAMETER]")
         Command.command_id_counter += 1
         setCommandID( commandID: Command.command_id_counter )
         setCommandCode( commandCode: commandCode )
         setSourceWebViewID(sourceWebViewID: WebViewManager.SYSTEM_WEBVIEW)
+        setPriority(priority: priority!)
         if targetWebViewID != nil {
             setTargetWebViewID( targetWebViewID: targetWebViewID! )
         } else {
@@ -218,7 +238,8 @@ class Command {
             if status == CommandStatus.RESOLVE || status == CommandStatus.UPDATE {
                 result.setValue( value, forKey: "value" )
             } else if status == CommandStatus.REJECT {
-                result.setValue( (value as! String).replacingOccurrences(of: "\'", with: ""), forKey: "message" )
+                //result.setValue( (value as! String).replacingOccurrences(of: "\'", with: ""), forKey: "message" )
+                result.setValue( value, forKey: "message" )
             }
             params.setValue( result, forKey: "result" )
             sourceWebView.getWebview().runJSCommand(commandName: getCallbackMethod(), params: params, onComplete: { result, error in

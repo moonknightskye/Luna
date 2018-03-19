@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreLocation
 
 class SystemSettings {
     
@@ -40,6 +41,9 @@ class SystemSettings {
         if self.get(key: "isactivated") == nil {
             self.set(key: "isactivated", value: false)
         }
+        if self.get(key: "logaccess") == nil {
+            self.set(key: "logaccess", value: true)
+        }
         
         //DEVICE SPECIFIC
         if self.get(key: "mobile_id") == nil {
@@ -56,6 +60,11 @@ class SystemSettings {
         if self.get(key: "mobile_gps") == nil {
             self.set(key: "mobile_gps", value: "")
         }
+        if CLLocationManager.locationServicesEnabled() {
+            Location.instance.startLocationTracking()
+        }
+        
+        self.set(key: "mobile_appversion", value: APP_VERSION)
         if self.get(key: "mobile_model") == nil {
             self.set(key: "mobile_model", value: UIDevice.current.modelName)
         }
@@ -96,22 +105,6 @@ class SystemSettings {
     public func set( key:String, value:Any ) {
         defaults.set(value, forKey: "system_" + key )
     }
-//    public func delete( key:String, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
-//        if self.get(key:key) != nil {
-//            defaults.removeObject(forKey: "system_" + key)
-//            onSuccess(true)
-//        } else {
-//            onFail(FileError.INEXISTENT.localizedDescription)
-//        }
-//    }
-//    public func add( key:String, value: Any, onSuccess: ((Bool)->()), onFail: ((String)->()) ) {
-//        if self.get( key: key ) == nil {
-//            defaults.set(value, forKey: key)
-//            onSuccess(true)
-//        } else {
-//            onFail(FileError.ALREADY_EXISTS.localizedDescription)
-//        }
-//    }
 
 }
 
@@ -141,17 +134,26 @@ public extension UIDevice {
         case "iPhone9,1", "iPhone9,3":                  return "iPhone 7"
         case "iPhone9,2", "iPhone9,4":                  return "iPhone 7 Plus"
         case "iPhone8,4":                               return "iPhone SE"
+        case "iPhone10,1", "iPhone10,4":                return "iPhone 8"
+        case "iPhone10,2", "iPhone10,5":                return "iPhone 8 Plus"
+        case "iPhone10,3", "iPhone10,6":                return "iPhone X"
         case "iPad2,1", "iPad2,2", "iPad2,3", "iPad2,4":return "iPad 2"
         case "iPad3,1", "iPad3,2", "iPad3,3":           return "iPad 3"
         case "iPad3,4", "iPad3,5", "iPad3,6":           return "iPad 4"
         case "iPad4,1", "iPad4,2", "iPad4,3":           return "iPad Air"
         case "iPad5,3", "iPad5,4":                      return "iPad Air 2"
+        case "iPad6,11", "iPad6,12":                    return "iPad 5"
         case "iPad2,5", "iPad2,6", "iPad2,7":           return "iPad Mini"
         case "iPad4,4", "iPad4,5", "iPad4,6":           return "iPad Mini 2"
         case "iPad4,7", "iPad4,8", "iPad4,9":           return "iPad Mini 3"
         case "iPad5,1", "iPad5,2":                      return "iPad Mini 4"
-        case "iPad6,3", "iPad6,4", "iPad6,7", "iPad6,8":return "iPad Pro"
+        case "iPad6,3", "iPad6,4":                      return "iPad Pro 9.7 Inch"
+        case "iPad6,7", "iPad6,8":                      return "iPad Pro 12.9 Inch"
+        case "iPad7,1", "iPad7,2":                      return "iPad Pro 12.9 Inch 2. Generation"
+        case "iPad7,3", "iPad7,4":                      return "iPad Pro 10.5 Inch"
         case "AppleTV5,3":                              return "Apple TV"
+        case "AppleTV6,2":                              return "Apple TV 4K"
+        case "AudioAccessory1,1":                       return "HomePod"
         case "i386", "x86_64":                          return "Simulator"
         default:                                        return identifier
         }

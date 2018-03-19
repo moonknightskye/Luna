@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Photos
 
 extension String {
     
@@ -169,10 +170,6 @@ extension String {
             return true
         }
         return false
-//        if let url  = URL(string: self) {
-//            return Shared.shared.UIApplication.canOpenURL( url )
-//        }
-//        return false
     }
 
 }

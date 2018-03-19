@@ -16,44 +16,15 @@ extension ViewController: WKScriptMessageHandler, WKNavigationDelegate, WKUIDele
         if message.name == "webcommand" {
             if let webcommand = Utility.shared.StringToDictionary( txt: message.body as! String ) {
                 let command = Command( command: webcommand )
-                var dispatchQos = DispatchQoS.default
-                switch command.getPriority() {
-                case .CRITICAL:
-					DispatchQueue.global(qos: .userInteractive).async(execute: {
-						DispatchQueue.main.async {
-							CommandProcessor.queue( command: command )
-						}
-					})
-                    return
-                case .HIGH:
-                    dispatchQos = DispatchQoS.userInteractive
-                    break
-                case .NORMAL:
-                    dispatchQos = DispatchQoS.userInitiated
-                    break
-                case .LOW:
-                    dispatchQos = DispatchQoS.utility
-                    break
-                case .BACKGROUND:
-                    dispatchQos = DispatchQoS.background
-                    break
-                }
-				DispatchQueue.global(qos: dispatchQos.qosClass).async(execute: {
-//				DispatchQueue.main.async(group: nil, qos: dispatchQos, flags: .inheritQoS, execute: {
-                    CommandProcessor.queue( command: command )
-                })
+                CommandProcessor.queue( command: command )
             }
         }
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        //print("============== ERROR LOADING ==============")
-        //print(error.localizedDescription)
-        //CommandProcessor.processWebViewOnLoaded(wkmanager: self)
         if let webview = WebViewManager.getManager(webview: webView) {
             CommandProcessor.processWebViewOnLoaded(wkmanager: webview, isSuccess: false, errorMessage: error.localizedDescription )
         }
-        //print("============== ERROR LOADING ==============")
     }
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         //print("↓↓↓↓↓↓↓↓↓↓↓↓ START LOADING ↓↓↓↓↓↓↓↓↓↓↓↓")

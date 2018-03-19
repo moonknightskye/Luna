@@ -11,7 +11,7 @@ import ServiceCore
 import ServiceChat
 
 extension ViewController: SCSChatDelegate {
-
+    
     /**
      Delegate method invoked when a Live Agent Session Ends.
      
@@ -51,3 +51,4 @@ extension ViewController: SCSChatDelegate {
         CommandProcessor.processSFServiceLiveAgentstateChange(value: value)
     }
 }
+

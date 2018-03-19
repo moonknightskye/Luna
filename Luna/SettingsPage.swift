@@ -68,7 +68,7 @@ class SettingsPage {
                 break
             }
             
-            command = Command( commandCode: CommandCode.SCREEN_EDGE_SWIPED, parameter: parameter )
+            command = Command( commandCode: CommandCode.SCREEN_EDGE_SWIPED, parameter: parameter, priority: .CRITICAL )
             command.onUpdate { (result) in
                 self.showSettingsPage()
             }
@@ -92,7 +92,7 @@ class SettingsPage {
             }
             
             var shakeStart:Date?
-            let commandShake = Command( commandCode: CommandCode.SHAKE_BEGIN, parameter: parameter )
+            let commandShake = Command( commandCode: CommandCode.SHAKE_BEGIN, parameter: parameter, priority: .CRITICAL )
             commandShake.onUpdate { (result) in
                 shakeStart = Date()
             }
@@ -146,6 +146,20 @@ class SettingsPage {
     
     func showSettingsPage() {
         if canShow() {
+            let hapticParameter = NSMutableDictionary()
+            let hapticInit = Command( commandCode: CommandCode.HAPTIC_INIT, priority: .CRITICAL)
+            hapticInit.onResolve(fn: { (success) in
+                hapticParameter.setValue( "success", forKey: "type")
+                let hapticSuccess = Command( commandCode: CommandCode.HAPTIC_FEEDBACK, parameter: hapticParameter, priority: .CRITICAL )
+                hapticSuccess.onReject(fn: { (message) in
+                    hapticParameter.setValue( "pop", forKey: "type")
+                    let hapticPop = Command( commandCode: CommandCode.HAPTIC_FEEDBACK, parameter: hapticParameter, priority: .CRITICAL )
+                    CommandProcessor.queue(command: hapticPop)
+                })
+                CommandProcessor.queue(command: hapticSuccess)
+            })
+            CommandProcessor.queue(command: hapticInit)
+            
             let parameter = NSMutableDictionary()
             parameter.setValue( self.getPage(), forKey: "html_file")
             let propertyBefore = NSMutableDictionary()
@@ -182,41 +196,32 @@ class SettingsPage {
 
             
             
-            let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter)
+            let command = Command(commandCode: CommandCode.NEW_WEB_VIEW, parameter: parameter, priority: .CRITICAL)
             command.onResolve { (webview_id) in
                 let cmdproperty = NSMutableDictionary()
                 cmdproperty.setValue( webview_id, forKey: "webview_id")
                 
-                let commandOnLoaded = Command(commandCode: CommandCode.WEB_VIEW_ONLOADED, targetWebViewID: webview_id as? Int, parameter: cmdproperty)
+                let commandOnLoaded = Command(commandCode: CommandCode.WEB_VIEW_ONLOADED, targetWebViewID: webview_id as? Int, parameter: cmdproperty, priority: .CRITICAL)
                 commandOnLoaded.onUpdate(fn: { (result) in
                     let setpropparam = NSMutableDictionary()
                     let animaparam = NSMutableDictionary()
                     animaparam.setValue( Double(0.2), forKey: "duration")
                     setpropparam.setValue( propertyAfter, forKey: "property")
                     setpropparam.setValue( animaparam, forKey: "animation")
-                    let commandSetProperty = Command(commandCode: CommandCode.ANIMATE_WEB_VIEW, targetWebViewID: Int(webview_id as! Int), parameter: setpropparam)
-                    CommandProcessor.queue(command: commandSetProperty)
+                    let commandSetProperty = Command(commandCode: CommandCode.ANIMATE_WEB_VIEW, targetWebViewID: Int(webview_id as! Int), parameter: setpropparam, priority: .CRITICAL)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        CommandProcessor.queue(command: commandSetProperty)
+                    }
                 })
                 
                 CommandProcessor.queue(command: commandOnLoaded)
                 
                 CommandProcessor.queue(command:
-                    Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int )
+                    Command( commandCode: CommandCode.LOAD_WEB_VIEW, targetWebViewID: webview_id as? Int, priority: .CRITICAL )
                 )
             }
             CommandProcessor.queue(command: command)
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

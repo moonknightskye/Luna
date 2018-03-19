@@ -10,26 +10,48 @@ import Foundation
 import UserNotifications
 
 class UserNotification {
-
     static let instance:UserNotification = UserNotification()
     
     init() {}
     
-    func checkAccess(onSuccess:@escaping ((Bool)->()), onFail:@escaping ((String)->())) {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.badge,.sound]) { (granted:Bool, error:Error?) in
-            if error != nil {
-                onFail(error!.localizedDescription)
-                return
+    func requestAuthorization(isPermitted:@escaping ((Bool)->())) {
+        let current = UNUserNotificationCenter.current()
+        
+        current.getNotificationSettings(completionHandler: { (settings) in
+            if settings.authorizationStatus == .notDetermined {
+                // Notification permission has not been asked yet, go for it!
+                UNUserNotificationCenter.current().requestAuthorization(options:[.badge, .alert, .sound]){ (granted, error) in
+                    if error != nil {
+                        isPermitted(false)
+                        return
+                    }
+                    
+                    if granted {
+                        DispatchQueue.main.async {
+                            Shared.shared.UIApplication.registerForRemoteNotifications()
+                        }
+                        UNUserNotificationCenter.current().delegate = Shared.shared.ViewController
+                        isPermitted(true)
+                    } else {
+                        isPermitted(false)
+                    }
+                }
+                
             }
             
-            if granted {
-                onSuccess( true )
-            } else {
-                onFail("User revoked access to Notifications")
+            if settings.authorizationStatus == .denied {
+                // Notification permission was previously denied, go to settings & privacy to re-enable
+                isPermitted(false)
             }
-        }
-        
-        UNUserNotificationCenter.current().delegate = Shared.shared.ViewController
+            
+            if settings.authorizationStatus == .authorized {
+                // Notification permission was already granted
+                DispatchQueue.main.async {
+                    Shared.shared.UIApplication.registerForRemoteNotifications()
+                }
+                UNUserNotificationCenter.current().delegate = Shared.shared.ViewController
+                isPermitted(true)
+            }
+        })
     }
-    
 }

@@ -20,8 +20,6 @@ enum PHAssetMediaType : Int {
 enum PickerType: String {
     case PHOTO_LIBRARY      = "PHOTO_LIBRARY"
     case CAMERA             = "CAMERA"
-    case VIDEO_LIBRARY      = "VIDEO_LIBRARY"
-    case CAMCORDER          = "CAMCORDER"
 }
 
 class Photos {
@@ -39,17 +37,6 @@ class Photos {
             mediaPickerController.sourceType = .camera
             mediaPickerController.cameraCaptureMode = .photo
             mediaPickerController.modalPresentationStyle = .fullScreen
-        } else if( type == PickerType.VIDEO_LIBRARY && UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.photoLibrary) ) {
-            mediaPickerController.sourceType = .photoLibrary
-            mediaPickerController.videoQuality = .typeHigh
-            mediaPickerController.mediaTypes = [kUTTypeMovie as String] //kUTTypeMovie kUTTypeImage
-        }  else if( type == PickerType.CAMCORDER && UIImagePickerController.isSourceTypeAvailable(.camera) ) {
-            mediaPickerController.mediaTypes = [kUTTypeMovie as String]
-            mediaPickerController.sourceType = .camera
-            mediaPickerController.cameraCaptureMode = .video
-            mediaPickerController.modalPresentationStyle = .fullScreen
-            mediaPickerController.videoQuality = .typeHigh
-            mediaPickerController.videoMaximumDuration = 10
         } else {
             return false;
         }
@@ -58,62 +45,11 @@ class Photos {
         return true;
     }
     
-    public class func appendEXIFtoImageBinary( uiimage:UIImage, exif:NSDictionary ) -> NSData {
-        let imageData = UIImagePNGRepresentation(uiimage)
-        
-        let imageRef:CGImageSource = CGImageSourceCreateWithData((imageData! as CFData), nil)!
-        let uti: CFString = CGImageSourceGetType(imageRef)!
-        let dataWithEXIF: NSMutableData = NSMutableData(data: imageData!)
-        
-        
-        let destination: CGImageDestination = CGImageDestinationCreateWithData((dataWithEXIF as CFMutableData), uti, 1, nil)!
-        CGImageDestinationAddImageFromSource(destination, imageRef, 0, (exif as CFDictionary))
-        CGImageDestinationFinalize(destination)
-        
-        return dataWithEXIF
-    }
-    
-    public class func getAsset( fileURL: URL ) -> PHAsset? {
-        let result = PHAsset.fetchAssets(withALAssetURLs: [fileURL], options: nil)
-        return result.firstObject
-    }
-    
-    public class func getVideoAsset( fileURL: URL ) -> PHAsset? {
-        let result = PHAsset.fetchAssets(with: .video, options: nil)
-        return result.firstObject
-    }
-    
     public class func goToSettings() {
         let url = NSURL(string: UIApplicationOpenSettingsURLString)
         UIApplication.shared.open(url! as URL) { (result) in
             print( result )
         }
-    }
-    
-    public class func getAllPhotosInfo() {
-        photoAssets = []
-        
-        // 画像をすべて取得
-        let assets: PHFetchResult = PHAsset.fetchAssets(with: .image, options: nil)
-        assets.enumerateObjects({ (asset, index, stop) -> Void in
-            self.photoAssets.append(asset as PHAsset)
-        })
-        print(photoAssets)
-    }
-    
-    public class func getAllSortedPhotosInfo() {
-        
-        // ソート条件を指定
-        let options = PHFetchOptions()
-        options.sortDescriptors = [
-            NSSortDescriptor(key: "creationDate", ascending: false)
-        ]
-        
-        let assets: PHFetchResult = PHAsset.fetchAssets(with: .image, options: options)
-        assets.enumerateObjects({ (asset, index, stop) -> Void in
-            self.photoAssets.append(asset as PHAsset)
-        })
-        print(photoAssets)
     }
     
     public class func getPhotoAt( index:Int) -> PHAsset?{
@@ -128,22 +64,6 @@ class Photos {
             return assets[ index ]
         }
         return nil
-    }
-    
-    public class func getBinaryVideo( asset: PHAsset, onSuccess:@escaping ((Data)->()), onFail: @escaping((String)->())  ) {
-        let manager: PHImageManager = PHImageManager()
-        manager.requestAVAsset(forVideo: asset, options: nil) { (videoAsset, avaudio, _: [AnyHashable : Any]?) in
-            
-            if videoAsset != nil {
-                if let vasset = videoAsset as? AVURLAsset {
-                    if let binaryData = NSData(contentsOf: vasset.url) {
-                        onSuccess( binaryData as Data )
-                        return
-                    }
-                }
-            }
-            onFail( FileError.INEXISTENT.localizedDescription )
-        }
     }
     
     public class func getBinaryImage( asset: PHAsset, onSuccess:@escaping ((Data)->()), onFail: @escaping((String)->())  ) {
